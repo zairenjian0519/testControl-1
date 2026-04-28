@@ -426,7 +426,7 @@ int main_loop(int serversocket)
     DeviceInfo device;
 	memset(&device, 0, sizeof(device));
 	
-    deviceInit(&device, "spssps", "ATB-5000", "2001:eaca:101:0:1e:cd00:ef0f:0", "00:0C:8F:00:01:01");
+    deviceInit(&device, "spssps", "ATB-5000", "2001:eaca:101:0:001E:CD00:0100:0000", "00:0C:8F:00:01:01");
     
     // Add buses
     deviceAddBus(&device, 0, "AUTBUS Bus 0", 3); // 1 MN + 2 TN

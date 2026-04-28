@@ -174,9 +174,9 @@ UA_NodeId createMNNode(UA_Server *server, UA_NodeId nodesNodeId) {
     UA_Variant_init(&temp1Value);
     double temp1 = 25.0;
     UA_Variant_setScalar(&temp1Value, &temp1, &UA_TYPES[UA_TYPES_DOUBLE]);
-    createVariableNode(server, (char*)"2001:eaca:0101:0000:001E:CD00:0201:0001", (char*)"温度1", mnNodeId, 
+    createVariableNode(server, (char*)"2001:eaca:101:0:001E:CD00:0201:0001", (char*)"温度1", mnNodeId, 
                       &UA_TYPES[UA_TYPES_DOUBLE], &temp1Value, UA_ACCESSLEVELMASK_READ);
-    #if 0
+    
     // 创建温度2变量
     UA_Variant temp2Value;
     UA_Variant_init(&temp2Value);
@@ -200,7 +200,6 @@ UA_NodeId createMNNode(UA_Server *server, UA_NodeId nodesNodeId) {
     UA_Variant_setScalar(&humidity2Value, &humidity2, &UA_TYPES[UA_TYPES_DOUBLE]);
     createVariableNode(server, (char*)"2001:eaca:101:0:001E:CD00:0201:0004", (char*)"湿度2", mnNodeId, 
                       &UA_TYPES[UA_TYPES_DOUBLE], &humidity2Value, UA_ACCESSLEVELMASK_READ);
-	#endif
     
     // 创建控制1变量（带数据源）
     UA_VariableAttributes control1Attr = UA_VariableAttributes_default;
@@ -208,7 +207,7 @@ UA_NodeId createMNNode(UA_Server *server, UA_NodeId nodesNodeId) {
     control1Attr.accessLevel = UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE;
     control1Attr.dataType = UA_TYPES[UA_TYPES_DOUBLE].typeId;
     
-    UA_Guid control1Guid = ipv6ToGuid((char*)"2001:eaca:0101:0000:001E:CD00:0201:0005");
+    UA_Guid control1Guid = ipv6ToGuid((char*)"2001:eaca:101:0:001E:CD00:0201:0005");
     UA_NodeId control1NodeId = UA_NODEID_GUID(1, control1Guid);
     UA_QualifiedName control1Name = UA_QUALIFIEDNAME(1, (char*)"控制1");
     UA_NodeId parentReferenceNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES);

@@ -34,3 +34,8 @@ Ipv6 的opcua 的连接 opc.tcp://[2001:eaca:101:0:1e:cd00:ee0f:0]:4840
 #程序的编译：
 D:\Interest_Group\project1ai_testControl\testControl-1>mingw32-make
 
+#运行
+D:\>D:\addp_controller.exe
+
+
+
