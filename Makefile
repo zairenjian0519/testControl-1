@@ -19,10 +19,10 @@ INC_DIR = include
 BUILD_DIR = build
 
 # 文件列表
-# 自动扫描src下所有.cpp和.c文件（包含opcua_server.c）
+# 自动扫描src下所有.cpp和.c文件（包含opcua_server.c、cJSON.c和cJSON_Utils.c）
 SRCS = $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(SRC_DIR)/*.c)
 # 目标文件输出到build目录
-OBJS = $(patsubst $(SRC_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(SRCS:.c=.o))
+OBJS = $(foreach src,$(SRCS),$(BUILD_DIR)/$(basename $(notdir $(src))).o)
 
 # 头文件依赖（包含include和src目录）
 INCLUDES = -I$(INC_DIR) -I$(SRC_DIR)

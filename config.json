@@ -1,0 +1,17 @@
+{
+    "description": "设备侧软件 - IPv6 组播 + 地址池配置",
+
+    "ipv6_multicast": {
+        "listen_port": 6060,
+        "multicast_ip": "ff03::c",
+        "bind_nic_name": "以太网",
+        "nic_index": 12
+    },
+
+    "ipv6_address_pool": {
+        "start_address": "2001:db8::10",
+        "end_address": "2001:db8::100",
+        "prefix_length": 64,
+        "max_lease_count": 50
+    }
+}

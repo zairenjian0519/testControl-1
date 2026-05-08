@@ -438,11 +438,6 @@ int main_loop(int serversocket)
     // Print device information
     devicePrintInfo(&device);
     
-    // Main loop
-    std::cout << "\nListening for ADDP scan requests..." << std::endl;
-    std::cout << "Multicast address: " << ADDP_MULTICAST_ADDRESS << std::endl;
-    std::cout << "UDP port: " << ADDP_UDP_PORT << std::endl;
-    std::cout << "Press Ctrl+C to exit" << std::endl << std::endl;
     
     uint8_t buffer[1024];
     struct sockaddr_in6 senderAddr;
