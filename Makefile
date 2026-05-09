@@ -5,7 +5,7 @@
 # 基础配置
 CC = g++
 # 静态链接核心编译选项 + C++11 + 优化 + 警告
-CFLAGS = -Wall -Wextra -std=c++11 -O2 -static -static-libgcc -static-libstdc++
+CFLAGS = -Wall -Wextra -std=c++11 -O2 -static -static-libgcc -static-libstdc++ -g 
 # Windows网络库静态链接 + 防止动态依赖
 LDFLAGS = -lws2_32 -liphlpapi -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic
 # 新增open62541静态库路径和链接

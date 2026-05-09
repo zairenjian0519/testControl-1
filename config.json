@@ -9,9 +9,15 @@
     },
 
     "ipv6_address_pool": {
-        "start_address": "2001:db8::10",
-        "end_address": "2001:db8::100",
+        "start_address": "2001:eaca:0101:0000:001E:CD00:0201:0000",
+        "end_address": "2001:eaca:0101:0000:001E:CD00:0201:1005",
         "prefix_length": 64,
-        "max_lease_count": 50
+        "max_lease_count": 1000
+    },
+
+    "modbus_tcp": {
+        "server_ip": "192.168.1.100",
+        "server_port": 502,
+        "polling_interval": 1000
     }
 }
