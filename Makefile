@@ -4,8 +4,8 @@
 
 # 基础配置
 CC = g++
-# 静态链接核心编译选项 + C++11 + 优化 + 警告
-CFLAGS = -Wall -Wextra -std=c++11 -O2 -static -static-libgcc -static-libstdc++ -g 
+# 静态链接核心编译选项 + C++11 + 优化 + 警告 + 自动生成依赖文件
+CFLAGS = -Wall -Wextra -std=c++11 -O2 -static -static-libgcc -static-libstdc++ -g -MMD
 # Windows网络库静态链接 + 防止动态依赖
 LDFLAGS = -lws2_32 -liphlpapi -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic
 # 新增静态库路径和链接
@@ -23,6 +23,8 @@ BUILD_DIR = build
 # 自动扫描src下所有.cpp和.c文件（包含opcua_server.c、cJSON.c和cJSON_Utils.c）
 SRCS = $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(SRC_DIR)/*.c)
 OBJS = $(foreach src,$(SRCS),$(BUILD_DIR)/$(basename $(notdir $(src))).o)
+# 依赖文件
+DEPS = $(OBJS:.o=.d)
 
 # 头文件依赖（包含include和src目录）
 INCLUDES = -I$(INC_DIR) -I$(SRC_DIR)
@@ -60,6 +62,9 @@ $(BUILD_DIR)/%.o: lib/libmodbus-master/src/%.c
 clean:
 	@echo 清理生成文件
 	@if exist $(BUILD_DIR) rmdir /s /q $(BUILD_DIR)
+
+# 包含自动生成的依赖文件
+-include $(DEPS)
 
 # 伪目标
 .PHONY: all clean

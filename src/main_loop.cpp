@@ -5,11 +5,48 @@
 #include <cstring>
 #include <iomanip>
 #include <stdint.h>  // C / C++ 通用
+#include "cJSON.h"
+#include "ipv6_manager.h"
 
 
 // Link with ws2_32.lib
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "iphlpapi.lib")
+
+// 获取指定网络接口的MAC地址
+bool get_interface_mac_address(int nic_index, char* mac_address, size_t mac_address_size) {
+    ULONG outBufLen = 0;
+    
+    // 获取所需缓冲区大小
+    if (GetAdaptersAddresses(AF_INET6, GAA_FLAG_INCLUDE_PREFIX, NULL, NULL, &outBufLen) == ERROR_BUFFER_OVERFLOW) {
+        PIP_ADAPTER_ADDRESSES pAddresses = (PIP_ADAPTER_ADDRESSES)malloc(outBufLen);
+        if (pAddresses) {
+            if (GetAdaptersAddresses(AF_INET6, GAA_FLAG_INCLUDE_PREFIX, NULL, pAddresses, &outBufLen) == NO_ERROR) {
+                PIP_ADAPTER_ADDRESSES pCurrAddresses = pAddresses;
+                while (pCurrAddresses) {
+                    if (pCurrAddresses->IfIndex == nic_index) {
+                        // 将MAC地址转换为字符串格式
+                        if (pCurrAddresses->PhysicalAddressLength == 6) {
+                            snprintf(mac_address, mac_address_size, "%02X:%02X:%02X:%02X:%02X:%02X",
+                                    pCurrAddresses->PhysicalAddress[0],
+                                    pCurrAddresses->PhysicalAddress[1],
+                                    pCurrAddresses->PhysicalAddress[2],
+                                    pCurrAddresses->PhysicalAddress[3],
+                                    pCurrAddresses->PhysicalAddress[4],
+                                    pCurrAddresses->PhysicalAddress[5]);
+                            free(pAddresses);
+                            return true;
+                        }
+                    }
+                    pCurrAddresses = pCurrAddresses->Next;
+                }
+            }
+            free(pAddresses);
+        }
+    }
+    
+    return false;
+}
 
 // ADDP protocol constants
 #define ADDP_PROTOCOL_ID 0xABDE
@@ -422,11 +459,104 @@ int main_loop(int serversocket)
 
 	network.multicastSocket = serversocket;
 	
+    // 从config.json读取网络接口索引和IPv6地址池配置
+    int nic_index = 0;
+    char ipv6_start_addr[INET6_ADDRSTRLEN] = {0};
+    char ipv6_end_addr[INET6_ADDRSTRLEN] = {0};
+    int ipv6_prefix_len = 0;
+    
+    FILE *file = fopen("config.json", "r");
+    if (!file) {
+        file = fopen("../config.json", "r");
+    }
+    if (!file) {
+        file = fopen("../../config.json", "r");
+    }
+    
+    if (file) {
+        // 获取文件大小
+        fseek(file, 0, SEEK_END);
+        long file_size = ftell(file);
+        rewind(file);
+        
+        // 分配内存读取文件内容
+        char *json_string = (char *)malloc(file_size + 1);
+        if (json_string) {
+            fread(json_string, 1, file_size, file);
+            json_string[file_size] = '\0';
+            
+            // 解析JSON
+            cJSON *root = cJSON_Parse(json_string);
+            if (root) {
+                // 读取网络接口索引
+                cJSON *ipv6_multicast = cJSON_GetObjectItem(root, "ipv6_multicast");
+                if (ipv6_multicast) {
+                    cJSON *index = cJSON_GetObjectItem(ipv6_multicast, "nic_index");
+                    if (index && cJSON_IsNumber(index)) {
+                        nic_index = index->valueint;
+                    }
+                }
+                
+                // 读取IPv6地址池配置
+                cJSON *ipv6_pool = cJSON_GetObjectItem(root, "ipv6_address_pool");
+                if (ipv6_pool) {
+                    cJSON *start_address = cJSON_GetObjectItem(ipv6_pool, "start_address");
+                    if (start_address && cJSON_IsString(start_address)) {
+                        strcpy(ipv6_start_addr, start_address->valuestring);
+                    }
+                    
+                    cJSON *end_address = cJSON_GetObjectItem(ipv6_pool, "end_address");
+                    if (end_address && cJSON_IsString(end_address)) {
+                        strcpy(ipv6_end_addr, end_address->valuestring);
+                    }
+                    
+                    cJSON *prefix_length = cJSON_GetObjectItem(ipv6_pool, "prefix_length");
+                    if (prefix_length && cJSON_IsNumber(prefix_length)) {
+                        ipv6_prefix_len = prefix_length->valueint;
+                    }
+                }
+                
+                cJSON_Delete(root);
+            }
+            
+            free(json_string);
+        }
+        
+        fclose(file);
+    }
+    
+    if (nic_index == 0) {
+        std::cerr << "Failed to get nic_index from config.json, using default 0" << std::endl;
+    }
+    
+    // 初始化IPv6管理器
+    if (!ipv6_manager_init(ipv6_start_addr, ipv6_end_addr, ipv6_prefix_len)) {
+        std::cerr << "Failed to initialize IPv6 manager" << std::endl;
+        networkCleanup(&network);
+        return 1;
+    }
+    
+    // 从IPv6内存池分配地址
+    char ipv6_address[INET6_ADDRSTRLEN] = {0};
+    if (!ipv6_allocate_address("spssps", nic_index, ipv6_address)) {
+        std::cerr << "Failed to allocate IPv6 address" << std::endl;
+        networkCleanup(&network);
+        return 1;
+    }
+    
+    // 获取指定网络接口的MAC地址
+    char mac_address[18] = {0};
+    if (!get_interface_mac_address(nic_index, mac_address, sizeof(mac_address))) {
+        std::cerr << "Failed to get MAC address for interface " << nic_index << ", using default" << std::endl;
+        strcpy(mac_address, "00:0C:8F:00:01:01");
+    }
+    
     // Initialize device information
     DeviceInfo device;
 	memset(&device, 0, sizeof(device));
 	
-    deviceInit(&device, "spssps", "ATB-5000", "2001:eaca:101:0:1e:cd00:ef0f:0", "00:0C:8F:00:01:01");
+    // 使用动态分配的IPv6地址和获取的MAC地址初始化设备
+    deviceInit(&device, "spssps", "ATB-5000", ipv6_address, mac_address);
     
     // Add buses
     deviceAddBus(&device, 0, "AUTBUS Bus 0", 3); // 1 MN + 2 TN
@@ -519,6 +649,11 @@ int main_loop(int serversocket)
     }
     
     // Cleanup
+    // 释放分配的IPv6地址
+    char ipv6_str[INET6_ADDRSTRLEN] = {0};
+    ipv6ToString(device.ipv6Address, ipv6_str, sizeof(ipv6_str));
+    ipv6_release_address("spssps", nic_index, ipv6_str);
+    
     networkCleanup(&network);
     if (device.buses) {
         delete[] device.buses;

@@ -72,6 +72,8 @@ typedef struct {
     ModbusClient modbus_client;
     UA_Server *server;
     UA_NodeId nodesNodeId;  // 用于动态添加设备节点
+    bool is_modbus_updating;  // 标志位，用于区分Modbus更新和外部OPC UA客户端更新
+    pthread_mutex_t var_update_mutex;  // 保护变量更新的互斥锁（支持递归）
 } GlobalData;
 
 // 函数声明
@@ -172,7 +174,16 @@ UA_NodeId createVariableNode(UA_Server *server, const char *ipv6Addr, const char
     
     UA_VariableAttributes varAttr = UA_VariableAttributes_default;
     varAttr.displayName = UA_LOCALIZEDTEXT((char*)"en-US", (char*)name);
-    varAttr.dataType = dataType->typeId;
+    
+    // 确保数据类型不会为NULL
+    if (dataType != NULL) {
+        varAttr.dataType = dataType->typeId;
+    } else {
+        // 如果数据类型为NULL，使用默认的UInt16类型
+        varAttr.dataType = UA_TYPES[UA_TYPES_UINT16].typeId;
+        log_warn("Warning: Data type is NULL for variable %s, using default UInt16 type", name);
+    }
+    
     varAttr.accessLevel = accessLevel;
     varAttr.value = *value;
     
@@ -188,7 +199,7 @@ UA_NodeId createVariableNode(UA_Server *server, const char *ipv6Addr, const char
     // 如果变量是可写的且提供了global_data，则添加读写回调函数
     if ((accessLevel & UA_ACCESSLEVELMASK_WRITE) && global_data) {
 
-		#if 0
+		#if 1
 		// 设置节点上下文，传递GlobalData指针
         UA_Server_setNodeContext(server, outNodeId, global_data);
         
@@ -440,6 +451,13 @@ int opcua_server_main(void)
     memset(&global_data, 0, sizeof(global_data));
     global_data.server = server;
     global_data.nodesNodeId = nodesNodeId;
+    
+    // 初始化支持递归的互斥锁
+    pthread_mutexattr_t attr;
+    pthread_mutexattr_init(&attr);
+    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+    pthread_mutex_init(&global_data.var_update_mutex, &attr);
+    pthread_mutexattr_destroy(&attr);
     
     // 加载配置文件
     if (loadConfig(&global_data) != 0) {
@@ -735,43 +753,9 @@ UA_Byte getAccessLevel(RegisterType reg_type) {
 static UA_StatusCode readVariableCallback(UA_Server *server, const UA_NodeId *sessionId, void *sessionContext,
                                          const UA_NodeId *nodeId, void *nodeContext, UA_Boolean sourceTimeStamp,
                                          const UA_NumericRange *range, UA_DataValue *dataValue) {
+    // 检查参数有效性
     if (!nodeContext || !dataValue) {
-        return UA_STATUSCODE_BADINTERNALERROR;
-    }
-    
-    GlobalData *global_data = (GlobalData *)nodeContext;
-    OPCUAVariable *var = NULL;
-    
-    // 查找对应的变量
-    for (int i = 0; i < global_data->device_count; i++) {
-        DeviceNode *device = &global_data->devices[i];
-        for (int j = 0; j < device->variable_count; j++) {
-            if (UA_NodeId_equal(&device->variables[j].node_id, nodeId)) {
-                var = &device->variables[j];
-                break;
-            }
-        }
-        if (var) {
-            break;
-        }
-    }
-    
-    if (!var || !var->value) {
-        return UA_STATUSCODE_BADNODEIDUNKNOWN;
-    }
-    
-    // 将本地变量值复制到dataValue
-    UA_Variant_copy((UA_Variant *)var->value, &dataValue->value);
-    dataValue->hasValue = true;
-    
-    return UA_STATUSCODE_GOOD;
-}
-
-// 写入值回调函数
-static UA_StatusCode writeVariableCallback(UA_Server *server, const UA_NodeId *sessionId, void *sessionContext,
-                                         const UA_NodeId *nodeId, void *nodeContext, const UA_NumericRange *range,
-                                         const UA_DataValue *dataValue) {
-    if (!nodeContext || !dataValue->hasValue) {
+        log_error("readVariableCallback: Invalid parameters");
         return UA_STATUSCODE_BADINTERNALERROR;
     }
     
@@ -793,6 +777,112 @@ static UA_StatusCode writeVariableCallback(UA_Server *server, const UA_NodeId *s
     }
     
     if (!var) {
+        log_error("readVariableCallback: Variable not found for nodeId");
+        return UA_STATUSCODE_BADNODEIDUNKNOWN;
+    }
+    
+    // 确保变量值不为空
+    if (!var->value) {
+        log_error("readVariableCallback: Variable value is NULL for %s", var->name);
+        // 如果变量值为空，使用默认值
+        // 先清理旧值
+        UA_Variant_clear(&dataValue->value);
+        
+        UA_UInt16 default_val = 0;
+        UA_Variant_setScalarCopy(&dataValue->value, &default_val, &UA_TYPES[UA_TYPES_UINT16]);
+        dataValue->hasValue = true;
+        return UA_STATUSCODE_GOOD;
+    }
+    
+    // 根据数据类型设置值
+    // 先清理旧值
+    UA_Variant_clear(&dataValue->value);
+    
+    switch (var->plc_datatype) {
+        case PLC_TYPE_BOOL: {
+            UA_Boolean val = *((UA_Boolean *)var->value);
+            UA_Variant_setScalarCopy(&dataValue->value, &val, &UA_TYPES[UA_TYPES_BOOLEAN]);
+            break;
+        }
+        case PLC_TYPE_USINT: {
+            UA_Byte val = *((UA_Byte *)var->value);
+            UA_Variant_setScalarCopy(&dataValue->value, &val, &UA_TYPES[UA_TYPES_BYTE]);
+            break;
+        }
+        case PLC_TYPE_UINT: {
+            UA_UInt16 val = *((UA_UInt16 *)var->value);
+            UA_Variant_setScalarCopy(&dataValue->value, &val, &UA_TYPES[UA_TYPES_UINT16]);
+            break;
+        }
+        case PLC_TYPE_ULINT: {
+            UA_UInt64 val = *((UA_UInt64 *)var->value);
+            UA_Variant_setScalarCopy(&dataValue->value, &val, &UA_TYPES[UA_TYPES_UINT64]);
+            break;
+        }
+        case PLC_TYPE_INT: {
+            UA_Int16 val = *((UA_Int16 *)var->value);
+            UA_Variant_setScalarCopy(&dataValue->value, &val, &UA_TYPES[UA_TYPES_INT16]);
+            break;
+        }
+        case PLC_TYPE_DINT: {
+            UA_Int32 val = *((UA_Int32 *)var->value);
+            UA_Variant_setScalarCopy(&dataValue->value, &val, &UA_TYPES[UA_TYPES_INT32]);
+            break;
+        }
+        case PLC_TYPE_REAL: {
+            UA_Float val = *((UA_Float *)var->value);
+            UA_Variant_setScalarCopy(&dataValue->value, &val, &UA_TYPES[UA_TYPES_FLOAT]);
+            break;
+        }
+        default: {
+            UA_UInt16 val = *((UA_UInt16 *)var->value);
+            UA_Variant_setScalarCopy(&dataValue->value, &val, &UA_TYPES[UA_TYPES_UINT16]);
+            break;
+        }
+    }
+    dataValue->hasValue = true;
+    
+    log_debug("readVariableCallback: Successfully read value for %s", var->name);
+    return UA_STATUSCODE_GOOD;
+}
+
+// 写入值回调函数
+static UA_StatusCode writeVariableCallback(UA_Server *server, const UA_NodeId *sessionId, void *sessionContext,
+                                         const UA_NodeId *nodeId, void *nodeContext, const UA_NumericRange *range,
+                                         const UA_DataValue *dataValue) {
+    if (!nodeContext || !dataValue->hasValue) {
+        return UA_STATUSCODE_BADINTERNALERROR;
+    }
+    
+    GlobalData *global_data = (GlobalData *)nodeContext;
+    
+    // 检查是否是Modbus更新，如果是则不执行写操作，防止循环调用
+    if (global_data->is_modbus_updating) {
+        return UA_STATUSCODE_GOOD;
+    }
+    
+    // 申请互斥锁
+    pthread_mutex_lock(&global_data->var_update_mutex);
+    
+    OPCUAVariable *var = NULL;
+    
+    // 查找对应的变量
+    for (int i = 0; i < global_data->device_count; i++) {
+        DeviceNode *device = &global_data->devices[i];
+        for (int j = 0; j < device->variable_count; j++) {
+            if (UA_NodeId_equal(&device->variables[j].node_id, nodeId)) {
+                var = &device->variables[j];
+                break;
+            }
+        }
+        if (var) {
+            break;
+        }
+    }
+    
+    if (!var) {
+        // 释放互斥锁
+        pthread_mutex_unlock(&global_data->var_update_mutex);
         return UA_STATUSCODE_BADNODEIDUNKNOWN;
     }
     
@@ -856,6 +946,8 @@ static UA_StatusCode writeVariableCallback(UA_Server *server, const UA_NodeId *s
     
     if (!modbus_write_success) {
         log_error("Failed to write value to Modbus server for variable %s", var->name);
+        // 释放互斥锁
+        pthread_mutex_unlock(&global_data->var_update_mutex);
         return UA_STATUSCODE_BADINTERNALERROR;
     }
     
@@ -863,6 +955,9 @@ static UA_StatusCode writeVariableCallback(UA_Server *server, const UA_NodeId *s
     UA_Variant_copy(&dataValue->value, (UA_Variant *)var->value);
     
     log_info("Successfully wrote value to Modbus server for variable %s", var->name);
+    
+    // 释放互斥锁
+    pthread_mutex_unlock(&global_data->var_update_mutex);
     return UA_STATUSCODE_GOOD;
 }
 
@@ -1130,6 +1225,11 @@ int deleteDeviceNodes(UA_Server *server, GlobalData *global_data, int device_ind
             // 重置变量节点ID
             var->node_id = UA_NODEID_NULL;
         }
+        // 释放变量的值内存
+        if (var->value != NULL) {
+            free(var->value);
+            var->value = NULL;
+        }
         // 释放变量的IPv6地址
         if (var->ipv6_address[0] != '\0') {
             ipv6_release_address(
@@ -1320,42 +1420,68 @@ int addDeviceNodes(UA_Server *server, GlobalData *global_data, int device_index,
             }
             
             // 保存值指针
+            // 先释放旧的内存（如果存在）
+            if (device->variables[var_index].value != NULL) {
+                free(device->variables[var_index].value);
+                device->variables[var_index].value = NULL;
+            }
+            
             if (is_status_var) {
                 // 如果是状态变量，使用UInt16类型
                 device->variables[var_index].value = malloc(sizeof(UA_UInt16));
-                *((UA_UInt16 *)device->variables[var_index].value) = 0;
+                if (device->variables[var_index].value != NULL) {
+                    *((UA_UInt16 *)device->variables[var_index].value) = 0;
+                }
             } else {
                 switch (record->plcDatatype) {
                     case PLC_TYPE_BOOL:
                         device->variables[var_index].value = malloc(sizeof(UA_Boolean));
-                        *((UA_Boolean *)device->variables[var_index].value) = false;
+                        if (device->variables[var_index].value != NULL) {
+                            *((UA_Boolean *)device->variables[var_index].value) = false;
+                        }
                         break;
                     case PLC_TYPE_USINT:
                         device->variables[var_index].value = malloc(sizeof(UA_Byte));
-                        *((UA_Byte *)device->variables[var_index].value) = 0;
+                        if (device->variables[var_index].value != NULL) {
+                            *((UA_Byte *)device->variables[var_index].value) = 0;
+                        }
                         break;
                     case PLC_TYPE_UINT:
                         device->variables[var_index].value = malloc(sizeof(UA_UInt16));
-                        *((UA_UInt16 *)device->variables[var_index].value) = 0;
+                        if (device->variables[var_index].value != NULL) {
+                            *((UA_UInt16 *)device->variables[var_index].value) = 0;
+                        }
                         break;
                     case PLC_TYPE_ULINT:
                         device->variables[var_index].value = malloc(sizeof(UA_UInt64));
-                        *((UA_UInt64 *)device->variables[var_index].value) = 0;
+                        if (device->variables[var_index].value != NULL) {
+                            *((UA_UInt64 *)device->variables[var_index].value) = 0;
+                        }
                         break;
                     case PLC_TYPE_INT:
                         device->variables[var_index].value = malloc(sizeof(UA_Int16));
-                        *((UA_Int16 *)device->variables[var_index].value) = 0;
+                        if (device->variables[var_index].value != NULL) {
+                            *((UA_Int16 *)device->variables[var_index].value) = 0;
+                        }
                         break;
                     case PLC_TYPE_DINT:
                         device->variables[var_index].value = malloc(sizeof(UA_Int32));
-                        *((UA_Int32 *)device->variables[var_index].value) = 0;
+                        if (device->variables[var_index].value != NULL) {
+                            *((UA_Int32 *)device->variables[var_index].value) = 0;
+                        }
                         break;
                     case PLC_TYPE_REAL:
                         device->variables[var_index].value = malloc(sizeof(UA_Float));
-                        *((UA_Float *)device->variables[var_index].value) = 0.0f;
+                        if (device->variables[var_index].value != NULL) {
+                            *((UA_Float *)device->variables[var_index].value) = 0.0f;
+                        }
                         break;
                     default:
-                        device->variables[var_index].value = NULL;
+                        // 为默认情况分配内存，避免NULL值
+                        device->variables[var_index].value = malloc(sizeof(UA_UInt16));
+                        if (device->variables[var_index].value != NULL) {
+                            *((UA_UInt16 *)device->variables[var_index].value) = 0;
+                        }
                         break;
                 }
             }
@@ -1373,6 +1499,12 @@ void updateOPCUAVariables(UA_Server *server, GlobalData *global_data) {
     if (!server || !global_data) {
         return;
     }
+    
+    // 申请互斥锁
+    pthread_mutex_lock(&global_data->var_update_mutex);
+    
+    // 设置标志位，表示这是Modbus更新
+    global_data->is_modbus_updating = true;
     
     for (int i = 0; i < global_data->device_count; i++) {
         DeviceNode *device = &global_data->devices[i];
@@ -1424,6 +1556,12 @@ void updateOPCUAVariables(UA_Server *server, GlobalData *global_data) {
             }
         }
     }
+    
+    // 重置标志位
+    global_data->is_modbus_updating = false;
+    
+    // 释放互斥锁
+    pthread_mutex_unlock(&global_data->var_update_mutex);
 }
 
 // Modbus轮询线程

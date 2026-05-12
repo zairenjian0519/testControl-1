@@ -596,7 +596,7 @@ bool ipv6_allocate_address(const char *device_name, int nic_index, char *ipv6_ad
 }
 
 // 释放设备的IPv6地址
-bool ipv6_release_address(const char *device_name, int nic_index, const char *ipv6_address)
+bool ipv6_release_address(const char *device_name, int nic_index, const char *ipv6_address) // 修改测试
 {
     if (!device_name || !ipv6_address) {
         return false;
