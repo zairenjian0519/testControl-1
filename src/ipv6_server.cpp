@@ -9,20 +9,39 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <getopt.h>
 #include "cJSON.h"
+#include "log_manager.h"
 
 #define BUF_LEN 256  
+
+// 日志配置结构体
+typedef struct {
+    bool enable_log;
+    std::string log_level;
+    std::string log_file;
+    int log_file_count;
+    long log_file_size;
+} LogConfigFromFile;
 
 // 简单的JSON配置结构体
 typedef struct {
     int listen_port;
     std::string multicast_ip;
     int nic_index;
+    LogConfigFromFile log_config;
 } Ipv6MulticastConfig;
 
 // 从JSON文件中读取配置
 Ipv6MulticastConfig read_ipv6_config(const std::string& config_file) {
     Ipv6MulticastConfig config = {0};
+    
+    // 初始化日志配置默认值
+    config.log_config.enable_log = false;
+    config.log_config.log_level = "INFO";
+    config.log_config.log_file = "application.log";
+    config.log_config.log_file_count = 2;
+    config.log_config.log_file_size = 1024 * 1024; // 默认1MB
     std::string content;
     std::ifstream file(config_file);
     
@@ -69,6 +88,48 @@ Ipv6MulticastConfig read_ipv6_config(const std::string& config_file) {
         }
     }
     
+    // 获取log对象
+    cJSON *log_config = cJSON_GetObjectItem(root, "log");
+    if (log_config != NULL) {
+        // 获取enable_log
+        cJSON *enable_log = cJSON_GetObjectItem(log_config, "enable_log");
+        if (enable_log != NULL && cJSON_IsBool(enable_log)) {
+            config.log_config.enable_log = cJSON_IsTrue(enable_log);
+        }
+        
+        // 获取log_level
+        cJSON *log_level = cJSON_GetObjectItem(log_config, "log_level");
+        if (log_level != NULL && cJSON_IsString(log_level)) {
+            config.log_config.log_level = log_level->valuestring;
+        }
+        
+        // 获取log_file
+        cJSON *log_file = cJSON_GetObjectItem(log_config, "log_file");
+        if (log_file != NULL && cJSON_IsString(log_file)) {
+            config.log_config.log_file = log_file->valuestring;
+        }
+        
+        // 获取log_file_count
+        cJSON *log_file_count = cJSON_GetObjectItem(log_config, "log_file_count");
+        if (log_file_count != NULL && cJSON_IsNumber(log_file_count)) {
+            config.log_config.log_file_count = log_file_count->valueint;
+            // 确保日志文件数量至少为1
+            if (config.log_config.log_file_count < 1) {
+                config.log_config.log_file_count = 1;
+            }
+        }
+        
+        // 获取log_file_size
+        cJSON *log_file_size = cJSON_GetObjectItem(log_config, "log_file_size");
+        if (log_file_size != NULL && cJSON_IsNumber(log_file_size)) {
+            config.log_config.log_file_size = log_file_size->valueint;
+            // 确保日志文件大小至少为1KB
+            if (config.log_config.log_file_size < 1024) {
+                config.log_config.log_file_size = 1024;
+            }
+        }
+    }
+    
     // 释放cJSON对象
     cJSON_Delete(root);
     
@@ -78,19 +139,102 @@ Ipv6MulticastConfig read_ipv6_config(const std::string& config_file) {
 int main_loop(int serversocket) ;
 int opcua_server_main(void);
 
-int main(int argc, char* argv[])
+// 打印帮助信息
+void print_help(const char* program_name)
 {
+    std::cout << "Usage: " << program_name << " [options]" << std::endl;
+    std::cout << "Options:" << std::endl;
+    std::cout << "  -h, --help          显示帮助信息" << std::endl;
+    std::cout << "  -l, --log           启用日志输出" << std::endl;
+    std::cout << "  -f, --log-file      设置日志文件路径" << std::endl;
+    std::cout << "  -v, --verbose       启用详细日志（DEBUG级别）" << std::endl;
+}
+
+int main(int argc, char* argv[]) {
+    // 先从配置文件读取配置
+    Ipv6MulticastConfig config = read_ipv6_config("config.json");
+    
+    // 命令行参数处理 - 默认值来自配置文件
+    bool enable_log = config.log_config.enable_log;
+    bool log_to_file = false; // 如果指定了日志文件或者配置中启用了日志，则设置为true
+    std::string log_file = config.log_config.log_file;
+    LogLevel log_level = LOG_LEVEL_INFO;
+    
+    // 解析日志级别
+    if (config.log_config.log_level == "DEBUG") {
+        log_level = LOG_LEVEL_DEBUG;
+    } else if (config.log_config.log_level == "INFO") {
+        log_level = LOG_LEVEL_INFO;
+    } else if (config.log_config.log_level == "WARN") {
+        log_level = LOG_LEVEL_WARN;
+    } else if (config.log_config.log_level == "ERROR") {
+        log_level = LOG_LEVEL_ERROR;
+    }
+
+    // 定义长选项
+    static struct option long_options[] = {
+        {"help", no_argument, NULL, 'h'},
+        {"log", no_argument, NULL, 'l'},
+        {"log-file", required_argument, NULL, 'f'},
+        {"verbose", no_argument, NULL, 'v'},
+        {NULL, 0, NULL, 0}
+    };
+
+    int opt;
+    int option_index = 0;
+    while ((opt = getopt_long(argc, argv, "hlf:v", long_options, &option_index)) != -1) {
+        switch (opt) {
+            case 'h':
+                print_help(argv[0]);
+                return 0;
+            case 'l':
+                enable_log = true;
+                break;
+            case 'f':
+                log_to_file = true;
+                log_file = optarg;
+                break;
+            case 'v':
+                log_level = LOG_LEVEL_DEBUG;
+                break;
+            default:
+                print_help(argv[0]);
+                return 1;
+        }
+    }
+    
+    // 如果配置中启用了日志但没有指定输出文件，则默认输出到文件
+    if (enable_log && !log_to_file) {
+        log_to_file = true;
+    }
+
+    // 初始化日志管理器
+    LogConfig log_config = {
+        .enable_log = enable_log,
+        .log_level = log_level,
+        .log_to_file = log_to_file,
+        .log_file = log_file.c_str(),
+        .log_file_count = config.log_config.log_file_count,
+        .log_file_size = config.log_config.log_file_size,
+        .log_fp = NULL
+    };
+
+    if (!log_manager_init(&log_config)) {
+        std::cerr << "日志管理器初始化失败" << std::endl;
+        return 1;
+    }
+
+    log_info("程序启动，初始化Winsock...");
+
     WSADATA     wsaData;
     WORD wVersionRequested;                   // 版本
     wVersionRequested = MAKEWORD(1, 1);       //版本信息
     WSAStartup(wVersionRequested, &wsaData);  //初始化Windows套接字库
-
-    // 从配置文件读取IPv6组播配置
-    Ipv6MulticastConfig config = read_ipv6_config("config.json");
     
-    // 验证配置是否有效
+    // 验证IPv6组播配置是否有效
     if (config.listen_port == 0 || config.multicast_ip.empty() || config.nic_index == 0) {
-        std::cerr << "配置无效，请检查config.json文件" << std::endl;
+        log_error("IPv6组播配置无效，请检查config.json文件");
+        log_manager_cleanup();
         return -1;
     }
 
@@ -123,8 +267,9 @@ int main(int argc, char* argv[])
 	hints.ai_flags = AI_NUMERICHOST;
 	
 	if (getaddrinfo(config.multicast_ip.c_str(), NULL, &hints, &res) != 0) {
-		fprintf(stderr, "getaddrinfo failed for %s\n", config.multicast_ip.c_str());
-		return 1;
+		log_error("getaddrinfo failed for %s", config.multicast_ip.c_str());
+        log_manager_cleanup();
+        return 1;
 	}
 	
 	memcpy(&group.ipv6mr_multiaddr, 
@@ -138,9 +283,9 @@ int main(int argc, char* argv[])
     int l_naddLen = sizeof(addr);
     int l_nReadLen = 0;
     char msgbuf[BUF_LEN];
-    printf("waiting receive\n");
+    log_info("等待接收数据...");
 	
-	printf("=== OPC UA 服务线程已启动 ===\n") ;
+	log_info("=== OPC UA 服务线程已启动 ===");
 
 	// ==============================
 	// 创建 C++ 线程，运行 opcua_server
@@ -149,10 +294,10 @@ int main(int argc, char* argv[])
 	
 
     // Main loop
-    std::cout << "\nListening for ADDP scan requests..." << std::endl;
-    std::cout << "Multicast address: " << config.multicast_ip << std::endl;
-    std::cout << "UDP port: " << config.listen_port << std::endl;
-    std::cout << "Press Ctrl+C to exit" << std::endl << std::endl;
+    log_info("\n监听ADDP扫描请求...");
+    log_info("多播地址: %s", config.multicast_ip.c_str());
+    log_info("UDP端口: %d", config.listen_port);
+    log_info("按Ctrl+C退出\n");
 
 	main_loop(l_nServer);
 
@@ -180,5 +325,8 @@ int main(int argc, char* argv[])
 
 	#endif
 
+    // 清理日志管理器
+    log_manager_cleanup();
+    
     return 0;
 }

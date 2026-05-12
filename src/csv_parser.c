@@ -9,7 +9,18 @@ static int parseCSVLine(char *line, CSVRecord *record, char *lastValidName) {
     // 解析modbusAddr
     token = strtok_r(line, ",", &saveptr);
     if (!token) return 0;
-    record->modbusAddr = atoi(token);
+    
+    // 将厂家扩展的6位地址转换为标准5位地址
+    // 30xxxx -> 3xxxx, 10xxxx -> 1xxxx, 20xxxx -> 2xxxx, 40xxxx -> 4xxxx
+    int addr = atoi(token);
+    if (addr >= 100000 && addr <= 499999) {
+        // 对于6位地址，去掉中间的0，保留前5位有效数字
+        // 例如：300001 -> 30001, 100002 -> 10002, 400003 -> 40003
+        int prefix = addr / 100000; // 获取第一位数字 (1,2,3,4)
+        int suffix = addr % 10000;  // 获取最后4位数字
+        addr = prefix * 10000 + suffix;
+    }
+    record->modbusAddr = addr;
     fieldIndex++;
     
     // 解析name

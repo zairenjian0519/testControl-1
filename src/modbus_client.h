@@ -1,37 +1,30 @@
 #ifndef MODBUS_CLIENT_H
 #define MODBUS_CLIENT_H
 
+#define _WIN32_WINNT 0x0600   // 必须放在最前面！
+#define FD_SETSIZE 1024       // 把上限从 64 改大！
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#include "modbus.h"
 
 #pragma comment(lib, "ws2_32.lib")
 
-// Modbus功能码
-#define MODBUS_FC_READ_COILS                0x01
-#define MODBUS_FC_READ_DISCRETE_INPUTS      0x02
-#define MODBUS_FC_READ_HOLDING_REGISTERS    0x03
-#define MODBUS_FC_READ_INPUT_REGISTERS      0x04
-#define MODBUS_FC_WRITE_SINGLE_COIL         0x05
-#define MODBUS_FC_WRITE_SINGLE_REGISTER     0x06
-#define MODBUS_FC_WRITE_MULTIPLE_COILS      0x0F
-#define MODBUS_FC_WRITE_MULTIPLE_REGISTERS  0x10
-
+// 使用libmodbus的功能码
 // Modbus错误码
 #define MODBUS_SUCCESS                      0x00
-#define MODBUS_ERROR_SOCKET                 0x01
+#define MODBUS_ERROR_INIT                   0x01
 #define MODBUS_ERROR_CONNECT                0x02
-#define MODBUS_ERROR_SEND                   0x03
-#define MODBUS_ERROR_RECV                   0x04
-#define MODBUS_ERROR_CRC                    0x05
-#define MODBUS_ERROR_RESPONSE               0x06
+#define MODBUS_ERROR_READ                   0x03
+#define MODBUS_ERROR_WRITE                  0x04
 
 // Modbus客户端上下文
 typedef struct {
-    SOCKET sockfd;
+    modbus_t *ctx;
     char server_ip[16];
     int server_port;
     int slave_id;

@@ -16,8 +16,17 @@
     },
 
     "modbus_tcp": {
-        "server_ip": "192.168.1.100",
+        "server_ip": "192.168.1.123",
         "server_port": 502,
-        "polling_interval": 1000
+        "polling_interval": 1000,
+        "reconnect_interval": 5000
+    },
+    
+    "log": {
+        "enable_log": false,
+        "log_level": "INFO",
+        "log_file": "application.log",
+        "log_file_count": 2,
+        "log_file_size": 1048576
     }
 }
