@@ -44,6 +44,127 @@ typedef struct {
 
 static IPv6AddressPool g_ipv6_pool = {0};
 
+// Device-IPv6映射节点
+typedef struct DeviceIPv6MapNode {
+    char device_name[64];
+    char ipv6_address[40];
+    struct DeviceIPv6MapNode *next;
+} DeviceIPv6MapNode;
+
+// Device-IPv6映射表
+static DeviceIPv6MapNode *g_device_ipv6_map = NULL;
+static pthread_mutex_t g_device_ipv6_map_lock = PTHREAD_MUTEX_INITIALIZER;
+
+// 添加设备-IPv6映射
+static bool add_device_ipv6_mapping(const char *device_name, const char *ipv6_address)
+{
+    if (!device_name || !ipv6_address) {
+        return false;
+    }
+    
+    pthread_mutex_lock(&g_device_ipv6_map_lock);
+    
+    // 先检查是否已存在该设备的映射
+    DeviceIPv6MapNode *current = g_device_ipv6_map;
+    while (current != NULL) {
+        if (strcmp(current->device_name, device_name) == 0) {
+            // 更新现有映射
+            strncpy(current->ipv6_address, ipv6_address, sizeof(current->ipv6_address) - 1);
+            current->ipv6_address[sizeof(current->ipv6_address) - 1] = '\0';
+            pthread_mutex_unlock(&g_device_ipv6_map_lock);
+            return true;
+        }
+        current = current->next;
+    }
+    
+    // 创建新节点
+    DeviceIPv6MapNode *new_node = (DeviceIPv6MapNode *)malloc(sizeof(DeviceIPv6MapNode));
+    if (new_node == NULL) {
+        pthread_mutex_unlock(&g_device_ipv6_map_lock);
+        return false;
+    }
+    
+    strncpy(new_node->device_name, device_name, sizeof(new_node->device_name) - 1);
+    new_node->device_name[sizeof(new_node->device_name) - 1] = '\0';
+    strncpy(new_node->ipv6_address, ipv6_address, sizeof(new_node->ipv6_address) - 1);
+    new_node->ipv6_address[sizeof(new_node->ipv6_address) - 1] = '\0';
+    new_node->next = g_device_ipv6_map;
+    g_device_ipv6_map = new_node;
+    
+    pthread_mutex_unlock(&g_device_ipv6_map_lock);
+    return true;
+}
+
+// 删除设备-IPv6映射
+static bool remove_device_ipv6_mapping(const char *device_name)
+{
+    if (!device_name) {
+        return false;
+    }
+    
+    pthread_mutex_lock(&g_device_ipv6_map_lock);
+    
+    DeviceIPv6MapNode **pp = &g_device_ipv6_map;
+    while (*pp != NULL) {
+        if (strcmp((*pp)->device_name, device_name) == 0) {
+            DeviceIPv6MapNode *temp = *pp;
+            *pp = (*pp)->next;
+            free(temp);
+            pthread_mutex_unlock(&g_device_ipv6_map_lock);
+            return true;
+        }
+        pp = &((*pp)->next);
+    }
+    
+    pthread_mutex_unlock(&g_device_ipv6_map_lock);
+    return false;
+}
+
+// 获取设备的IPv6地址
+bool ipv6_get_device_address(const char *device_name, char *ipv6_address, size_t max_len)
+{
+    if (!device_name || !ipv6_address || max_len == 0) {
+        return false;
+    }
+    
+    pthread_mutex_lock(&g_device_ipv6_map_lock);
+    
+    DeviceIPv6MapNode *current = g_device_ipv6_map;
+    while (current != NULL) {
+        if (strcmp(current->device_name, device_name) == 0) {
+            strncpy(ipv6_address, current->ipv6_address, max_len - 1);
+            ipv6_address[max_len - 1] = '\0';
+            pthread_mutex_unlock(&g_device_ipv6_map_lock);
+            return true;
+        }
+        current = current->next;
+    }
+    
+    pthread_mutex_unlock(&g_device_ipv6_map_lock);
+    return false;
+}
+
+// 打印所有设备-IPv6映射
+void ipv6_print_device_mappings(void)
+{
+    pthread_mutex_lock(&g_device_ipv6_map_lock);
+    
+    log_debug("=== Device-IPv6 Mapping Table ===");
+    if (g_device_ipv6_map == NULL) {
+        log_debug("  (empty)");
+        pthread_mutex_unlock(&g_device_ipv6_map_lock);
+        return;
+    }
+    
+    DeviceIPv6MapNode *current = g_device_ipv6_map;
+    while (current != NULL) {
+        log_debug("  Device: %s -> IPv6: %s", current->device_name, current->ipv6_address);
+        current = current->next;
+    }
+    
+    pthread_mutex_unlock(&g_device_ipv6_map_lock);
+}
+
 // 检查IPv6地址是否已分配
 static bool is_address_allocated(const char *addr)
 {
@@ -590,6 +711,9 @@ bool ipv6_allocate_address(const char *device_name, int nic_index, char *ipv6_ad
         }
     }
 
+    // 添加设备-IPv6映射
+    add_device_ipv6_mapping(device_name, ipv6_address);
+    
     log_info("Successfully allocated IPv6 address %s for device %s on interface %d",
             ipv6_address, device_name, nic_index);
     return true;
@@ -609,6 +733,9 @@ bool ipv6_release_address(const char *device_name, int nic_index, const char *ip
 
     // 从已分配列表中删除地址
     remove_address_from_allocated(ipv6_address);
+    
+    // 删除设备-IPv6映射
+    remove_device_ipv6_mapping(device_name);
 
     log_info("Successfully released IPv6 address %s from device %s on interface %d",
             ipv6_address, device_name, nic_index);
@@ -642,8 +769,10 @@ bool ipv6_manager_init(const char *start_addr, const char *end_addr, int prefix_
     g_ipv6_pool.next_addr_counter = 0;
 
     // 设置地址池范围
-    strncpy(g_ipv6_pool.start_addr, start_addr, sizeof(g_ipv6_pool.start_addr));
-    strncpy(g_ipv6_pool.end_addr, end_addr, sizeof(g_ipv6_pool.end_addr));
+    strncpy(g_ipv6_pool.start_addr, start_addr, sizeof(g_ipv6_pool.start_addr) - 1);
+    g_ipv6_pool.start_addr[sizeof(g_ipv6_pool.start_addr) - 1] = '\0';
+    strncpy(g_ipv6_pool.end_addr, end_addr, sizeof(g_ipv6_pool.end_addr) - 1);
+    g_ipv6_pool.end_addr[sizeof(g_ipv6_pool.end_addr) - 1] = '\0';
     g_ipv6_pool.prefix_len = prefix_len;
 
     // 解锁

@@ -23,6 +23,10 @@ bool ipv6_allocate_address(const char *device_name, int nic_index, char *ipv6_ad
  */
 bool ipv6_release_address(const char *device_name, int nic_index, const char *ipv6_address);
 
+bool ipv6_add_address_to_interface(int nic_index, const char *ipv6_address, int prefix_len);
+
+bool ipv6_remove_address_from_interface(int nic_index, const char *ipv6_address);
+
 /**
  * @brief 初始化IPv6地址管理器
  * @param start_addr 地址池起始地址
@@ -36,5 +40,19 @@ bool ipv6_manager_init(const char *start_addr, const char *end_addr, int prefix_
  * @brief 清理IPv6地址管理器
  */
 void ipv6_manager_cleanup(void);
+
+/**
+ * @brief 获取设备的IPv6地址
+ * @param device_name 设备名称
+ * @param ipv6_address 输出参数，存储获取的IPv6地址
+ * @param max_len 输出缓冲区最大长度
+ * @return true表示获取成功，false表示失败
+ */
+bool ipv6_get_device_address(const char *device_name, char *ipv6_address, size_t max_len);
+
+/**
+ * @brief 打印所有设备-IPv6映射
+ */
+void ipv6_print_device_mappings(void);
 
 #endif // IPV6_MANAGER_H

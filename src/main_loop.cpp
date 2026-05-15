@@ -5,7 +5,6 @@
 #include <cstring>
 #include <iomanip>
 #include <stdint.h>  // C / C++ 通用
-#include "cJSON.h"
 #include "ipv6_manager.h"
 
 
@@ -437,7 +436,7 @@ void devicePrintInfo(const DeviceInfo* device) {
     }
 }
 
-int main_loop(int serversocket) 
+int main_loop(int serversocket, int nic_index) 
 {
     std::cout << "=== AUTBUS Controller Simulator ===" << std::endl;
     
@@ -458,80 +457,9 @@ int main_loop(int serversocket)
     #endif
 
 	network.multicastSocket = serversocket;
-	
-    // 从config.json读取网络接口索引和IPv6地址池配置
-    int nic_index = 0;
-    char ipv6_start_addr[INET6_ADDRSTRLEN] = {0};
-    char ipv6_end_addr[INET6_ADDRSTRLEN] = {0};
-    int ipv6_prefix_len = 0;
-    
-    FILE *file = fopen("config.json", "r");
-    if (!file) {
-        file = fopen("../config.json", "r");
-    }
-    if (!file) {
-        file = fopen("../../config.json", "r");
-    }
-    
-    if (file) {
-        // 获取文件大小
-        fseek(file, 0, SEEK_END);
-        long file_size = ftell(file);
-        rewind(file);
-        
-        // 分配内存读取文件内容
-        char *json_string = (char *)malloc(file_size + 1);
-        if (json_string) {
-            fread(json_string, 1, file_size, file);
-            json_string[file_size] = '\0';
-            
-            // 解析JSON
-            cJSON *root = cJSON_Parse(json_string);
-            if (root) {
-                // 读取网络接口索引
-                cJSON *ipv6_multicast = cJSON_GetObjectItem(root, "ipv6_multicast");
-                if (ipv6_multicast) {
-                    cJSON *index = cJSON_GetObjectItem(ipv6_multicast, "nic_index");
-                    if (index && cJSON_IsNumber(index)) {
-                        nic_index = index->valueint;
-                    }
-                }
-                
-                // 读取IPv6地址池配置
-                cJSON *ipv6_pool = cJSON_GetObjectItem(root, "ipv6_address_pool");
-                if (ipv6_pool) {
-                    cJSON *start_address = cJSON_GetObjectItem(ipv6_pool, "start_address");
-                    if (start_address && cJSON_IsString(start_address)) {
-                        strcpy(ipv6_start_addr, start_address->valuestring);
-                    }
-                    
-                    cJSON *end_address = cJSON_GetObjectItem(ipv6_pool, "end_address");
-                    if (end_address && cJSON_IsString(end_address)) {
-                        strcpy(ipv6_end_addr, end_address->valuestring);
-                    }
-                    
-                    cJSON *prefix_length = cJSON_GetObjectItem(ipv6_pool, "prefix_length");
-                    if (prefix_length && cJSON_IsNumber(prefix_length)) {
-                        ipv6_prefix_len = prefix_length->valueint;
-                    }
-                }
-                
-                cJSON_Delete(root);
-            }
-            
-            free(json_string);
-        }
-        
-        fclose(file);
-    }
     
     if (nic_index == 0) {
-        std::cerr << "Failed to get nic_index from config.json, using default 0" << std::endl;
-    }
-    
-    // 初始化IPv6管理器
-    if (!ipv6_manager_init(ipv6_start_addr, ipv6_end_addr, ipv6_prefix_len)) {
-        std::cerr << "Failed to initialize IPv6 manager" << std::endl;
+        std::cerr << "Invalid nic_index" << std::endl;
         networkCleanup(&network);
         return 1;
     }

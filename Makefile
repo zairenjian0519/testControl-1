@@ -1,70 +1,60 @@
-# Windows平台静态链接Makefile (MinGW-w64环境)
-# 编译后生成的EXE可直接拷贝到其他Windows机器运行
-# 使用方法: make clean && make
+# Windows static-link Makefile for MinGW-w64
 
-# 基础配置
 CC = g++
-# 静态链接核心编译选项 + C++11 + 优化 + 警告 + 自动生成依赖文件
-CFLAGS = -Wall -Wextra -std=c++11 -O2 -static -static-libgcc -static-libstdc++ -g -MMD
-# Windows网络库静态链接 + 防止动态依赖
+
+DEBUG ?= 1
+
+BASE_CFLAGS = -Wall -Wextra -std=c++11 -static -static-libgcc -static-libstdc++ -MMD
+DEBUG_CFLAGS = -Og -ggdb -g3 -fno-omit-frame-pointer
+RELEASE_CFLAGS = -O2
+CFLAGS = $(BASE_CFLAGS) $(if $(filter 1,$(DEBUG)),$(DEBUG_CFLAGS),$(RELEASE_CFLAGS))
+
 LDFLAGS = -lws2_32 -liphlpapi -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic
-# 新增静态库路径和链接
 OPEN62541_LIB = lib/libopen62541.a
 MODBUS_LIB = lib/libmodbus.a
-# 最终生成的可执行文件
 TARGET = build/addp_controller.exe
 
-# 路径配置
 SRC_DIR = src
 INC_DIR = include
 BUILD_DIR = build
 
-# 文件列表
-# 自动扫描src下所有.cpp和.c文件（包含opcua_server.c、cJSON.c和cJSON_Utils.c）
 SRCS = $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(SRC_DIR)/*.c)
 OBJS = $(foreach src,$(SRCS),$(BUILD_DIR)/$(basename $(notdir $(src))).o)
-# 依赖文件
 DEPS = $(OBJS:.o=.d)
-
-# 头文件依赖（包含include和src目录）
 INCLUDES = -I$(INC_DIR) -I$(SRC_DIR)
 
-# 主目标
 all: $(BUILD_DIR) $(TARGET)
 
-# 创建build目录（Windows兼容）
+debug: DEBUG = 1
+debug: all
+
+release: DEBUG = 0
+release: all
+
 $(BUILD_DIR):
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 
-# 链接生成静态可执行文件（新增链接open62541和libmodbus静态库）
 $(TARGET): $(OBJS)
-	@echo 静态链接生成可执行文件: $@
+	@echo Linking executable: $@
 	$(CC) $(CFLAGS) $(OBJS) -o $@ $(LDFLAGS) $(OPEN62541_LIB) $(MODBUS_LIB)
-	@echo 编译完成！文件位置: $(TARGET)
-	@echo 该文件可直接拷贝到其他Windows机器运行
+	@echo Build complete: $(TARGET)
 
-# 编译C++源文件为目标文件
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
-	@echo 编译C++文件: $<
+	@echo Compiling C++ source: $<
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-# 编译C源文件为目标文件（适配opcua_server.c）
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
-	@echo 编译C文件: $<
+	@echo Compiling C source: $<
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-# 编译libmodbus源文件为目标文件
 $(BUILD_DIR)/%.o: lib/libmodbus-master/src/%.c
-	@echo 编译libmodbus文件: $<
+	@echo Compiling libmodbus source: $<
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-# 清理生成文件（Windows兼容）
 clean:
-	@echo 清理生成文件
+	@echo Cleaning build artifacts
 	@if exist $(BUILD_DIR) rmdir /s /q $(BUILD_DIR)
 
-# 包含自动生成的依赖文件
 -include $(DEPS)
 
-# 伪目标
-.PHONY: all clean
+.PHONY: all clean debug release

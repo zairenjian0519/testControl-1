@@ -12,6 +12,7 @@
 #include <getopt.h>
 #include "cJSON.h"
 #include "log_manager.h"
+#include "ipv6_manager.h"
 
 #define BUF_LEN 256  
 
@@ -29,6 +30,10 @@ typedef struct {
     int listen_port;
     std::string multicast_ip;
     int nic_index;
+    std::string ipv6_start_address;
+    std::string ipv6_end_address;
+    int ipv6_prefix_length;
+    int ipv6_max_lease_count;
     LogConfigFromFile log_config;
 } Ipv6MulticastConfig;
 
@@ -42,6 +47,8 @@ Ipv6MulticastConfig read_ipv6_config(const std::string& config_file) {
     config.log_config.log_file = "application.log";
     config.log_config.log_file_count = 2;
     config.log_config.log_file_size = 1024 * 1024; // 默认1MB
+    config.ipv6_prefix_length = 0;
+    config.ipv6_max_lease_count = 0;
     std::string content;
     std::ifstream file(config_file);
     
@@ -89,6 +96,29 @@ Ipv6MulticastConfig read_ipv6_config(const std::string& config_file) {
     }
     
     // 获取log对象
+    cJSON *ipv6_pool = cJSON_GetObjectItem(root, "ipv6_address_pool");
+    if (ipv6_pool != NULL) {
+        cJSON *start_address = cJSON_GetObjectItem(ipv6_pool, "start_address");
+        if (start_address != NULL && cJSON_IsString(start_address)) {
+            config.ipv6_start_address = start_address->valuestring;
+        }
+
+        cJSON *end_address = cJSON_GetObjectItem(ipv6_pool, "end_address");
+        if (end_address != NULL && cJSON_IsString(end_address)) {
+            config.ipv6_end_address = end_address->valuestring;
+        }
+
+        cJSON *prefix_length = cJSON_GetObjectItem(ipv6_pool, "prefix_length");
+        if (prefix_length != NULL && cJSON_IsNumber(prefix_length)) {
+            config.ipv6_prefix_length = prefix_length->valueint;
+        }
+
+        cJSON *max_lease_count = cJSON_GetObjectItem(ipv6_pool, "max_lease_count");
+        if (max_lease_count != NULL && cJSON_IsNumber(max_lease_count)) {
+            config.ipv6_max_lease_count = max_lease_count->valueint;
+        }
+    }
+
     cJSON *log_config = cJSON_GetObjectItem(root, "log");
     if (log_config != NULL) {
         // 获取enable_log
@@ -136,7 +166,23 @@ Ipv6MulticastConfig read_ipv6_config(const std::string& config_file) {
     return config;
 }
 
-int main_loop(int serversocket) ;
+static void log_ipv6_config_debug(const Ipv6MulticastConfig& config) {
+    log_debug("=== Parsed IPv6 configuration ===");
+    log_debug("ipv6_multicast.listen_port: %d", config.listen_port);
+    log_debug("ipv6_multicast.multicast_ip: %s", config.multicast_ip.c_str());
+    log_debug("ipv6_multicast.nic_index: %d", config.nic_index);
+    log_debug("ipv6_address_pool.start_address: %s", config.ipv6_start_address.c_str());
+    log_debug("ipv6_address_pool.end_address: %s", config.ipv6_end_address.c_str());
+    log_debug("ipv6_address_pool.prefix_length: %d", config.ipv6_prefix_length);
+    log_debug("ipv6_address_pool.max_lease_count: %d", config.ipv6_max_lease_count);
+    log_debug("log.enable_log: %s", config.log_config.enable_log ? "true" : "false");
+    log_debug("log.log_level: %s", config.log_config.log_level.c_str());
+    log_debug("log.log_file: %s", config.log_config.log_file.c_str());
+    log_debug("log.log_file_count: %d", config.log_config.log_file_count);
+    log_debug("log.log_file_size: %ld", config.log_config.log_file_size);
+}
+
+int main_loop(int serversocket, int nic_index) ;
 int opcua_server_main(void);
 
 // 打印帮助信息
@@ -224,6 +270,8 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    log_ipv6_config_debug(config);
+
     log_info("程序启动，初始化Winsock...");
 
     WSADATA     wsaData;
@@ -239,6 +287,21 @@ int main(int argc, char* argv[]) {
     }
 
     //使用此结构来指定将套接字连接到的本地或远程端点地址
+    if (config.ipv6_start_address.empty() || config.ipv6_end_address.empty() || config.ipv6_prefix_length == 0) {
+        log_error("IPv6 address pool configuration is invalid, please check config.json");
+        log_manager_cleanup();
+        return -1;
+    }
+
+    if (!ipv6_manager_init(
+            config.ipv6_start_address.c_str(),
+            config.ipv6_end_address.c_str(),
+            config.ipv6_prefix_length)) {
+        log_error("Failed to initialize IPv6 manager");
+        log_manager_cleanup();
+        return -1;
+    }
+
     struct sockaddr_in6 addr = { 0 };
     addr.sin6_family = AF_INET6;
     addr.sin6_port = htons(config.listen_port);
@@ -299,7 +362,7 @@ int main(int argc, char* argv[]) {
     log_info("UDP端口: %d", config.listen_port);
     log_info("按Ctrl+C退出\n");
 
-	main_loop(l_nServer);
+	main_loop(l_nServer, config.nic_index);
 
 	#if 0
     while (1)
@@ -326,6 +389,7 @@ int main(int argc, char* argv[]) {
 	#endif
 
     // 清理日志管理器
+    ipv6_manager_cleanup();
     log_manager_cleanup();
     
     return 0;

@@ -76,6 +76,39 @@ typedef struct {
     pthread_mutex_t var_update_mutex;  // 保护变量更新的互斥锁（支持递归）
 } GlobalData;
 
+static bool ensurePersistentIPv6OnInterface(GlobalData *global_data, const char *owner_name, const char *ipv6_address) {
+    if (!global_data || !owner_name || !ipv6_address || ipv6_address[0] == '\0') {
+        return false;
+    }
+
+    if (ipv6_add_address_to_interface(
+            global_data->ipv6_multicast.nic_index,
+            ipv6_address,
+            global_data->ipv6_pool.prefix_length)) {
+        log_debug("Added persistent IPv6 address %s for %s to interface %d",
+                 ipv6_address, owner_name, global_data->ipv6_multicast.nic_index);
+        return true;
+    }
+
+    log_debug("Persistent IPv6 address %s for %s may already exist on interface %d",
+             ipv6_address, owner_name, global_data->ipv6_multicast.nic_index);
+    return true;
+}
+
+static void removePersistentIPv6FromInterface(GlobalData *global_data, const char *owner_name, const char *ipv6_address) {
+    if (!global_data || !owner_name || !ipv6_address || ipv6_address[0] == '\0') {
+        return;
+    }
+
+    if (ipv6_remove_address_from_interface(global_data->ipv6_multicast.nic_index, ipv6_address)) {
+        log_debug("Removed persistent IPv6 address %s for %s from interface %d",
+                 ipv6_address, owner_name, global_data->ipv6_multicast.nic_index);
+    } else {
+        log_warn("Failed to remove persistent IPv6 address %s for %s from interface %d",
+                 ipv6_address, owner_name, global_data->ipv6_multicast.nic_index);
+    }
+}
+
 // 函数声明
 UA_Guid ipv6ToGuid(const char *ipv6Addr);
 UA_NodeId createNodeWithIPv6Id(UA_Server *server, const char *ipv6Addr, const char *name, UA_NodeId parentNodeId);
@@ -110,6 +143,7 @@ int isDeviceStatusVariable(CSVRecord *record);
 int checkDeviceStatus(GlobalData *global_data, const char *device_name);
 int deleteDeviceNodes(UA_Server *server, GlobalData *global_data, int device_index);
 int addDeviceNodes(UA_Server *server, GlobalData *global_data, int device_index, UA_NodeId nodesNodeId);
+static UA_StatusCode writeCachedValueToNode(UA_Server *server, OPCUAVariable *var);
 
 UA_Boolean running = true;
 
@@ -506,12 +540,14 @@ int opcua_server_main(void)
     
     // 启动定时打印节点变量信息的线程
     log_debug("Starting to create node variables printing thread");
-    pthread_t print_thread;
+    pthread_t print_thread = 0;
+    bool print_thread_created = false;
     if (pthread_create(&print_thread, NULL, printNodeVariablesThread, (void *)&global_data) != 0) {
         log_error("Failed to create node variables printing thread");
         // 不影响主程序运行，仅记录错误
         log_warn("Node variables printing function will be unavailable");
     } else {
+        print_thread_created = true;
         log_debug("Node variables printing thread created successfully");
     }
 
@@ -524,7 +560,7 @@ int opcua_server_main(void)
     pthread_join(modbus_thread, NULL);
     
     // 取消并清理定时打印线程
-    if (pthread_cancel(print_thread) == 0) {
+    if (print_thread_created && pthread_cancel(print_thread) == 0) {
         pthread_join(print_thread, NULL);
         log_debug("Node variables printing thread stopped");
     }
@@ -664,13 +700,6 @@ int loadConfig(GlobalData *global_data) {
     
     cJSON_Delete(root);
     
-    // 初始化IPv6地址管理器
-    ipv6_manager_init(
-        global_data->ipv6_pool.start_address,
-        global_data->ipv6_pool.end_address,
-        global_data->ipv6_pool.prefix_length
-    );
-    
     return 0;
 }
 
@@ -761,6 +790,7 @@ static UA_StatusCode readVariableCallback(UA_Server *server, const UA_NodeId *se
     
     GlobalData *global_data = (GlobalData *)nodeContext;
     OPCUAVariable *var = NULL;
+    pthread_mutex_lock(&global_data->var_update_mutex);
     
     // 查找对应的变量
     for (int i = 0; i < global_data->device_count; i++) {
@@ -778,6 +808,7 @@ static UA_StatusCode readVariableCallback(UA_Server *server, const UA_NodeId *se
     
     if (!var) {
         log_error("readVariableCallback: Variable not found for nodeId");
+        pthread_mutex_unlock(&global_data->var_update_mutex);
         return UA_STATUSCODE_BADNODEIDUNKNOWN;
     }
     
@@ -791,6 +822,7 @@ static UA_StatusCode readVariableCallback(UA_Server *server, const UA_NodeId *se
         UA_UInt16 default_val = 0;
         UA_Variant_setScalarCopy(&dataValue->value, &default_val, &UA_TYPES[UA_TYPES_UINT16]);
         dataValue->hasValue = true;
+        pthread_mutex_unlock(&global_data->var_update_mutex);
         return UA_STATUSCODE_GOOD;
     }
     
@@ -843,6 +875,7 @@ static UA_StatusCode readVariableCallback(UA_Server *server, const UA_NodeId *se
     dataValue->hasValue = true;
     
     log_debug("readVariableCallback: Successfully read value for %s", var->name);
+    pthread_mutex_unlock(&global_data->var_update_mutex);
     return UA_STATUSCODE_GOOD;
 }
 
@@ -938,7 +971,7 @@ static UA_StatusCode writeVariableCallback(UA_Server *server, const UA_NodeId *s
         case REGISTER_TYPE_COIL:
             if (var->plc_datatype == PLC_TYPE_BOOL && dataValue->value.type == &UA_TYPES[UA_TYPES_BOOLEAN]) {
                 UA_Boolean bool_val = *(UA_Boolean *)dataValue->value.data;
-                int coil_addr = var->modbus_addr - 0;
+                int coil_addr = var->modbus_addr - 1;
                 modbus_write_success = (modbus_client_write_single_coil(&global_data->modbus_client, coil_addr, bool_val) == MODBUS_SUCCESS);
             }
             break;
@@ -952,7 +985,47 @@ static UA_StatusCode writeVariableCallback(UA_Server *server, const UA_NodeId *s
     }
     
     // 更新本地变量值
-    UA_Variant_copy(&dataValue->value, (UA_Variant *)var->value);
+    if (var->value != NULL) {
+        switch (var->plc_datatype) {
+            case PLC_TYPE_BOOL:
+                if (dataValue->value.type == &UA_TYPES[UA_TYPES_BOOLEAN]) {
+                    *((UA_Boolean *)var->value) = *(UA_Boolean *)dataValue->value.data;
+                }
+                break;
+            case PLC_TYPE_USINT:
+                if (dataValue->value.type == &UA_TYPES[UA_TYPES_BYTE]) {
+                    *((UA_Byte *)var->value) = *(UA_Byte *)dataValue->value.data;
+                }
+                break;
+            case PLC_TYPE_UINT:
+                if (dataValue->value.type == &UA_TYPES[UA_TYPES_UINT16]) {
+                    *((UA_UInt16 *)var->value) = *(UA_UInt16 *)dataValue->value.data;
+                }
+                break;
+            case PLC_TYPE_ULINT:
+                if (dataValue->value.type == &UA_TYPES[UA_TYPES_UINT64]) {
+                    *((UA_UInt64 *)var->value) = *(UA_UInt64 *)dataValue->value.data;
+                }
+                break;
+            case PLC_TYPE_INT:
+                if (dataValue->value.type == &UA_TYPES[UA_TYPES_INT16]) {
+                    *((UA_Int16 *)var->value) = *(UA_Int16 *)dataValue->value.data;
+                }
+                break;
+            case PLC_TYPE_DINT:
+                if (dataValue->value.type == &UA_TYPES[UA_TYPES_INT32]) {
+                    *((UA_Int32 *)var->value) = *(UA_Int32 *)dataValue->value.data;
+                }
+                break;
+            case PLC_TYPE_REAL:
+                if (dataValue->value.type == &UA_TYPES[UA_TYPES_FLOAT]) {
+                    *((UA_Float *)var->value) = *(UA_Float *)dataValue->value.data;
+                }
+                break;
+            default:
+                break;
+        }
+    }
     
     log_info("Successfully wrote value to Modbus server for variable %s", var->name);
     
@@ -1213,6 +1286,9 @@ int deleteDeviceNodes(UA_Server *server, GlobalData *global_data, int device_ind
         return -1;
     }
     
+    // 申请互斥锁，保护设备列表和变量资源访问
+    pthread_mutex_lock(&global_data->var_update_mutex);
+    
     DeviceNode *device = &global_data->devices[device_index];
     log_debug("Deleting device %s and its variables", device->name);
     
@@ -1225,22 +1301,9 @@ int deleteDeviceNodes(UA_Server *server, GlobalData *global_data, int device_ind
             // 重置变量节点ID
             var->node_id = UA_NODEID_NULL;
         }
-        // 释放变量的值内存
-        if (var->value != NULL) {
-            free(var->value);
-            var->value = NULL;
-        }
-        // 释放变量的IPv6地址
+        // 从网卡删除变量IPv6地址，但保留分配关系，重复上线时继续使用同一个地址
         if (var->ipv6_address[0] != '\0') {
-            ipv6_release_address(
-                var->name,
-                global_data->ipv6_multicast.nic_index,
-                var->ipv6_address
-            );
-            log_debug("Successfully released IPv6 address %s for variable %s",
-                     var->ipv6_address, var->name);
-            // 清空地址字段
-            var->ipv6_address[0] = '\0';
+            removePersistentIPv6FromInterface(global_data, var->name, var->ipv6_address);
         }
     }
     
@@ -1251,7 +1314,13 @@ int deleteDeviceNodes(UA_Server *server, GlobalData *global_data, int device_ind
         device->node_id = UA_NODEID_NULL;
     }
     
-    log_debug("Device %s deleted successfully", device->name);
+    // 释放variables数组内存并重置指针
+    
+    log_debug("Device %s deleted successfully, cached variables retained for reconnection", device->name);
+    
+    // 释放互斥锁
+    pthread_mutex_unlock(&global_data->var_update_mutex);
+    
     return 0;
 }
 
@@ -1261,16 +1330,21 @@ int addDeviceNodes(UA_Server *server, GlobalData *global_data, int device_index,
         return -1;
     }
     
+    // 申请互斥锁，保护设备列表和变量资源访问
+    pthread_mutex_lock(&global_data->var_update_mutex);
+    
     DeviceNode *device = &global_data->devices[device_index];
     
     // 如果设备名称为空，说明已被删除，无法添加
     if (device->name[0] == '\0') {
+        pthread_mutex_unlock(&global_data->var_update_mutex);
         return -1;
     }
     
     // 检查设备节点是否已经存在，如果存在则直接返回
     if (!UA_NodeId_isNull(&device->node_id)) {
         log_debug("Device node for %s already exists", device->name);
+        pthread_mutex_unlock(&global_data->var_update_mutex);
         return 0;
     }
     
@@ -1279,6 +1353,7 @@ int addDeviceNodes(UA_Server *server, GlobalData *global_data, int device_index,
     // 设备的IPv6地址已经在modbusPollingThread中分配，直接使用
     if (device->ipv6_address[0] == '\0') {
         log_error("Device %s has no IPv6 address allocated", device->name);
+        pthread_mutex_unlock(&global_data->var_update_mutex);
         return -1;
     }
     
@@ -1307,8 +1382,10 @@ int addDeviceNodes(UA_Server *server, GlobalData *global_data, int device_index,
         device->variables = (OPCUAVariable *)malloc(sizeof(OPCUAVariable) * var_count);
         if (!device->variables) {
             log_error("Failed to allocate variable memory for device %s", device->name);
+            pthread_mutex_unlock(&global_data->var_update_mutex);
             return -1;
         }
+        memset(device->variables, 0, sizeof(OPCUAVariable) * var_count);
     }
     
     device->variable_count = var_count;
@@ -1392,26 +1469,29 @@ int addDeviceNodes(UA_Server *server, GlobalData *global_data, int device_index,
             device->variables[var_index].plc_datatype = record->plcDatatype;
             strcpy(device->variables[var_index].name, record->nodeName);
             
-            // 初始化IPv6地址为空字符串
-            device->variables[var_index].ipv6_address[0] = '\0';
-            
-            // 为变量分配IPv6地址
-            if (ipv6_allocate_address(
-                record->nodeName,
-                global_data->ipv6_multicast.nic_index,
-                device->variables[var_index].ipv6_address
-            )) {
+            if (device->variables[var_index].ipv6_address[0] != '\0') {
+                log_debug("Reusing IPv6 address %s for variable %s",
+                         device->variables[var_index].ipv6_address, record->nodeName);
+                ensurePersistentIPv6OnInterface(global_data, record->nodeName,
+                                                device->variables[var_index].ipv6_address);
+            } else if (ipv6_allocate_address(
+                    record->nodeName,
+                    global_data->ipv6_multicast.nic_index,
+                    device->variables[var_index].ipv6_address
+                )) {
                 log_debug("Successfully allocated IPv6 address %s for variable %s",
                          device->variables[var_index].ipv6_address, record->nodeName);
+            } else {
+                log_error("Failed to allocate IPv6 address for variable %s", record->nodeName);
+                device->variables[var_index].ipv6_address[0] = '\0';
+            }
                 
-                // 创建变量节点
+            // 创建变量节点
+            if (device->variables[var_index].ipv6_address[0] != '\0') {
                 device->variables[var_index].node_id = createVariableNode(
                     server, device->variables[var_index].ipv6_address, record->nodeName, device->node_id,
                     opcua_type, &default_value, access_level, global_data);
             } else {
-                log_error("Failed to allocate IPv6 address for variable %s", record->nodeName);
-                // 如果分配失败，清空地址字段
-                device->variables[var_index].ipv6_address[0] = '\0';
                 // 仍然创建节点，但使用默认的IPv6地址
                 char default_ipv6_addr[40] = "2001:eaca:101:0:001E:CD00:0201:0000";
                 device->variables[var_index].node_id = createVariableNode(
@@ -1421,11 +1501,7 @@ int addDeviceNodes(UA_Server *server, GlobalData *global_data, int device_index,
             
             // 保存值指针
             // 先释放旧的内存（如果存在）
-            if (device->variables[var_index].value != NULL) {
-                free(device->variables[var_index].value);
-                device->variables[var_index].value = NULL;
-            }
-            
+            if (device->variables[var_index].value == NULL) {
             if (is_status_var) {
                 // 如果是状态变量，使用UInt16类型
                 device->variables[var_index].value = malloc(sizeof(UA_UInt16));
@@ -1485,13 +1561,60 @@ int addDeviceNodes(UA_Server *server, GlobalData *global_data, int device_index,
                         break;
                 }
             }
-            
+            }
+
+            if (!UA_NodeId_isNull(&device->variables[var_index].node_id) &&
+                device->variables[var_index].value != NULL) {
+                writeCachedValueToNode(server, &device->variables[var_index]);
+            }
+
             var_index++;
         }
     }
     
     log_debug("Device %s added successfully", device->name);
+    
+    // 释放互斥锁
+    pthread_mutex_unlock(&global_data->var_update_mutex);
+    
     return 0;
+}
+
+static UA_StatusCode writeCachedValueToNode(UA_Server *server, OPCUAVariable *var) {
+    if (!server || !var || !var->value || UA_NodeId_isNull(&var->node_id)) {
+        return UA_STATUSCODE_BADINVALIDARGUMENT;
+    }
+
+    UA_Variant variant;
+    UA_Variant_init(&variant);
+
+    switch (var->plc_datatype) {
+        case PLC_TYPE_BOOL:
+            UA_Variant_setScalar(&variant, (UA_Boolean *)var->value, &UA_TYPES[UA_TYPES_BOOLEAN]);
+            break;
+        case PLC_TYPE_USINT:
+            UA_Variant_setScalar(&variant, (UA_Byte *)var->value, &UA_TYPES[UA_TYPES_BYTE]);
+            break;
+        case PLC_TYPE_UINT:
+            UA_Variant_setScalar(&variant, (UA_UInt16 *)var->value, &UA_TYPES[UA_TYPES_UINT16]);
+            break;
+        case PLC_TYPE_ULINT:
+            UA_Variant_setScalar(&variant, (UA_UInt64 *)var->value, &UA_TYPES[UA_TYPES_UINT64]);
+            break;
+        case PLC_TYPE_INT:
+            UA_Variant_setScalar(&variant, (UA_Int16 *)var->value, &UA_TYPES[UA_TYPES_INT16]);
+            break;
+        case PLC_TYPE_DINT:
+            UA_Variant_setScalar(&variant, (UA_Int32 *)var->value, &UA_TYPES[UA_TYPES_INT32]);
+            break;
+        case PLC_TYPE_REAL:
+            UA_Variant_setScalar(&variant, (UA_Float *)var->value, &UA_TYPES[UA_TYPES_FLOAT]);
+            break;
+        default:
+            return UA_STATUSCODE_BADTYPEMISMATCH;
+    }
+
+    return UA_Server_writeValue(server, var->node_id, variant);
 }
 
 // 更新OPC UA变量值
@@ -1607,6 +1730,7 @@ void *modbusPollingThread(void *arg) {
         // 读取输入寄存器
         if (modbus_client_read_input_registers(&global_data->modbus_client, 0, 100, input_registers) == MODBUS_SUCCESS) {
             // 更新相关变量
+            pthread_mutex_lock(&global_data->var_update_mutex);
             for (int i = 0; i < global_data->device_count; i++) {
                 DeviceNode *device = &global_data->devices[i];
                 for (int j = 0; j < device->variable_count; j++) {
@@ -1627,7 +1751,7 @@ void *modbusPollingThread(void *arg) {
                                     break;
                                 case PLC_TYPE_ULINT:
                                     // 合并两个寄存器
-                                    if (reg_index + 1 < 100) {
+                                    if (reg_index + 3 < 100) {
                                         *((UA_UInt64 *)var->value) = ((UA_UInt64)input_registers[reg_index] << 48) | 
                                                                    ((UA_UInt64)input_registers[reg_index + 1] << 32) |
                                                                    ((UA_UInt64)input_registers[reg_index + 2] << 16) |
@@ -1649,6 +1773,7 @@ void *modbusPollingThread(void *arg) {
                     }
                 }
             }
+            pthread_mutex_unlock(&global_data->var_update_mutex);
         } else {
             log_error("Failed to read input registers, connection may be lost");
             connected = 0;
@@ -1662,6 +1787,7 @@ void *modbusPollingThread(void *arg) {
         // 读取保持寄存器
         if (modbus_client_read_holding_registers(&global_data->modbus_client, 0, 100, holding_registers) == MODBUS_SUCCESS) {
             // 更新相关变量
+            pthread_mutex_lock(&global_data->var_update_mutex);
             for (int i = 0; i < global_data->device_count; i++) {
                 DeviceNode *device = &global_data->devices[i];
                 for (int j = 0; j < device->variable_count; j++) {
@@ -1679,7 +1805,7 @@ void *modbusPollingThread(void *arg) {
                                     break;
                                 case PLC_TYPE_ULINT:
                                     // 合并两个寄存器
-                                    if (reg_index + 1 < 100) {
+                                    if (reg_index + 3 < 100) {
                                         *((UA_UInt64 *)var->value) = ((UA_UInt64)holding_registers[reg_index] << 48) | 
                                                                    ((UA_UInt64)holding_registers[reg_index + 1] << 32) |
                                                                    ((UA_UInt64)holding_registers[reg_index + 2] << 16) |
@@ -1701,6 +1827,7 @@ void *modbusPollingThread(void *arg) {
                     }
                 }
             }
+            pthread_mutex_unlock(&global_data->var_update_mutex);
         } else {
             log_error("Failed to read holding registers, connection may be lost");
             connected = 0;
@@ -1713,6 +1840,7 @@ void *modbusPollingThread(void *arg) {
         // 读取离散输入
         if (modbus_client_read_discrete_inputs(&global_data->modbus_client, 0, 100, discrete_inputs) == MODBUS_SUCCESS) {
             // 更新相关变量
+            pthread_mutex_lock(&global_data->var_update_mutex);
             for (int i = 0; i < global_data->device_count; i++) {
                 DeviceNode *device = &global_data->devices[i];
                 for (int j = 0; j < device->variable_count; j++) {
@@ -1727,6 +1855,7 @@ void *modbusPollingThread(void *arg) {
                     }
                 }
             }
+            pthread_mutex_unlock(&global_data->var_update_mutex);
         } else {
             log_error("Failed to read discrete inputs, connection may be lost");
             connected = 0;
@@ -1768,12 +1897,17 @@ void *modbusPollingThread(void *arg) {
             if (device_online) {
                 // 如果设备在线，且设备节点不存在，则添加设备节点
                 if (UA_NodeId_isNull(&device->node_id)) {
-                    // 为设备分配IPv6地址
-                    if (ipv6_allocate_address(
-                        device->name,
-                        global_data->ipv6_multicast.nic_index,
-                        device->ipv6_address
-                    )) {
+                    if (device->ipv6_address[0] != '\0') {
+                        log_debug("Reusing IPv6 address %s for device %s",
+                                 device->ipv6_address, device->name);
+                        ensurePersistentIPv6OnInterface(global_data, device->name, device->ipv6_address);
+                        // 设备节点不存在，添加设备节点
+                        addDeviceNodes(global_data->server, global_data, i, global_data->nodesNodeId);
+                    } else if (ipv6_allocate_address(
+                            device->name,
+                            global_data->ipv6_multicast.nic_index,
+                            device->ipv6_address
+                        )) {
                         // 设备节点不存在，添加设备节点
                         addDeviceNodes(global_data->server, global_data, i, global_data->nodesNodeId);
                     } else {
@@ -1783,15 +1917,8 @@ void *modbusPollingThread(void *arg) {
             } else {
                 // 如果设备不在线，且设备节点存在，则删除设备节点
                 if (!UA_NodeId_isNull(&device->node_id)) {
-                    // 释放设备的IPv6地址
                     if (device->ipv6_address[0] != '\0') {
-                        ipv6_release_address(
-                            device->name,
-                            global_data->ipv6_multicast.nic_index,
-                            device->ipv6_address
-                        );
-                        // 清空IPv6地址
-                        device->ipv6_address[0] = '\0';
+                        removePersistentIPv6FromInterface(global_data, device->name, device->ipv6_address);
                     }
                     deleteDeviceNodes(global_data->server, global_data, i);
                 }
@@ -1819,46 +1946,106 @@ void* printNodeVariablesThread(void* arg) {
         
         log_debug("=== Node Variables Information (updated every 10 seconds) ===");
         
+        // 检查全局数据指针有效性
+        if (!global_data) {
+            log_error("Global data is NULL in printNodeVariablesThread");
+            continue;
+        }
+        
+        // 申请互斥锁，保护设备列表访问
+        pthread_mutex_lock(&global_data->var_update_mutex);
+        
         // 遍历所有设备
         for (int i = 0; i < global_data->device_count; i++) {
             DeviceNode* device = &global_data->devices[i];
             
+            // 检查设备指针有效性
+            if (!device) {
+                continue;
+            }
+            
             // 打印设备信息
             log_debug("Device: %s, IPv6 Address: %s", device->name, device->ipv6_address);
+            
+            // 检查设备变量列表有效性
+            if (!device->variables || device->variable_count <= 0) {
+                log_debug("  No variables for this device");
+                continue;
+            }
             
             // 遍历设备的所有变量
             for (int j = 0; j < device->variable_count; j++) {
                 OPCUAVariable* var = &device->variables[j];
                 
-                // 根据变量类型打印值
+                // 检查变量指针有效性
+                if (!var) {
+                    continue;
+                }
+                
+                // 根据变量类型打印值，增加变量值指针检查
                 if (var->plc_datatype == PLC_TYPE_BOOL) {
                     bool* value = (bool*)var->value;
-                    log_debug("  Variable: %s, IPv6 Address: %s, Address: %d, Type: BOOL, Value: %s", 
-                             var->name, var->ipv6_address, var->modbus_addr, *value ? "TRUE" : "FALSE");
+                    if (value) {
+                        log_debug("  Variable: %s, IPv6 Address: %s, Address: %d, Type: BOOL, Value: %s", 
+                                 var->name, var->ipv6_address, var->modbus_addr, *value ? "TRUE" : "FALSE");
+                    } else {
+                        log_debug("  Variable: %s, IPv6 Address: %s, Address: %d, Type: BOOL, Value: NULL", 
+                                 var->name, var->ipv6_address, var->modbus_addr);
+                    }
                 } else if (var->plc_datatype == PLC_TYPE_USINT) {
                     uint8_t* value = (uint8_t*)var->value;
-                    log_debug("  Variable: %s, IPv6 Address: %s, Address: %d, Type: USINT, Value: %u", 
-                             var->name, var->ipv6_address, var->modbus_addr, *value);
+                    if (value) {
+                        log_debug("  Variable: %s, IPv6 Address: %s, Address: %d, Type: USINT, Value: %u", 
+                                 var->name, var->ipv6_address, var->modbus_addr, *value);
+                    } else {
+                        log_debug("  Variable: %s, IPv6 Address: %s, Address: %d, Type: USINT, Value: NULL", 
+                                 var->name, var->ipv6_address, var->modbus_addr);
+                    }
                 } else if (var->plc_datatype == PLC_TYPE_UINT) {
                     uint16_t* value = (uint16_t*)var->value;
-                    log_debug("  Variable: %s, IPv6 Address: %s, Address: %d, Type: UINT, Value: %u", 
-                             var->name, var->ipv6_address, var->modbus_addr, *value);
+                    if (value) {
+                        log_debug("  Variable: %s, IPv6 Address: %s, Address: %d, Type: UINT, Value: %u", 
+                                 var->name, var->ipv6_address, var->modbus_addr, *value);
+                    } else {
+                        log_debug("  Variable: %s, IPv6 Address: %s, Address: %d, Type: UINT, Value: NULL", 
+                                 var->name, var->ipv6_address, var->modbus_addr);
+                    }
                 } else if (var->plc_datatype == PLC_TYPE_INT) {
                     int16_t* value = (int16_t*)var->value;
-                    log_debug("  Variable: %s, IPv6 Address: %s, Address: %d, Type: INT, Value: %d", 
-                             var->name, var->ipv6_address, var->modbus_addr, *value);
+                    if (value) {
+                        log_debug("  Variable: %s, IPv6 Address: %s, Address: %d, Type: INT, Value: %d", 
+                                 var->name, var->ipv6_address, var->modbus_addr, *value);
+                    } else {
+                        log_debug("  Variable: %s, IPv6 Address: %s, Address: %d, Type: INT, Value: NULL", 
+                                 var->name, var->ipv6_address, var->modbus_addr);
+                    }
                 } else if (var->plc_datatype == PLC_TYPE_ULINT) {
-                    uint32_t* value = (uint32_t*)var->value;
-                    log_debug("  Variable: %s, IPv6 Address: %s, Address: %d, Type: ULINT, Value: %u", 
-                             var->name, var->ipv6_address, var->modbus_addr, *value);
+                    uint64_t* value = (uint64_t*)var->value;
+                    if (value) {
+                        log_debug("  Variable: %s, IPv6 Address: %s, Address: %d, Type: ULINT, Value: %llu", 
+                                 var->name, var->ipv6_address, var->modbus_addr, *value);
+                    } else {
+                        log_debug("  Variable: %s, IPv6 Address: %s, Address: %d, Type: ULINT, Value: NULL", 
+                                 var->name, var->ipv6_address, var->modbus_addr);
+                    }
                 } else if (var->plc_datatype == PLC_TYPE_DINT) {
                     int32_t* value = (int32_t*)var->value;
-                    log_debug("  Variable: %s, IPv6 Address: %s, Address: %d, Type: DINT, Value: %d", 
-                             var->name, var->ipv6_address, var->modbus_addr, *value);
+                    if (value) {
+                        log_debug("  Variable: %s, IPv6 Address: %s, Address: %d, Type: DINT, Value: %d", 
+                                 var->name, var->ipv6_address, var->modbus_addr, *value);
+                    } else {
+                        log_debug("  Variable: %s, IPv6 Address: %s, Address: %d, Type: DINT, Value: NULL", 
+                                 var->name, var->ipv6_address, var->modbus_addr);
+                    }
                 } else if (var->plc_datatype == PLC_TYPE_REAL) {
                     float* value = (float*)var->value;
-                    log_debug("  Variable: %s, IPv6 Address: %s, Address: %d, Type: REAL, Value: %.2f", 
-                             var->name, var->ipv6_address, var->modbus_addr, *value);
+                    if (value) {
+                        log_debug("  Variable: %s, IPv6 Address: %s, Address: %d, Type: REAL, Value: %.2f", 
+                                 var->name, var->ipv6_address, var->modbus_addr, *value);
+                    } else {
+                        log_debug("  Variable: %s, IPv6 Address: %s, Address: %d, Type: REAL, Value: NULL", 
+                                 var->name, var->ipv6_address, var->modbus_addr);
+                    }
                 } else {
                     log_debug("  Variable: %s, IPv6 Address: %s, Address: %d, Type: Unknown", 
                              var->name, var->ipv6_address, var->modbus_addr);
@@ -1866,7 +2053,13 @@ void* printNodeVariablesThread(void* arg) {
             }
         }
         
+        // 释放互斥锁
+        pthread_mutex_unlock(&global_data->var_update_mutex);
+        
         log_debug("===================================");
+        
+        // 打印设备-IPv6映射关系
+        ipv6_print_device_mappings();
     }
     
     return NULL;
