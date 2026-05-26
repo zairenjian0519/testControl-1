@@ -1,0 +1,32 @@
+{
+    "description": "Linux version - IPv6 multicast + address pool configuration",
+
+    "ipv6_multicast": {
+        "listen_port": 6060,
+        "multicast_ip": "ff03::c",
+        "bind_nic_name": "eth0",
+        "nic_index": 2
+    },
+
+    "ipv6_address_pool": {
+        "start_address": "2001:eaca:0101:0000:001E:CD00:0201:0000",
+        "end_address": "2001:eaca:0101:0000:001E:CD00:0201:1005",
+        "prefix_length": 64,
+        "max_lease_count": 1000
+    },
+
+    "modbus_tcp": {
+        "server_ip": "192.168.1.123",
+        "server_port": 502,
+        "polling_interval": 1000,
+        "reconnect_interval": 5000
+    },
+
+    "log": {
+        "enable_log": false,
+        "log_level": "INFO",
+        "log_file": "application.log",
+        "log_file_count": 2,
+        "log_file_size": 1048576
+    }
+}

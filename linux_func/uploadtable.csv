@@ -1,0 +1,229 @@
+﻿modbusAddr,name,register,datatype,desc
+300001,AutbusPADev1_slot0_var1.AutbusPADev1_slot0_var1,Input Registers,USINT,InData1
+300002,AutbusPADev1_slot0_var2.AutbusPADev1_slot0_var2,Input Registers,UINT,InData2
+300003,AutbusPADev1_slot0_var3.AutbusPADev1_slot0_var3,Input Registers,ULINT,timer
+300007,AutbusPADev1_slot0_var4.AutbusPADev1_slot0_var4,Input Registers,UINT,year
+300008,AutbusPADev1_slot0_var5.AutbusPADev1_slot0_var5,Input Registers,USINT,month
+300009,AutbusPADev1_slot0_var6.AutbusPADev1_slot0_var6,Input Registers,USINT,day
+300010,AutbusPADev1_slot0_var7.AutbusPADev1_slot0_var7,Input Registers,USINT,hour
+300011,AutbusPADev1_slot0_var8.AutbusPADev1_slot0_var8,Input Registers,USINT,minute
+300012,AutbusPADev1_slot0_var9.AutbusPADev1_slot0_var9,Input Registers,USINT,second
+400001,AutbusPADev1_slot0_var10.AutbusPADev1_slot0_var10,Holding Registers,USINT,OutData1
+400002,AutbusPADev1_slot0_var11.AutbusPADev1_slot0_var11,Holding Registers,USINT,OutData2
+300013,AutbusPADev1_slot0_alarm1.AutbusPADev1_slot0_alarm1,Input Registers,USINT,alarm1
+300014,AutbusPADev1_slot0_alarm2.AutbusPADev1_slot0_alarm2,Input Registers,USINT,alarm2
+400003,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400004,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300015,null.null,Input Registers,UINT,undefined
+300016,AutbusPADev3_slot0_var1.AutbusPADev3_slot0_var1,Input Registers,ULINT,timestamp
+300020,AutbusPADev3_slot0_var2.AutbusPADev3_slot0_var2,Input Registers,ULINT,rx_bytes
+300024,AutbusPADev3_slot0_var3.AutbusPADev3_slot0_var3,Input Registers,ULINT,tx_bytes
+300028,AutbusPADev3_slot0_var4.AutbusPADev3_slot0_var4,Input Registers,ULINT,tx_dropbytes
+300032,AutbusPADev3_slot0_alarm1.AutbusPADev3_slot0_alarm1,Input Registers,USINT,alarm1
+400005,null.null,Holding Registers,DINT,RS485-baudrate(0 ~ 115200) 
+400007,null.null,Holding Registers,USINT,RS485-DataBits(0 ~ 8) 
+400008,null.null,Holding Registers,USINT,RS485-StopBits(0 ~ 2) 
+400009,null.null,Holding Registers,UINT,RS485-Parity(0 ~ 4) 
+400010,null.null,Holding Registers,DINT,CAN-baudrate(0 ~ 1000000) 
+100001,AutbusPADev3_slot1_var1.AutbusPADev3_slot1_var1,Discretes Input,BOOL,di1
+100002,AutbusPADev3_slot1_var2.AutbusPADev3_slot1_var2,Discretes Input,BOOL,di2
+100003,AutbusPADev3_slot1_var3.AutbusPADev3_slot1_var3,Discretes Input,BOOL,di3
+100004,AutbusPADev3_slot1_var4.AutbusPADev3_slot1_var4,Discretes Input,BOOL,di4
+100005,AutbusPADev3_slot1_var5.AutbusPADev3_slot1_var5,Discretes Input,BOOL,di5
+100006,AutbusPADev3_slot1_var6.AutbusPADev3_slot1_var6,Discretes Input,BOOL,di6
+100007,AutbusPADev3_slot1_var7.AutbusPADev3_slot1_var7,Discretes Input,BOOL,di7
+100008,AutbusPADev3_slot1_var8.AutbusPADev3_slot1_var8,Discretes Input,BOOL,di8
+100009,AutbusPADev3_slot1_var9.AutbusPADev3_slot1_var9,Discretes Input,BOOL,di9
+100010,AutbusPADev3_slot1_var10.AutbusPADev3_slot1_var10,Discretes Input,BOOL,di10
+100011,AutbusPADev3_slot1_var11.AutbusPADev3_slot1_var11,Discretes Input,BOOL,di11
+100012,AutbusPADev3_slot1_var12.AutbusPADev3_slot1_var12,Discretes Input,BOOL,di12
+100013,AutbusPADev3_slot1_var13.AutbusPADev3_slot1_var13,Discretes Input,BOOL,di13
+100014,AutbusPADev3_slot1_var14.AutbusPADev3_slot1_var14,Discretes Input,BOOL,di14
+100015,AutbusPADev3_slot1_var15.AutbusPADev3_slot1_var15,Discretes Input,BOOL,di15
+100016,AutbusPADev3_slot1_var16.AutbusPADev3_slot1_var16,Discretes Input,BOOL,di16
+100017,AutbusPADev3_slot1_var17.AutbusPADev3_slot1_var17,Discretes Input,BOOL,di17
+100018,AutbusPADev3_slot1_var18.AutbusPADev3_slot1_var18,Discretes Input,BOOL,di18
+100019,AutbusPADev3_slot1_var19.AutbusPADev3_slot1_var19,Discretes Input,BOOL,di19
+100020,AutbusPADev3_slot1_var20.AutbusPADev3_slot1_var20,Discretes Input,BOOL,di20
+100021,AutbusPADev3_slot1_var21.AutbusPADev3_slot1_var21,Discretes Input,BOOL,di21
+100022,AutbusPADev3_slot1_var22.AutbusPADev3_slot1_var22,Discretes Input,BOOL,di22
+100023,AutbusPADev3_slot1_var23.AutbusPADev3_slot1_var23,Discretes Input,BOOL,di23
+100024,AutbusPADev3_slot1_var24.AutbusPADev3_slot1_var24,Discretes Input,BOOL,di24
+100025,AutbusPADev3_slot1_var25.AutbusPADev3_slot1_var25,Discretes Input,BOOL,di25
+100026,AutbusPADev3_slot1_var26.AutbusPADev3_slot1_var26,Discretes Input,BOOL,di26
+100027,AutbusPADev3_slot1_var27.AutbusPADev3_slot1_var27,Discretes Input,BOOL,di27
+100028,AutbusPADev3_slot1_var28.AutbusPADev3_slot1_var28,Discretes Input,BOOL,di28
+100029,AutbusPADev3_slot1_var29.AutbusPADev3_slot1_var29,Discretes Input,BOOL,di29
+100030,AutbusPADev3_slot1_var30.AutbusPADev3_slot1_var30,Discretes Input,BOOL,di30
+100031,AutbusPADev3_slot1_var31.AutbusPADev3_slot1_var31,Discretes Input,BOOL,di31
+100032,AutbusPADev3_slot1_var32.AutbusPADev3_slot1_var32,Discretes Input,BOOL,di32
+300033,AutbusPADev3_slot1_var33.AutbusPADev3_slot1_var33,Input Registers,ULINT,timestamp
+300037,AutbusPADev3_slot1_alarm1.AutbusPADev3_slot1_alarm1,Input Registers,USINT,di-alarm1
+400012,null.null,Holding Registers,UINT,di-param1(0 ~ 4) 
+300058,AutbusPADev3_slot2_var1.AutbusPADev3_slot2_var1,Input Registers,REAL,RTD1
+300060,AutbusPADev3_slot2_var2.AutbusPADev3_slot2_var2,Input Registers,REAL,RTD2
+300062,AutbusPADev3_slot2_var3.AutbusPADev3_slot2_var3,Input Registers,REAL,RTD3
+300064,AutbusPADev3_slot2_var4.AutbusPADev3_slot2_var4,Input Registers,REAL,RTD4
+300066,AutbusPADev3_slot2_var5.AutbusPADev3_slot2_var5,Input Registers,REAL,RTD5
+300068,AutbusPADev3_slot2_var6.AutbusPADev3_slot2_var6,Input Registers,REAL,RTD6
+300070,AutbusPADev3_slot2_var7.AutbusPADev3_slot2_var7,Input Registers,REAL,RTD7
+300072,AutbusPADev3_slot2_var8.AutbusPADev3_slot2_var8,Input Registers,REAL,RTD8
+300074,AutbusPADev3_slot2_var9.AutbusPADev3_slot2_var9,Input Registers,ULINT,timestamp
+300078,AutbusPADev3_slot2_alarm1.AutbusPADev3_slot2_alarm1,Input Registers,USINT,rtd-alarm1
+400046,null.null,Holding Registers,UINT,RTD1-filter(0 ~ 12) 
+400047,null.null,Holding Registers,UINT,RTD1-samplerate(0 ~ 7) 
+400048,null.null,Holding Registers,UINT,RTD1-mode(2 ~ 4) 
+400049,null.null,Holding Registers,UINT,RTD1-range(0 ~ 31) 
+400050,null.null,Holding Registers,UINT,RTD1-convertTime(0 ~ 14) 
+400051,null.null,Holding Registers,UINT,RTD2-filter(0 ~ 12) 
+400052,null.null,Holding Registers,UINT,RTD2-samplerate(0 ~ 7) 
+400053,null.null,Holding Registers,UINT,RTD2-mode(2 ~ 4) 
+400054,null.null,Holding Registers,UINT,RTD2-range(0 ~ 31) 
+400055,null.null,Holding Registers,UINT,RTD2-convertTime(0 ~ 14) 
+400056,null.null,Holding Registers,UINT,RTD3-filter(0 ~ 12) 
+400057,null.null,Holding Registers,UINT,RTD3-samplerate(0 ~ 7) 
+400058,null.null,Holding Registers,UINT,RTD3-mode(2 ~ 4) 
+400059,null.null,Holding Registers,UINT,RTD3-range(0 ~ 31) 
+400060,null.null,Holding Registers,UINT,RTD3-convertTime(0 ~ 14) 
+400061,null.null,Holding Registers,UINT,RTD4-filter(0 ~ 12) 
+400062,null.null,Holding Registers,UINT,RTD4-samplerate(0 ~ 7) 
+400063,null.null,Holding Registers,UINT,RTD4-mode(2 ~ 4) 
+400064,null.null,Holding Registers,UINT,RTD4-range(0 ~ 31) 
+400065,null.null,Holding Registers,UINT,RTD4-convertTime(0 ~ 14) 
+400066,null.null,Holding Registers,UINT,RTD5-filter(0 ~ 12) 
+400067,null.null,Holding Registers,UINT,RTD5-samplerate(0 ~ 7) 
+400068,null.null,Holding Registers,UINT,RTD5-mode(2 ~ 4) 
+400069,null.null,Holding Registers,UINT,RTD5-range(0 ~ 31) 
+400070,null.null,Holding Registers,UINT,RTD5-convertTime(0 ~ 14) 
+400071,null.null,Holding Registers,UINT,RTD6-filter(0 ~ 12) 
+400072,null.null,Holding Registers,UINT,RTD6-samplerate(0 ~ 7) 
+400073,null.null,Holding Registers,UINT,RTD6-mode(2 ~ 4) 
+400074,null.null,Holding Registers,UINT,RTD6-range(0 ~ 31) 
+400075,null.null,Holding Registers,UINT,RTD6-convertTime(0 ~ 14) 
+400076,null.null,Holding Registers,UINT,RTD7-filter(0 ~ 12) 
+400077,null.null,Holding Registers,UINT,RTD7-samplerate(0 ~ 7) 
+400078,null.null,Holding Registers,UINT,RTD7-mode(2 ~ 4) 
+400079,null.null,Holding Registers,UINT,RTD7-range(0 ~ 31) 
+400080,null.null,Holding Registers,UINT,RTD7-convertTime(0 ~ 14) 
+400081,null.null,Holding Registers,UINT,RTD8-filter(0 ~ 12) 
+400082,null.null,Holding Registers,UINT,RTD8-samplerate(0 ~ 7) 
+400083,null.null,Holding Registers,UINT,RTD8-mode(2 ~ 4) 
+400084,null.null,Holding Registers,UINT,RTD8-range(0 ~ 31) 
+400085,null.null,Holding Registers,UINT,RTD8-convertTime(0 ~ 14) 
+300079,AutbusPADev3_slot3_var1.AutbusPADev3_slot3_var1,Input Registers,UINT,AI1
+300080,AutbusPADev3_slot3_var2.AutbusPADev3_slot3_var2,Input Registers,UINT,AI2
+300081,AutbusPADev3_slot3_var3.AutbusPADev3_slot3_var3,Input Registers,UINT,AI3
+300082,AutbusPADev3_slot3_var4.AutbusPADev3_slot3_var4,Input Registers,UINT,AI4
+300083,AutbusPADev3_slot3_var5.AutbusPADev3_slot3_var5,Input Registers,UINT,AI5
+300084,AutbusPADev3_slot3_var6.AutbusPADev3_slot3_var6,Input Registers,UINT,AI6
+300085,AutbusPADev3_slot3_var7.AutbusPADev3_slot3_var7,Input Registers,UINT,AI7
+300086,AutbusPADev3_slot3_var8.AutbusPADev3_slot3_var8,Input Registers,UINT,AI8
+300087,AutbusPADev3_slot3_var9.AutbusPADev3_slot3_var9,Input Registers,ULINT,timestamp
+300091,AutbusPADev3_slot3_alarm1.AutbusPADev3_slot3_alarm1,Input Registers,USINT,ai-alarm1
+400086,null.null,Holding Registers,UINT,AI1-filter(0 ~ 12) 
+400087,null.null,Holding Registers,UINT,AI1-samplerate(0 ~ 7) 
+400088,null.null,Holding Registers,UINT,AI1-mode(0 ~ 1) 
+400089,null.null,Holding Registers,UINT,AI1-range(0 ~ 8) 
+400090,null.null,Holding Registers,UINT,AI2-filter(0 ~ 12) 
+400091,null.null,Holding Registers,UINT,AI2-samplerate(0 ~ 7) 
+400092,null.null,Holding Registers,UINT,AI2-mode(0 ~ 1) 
+400093,null.null,Holding Registers,UINT,AI2-range(0 ~ 8) 
+400094,null.null,Holding Registers,UINT,AI3-filter(0 ~ 12) 
+400095,null.null,Holding Registers,UINT,AI3-samplerate(0 ~ 7) 
+400096,null.null,Holding Registers,UINT,AI3-mode(0 ~ 1) 
+400097,null.null,Holding Registers,UINT,AI3-range(0 ~ 8) 
+400098,null.null,Holding Registers,UINT,AI4-filter(0 ~ 12) 
+400099,null.null,Holding Registers,UINT,AI4-samplerate(0 ~ 7) 
+400100,null.null,Holding Registers,UINT,AI4-mode(0 ~ 1) 
+400101,null.null,Holding Registers,UINT,AI4-range(0 ~ 8) 
+400102,null.null,Holding Registers,UINT,AI5-filter(0 ~ 12) 
+400103,null.null,Holding Registers,UINT,AI5-samplerate(0 ~ 7) 
+400104,null.null,Holding Registers,UINT,AI5-mode(0 ~ 1) 
+400105,null.null,Holding Registers,UINT,AI5-range(0 ~ 8) 
+400106,null.null,Holding Registers,UINT,AI6-filter(0 ~ 12) 
+400107,null.null,Holding Registers,UINT,AI6-samplerate(0 ~ 7) 
+400108,null.null,Holding Registers,UINT,AI6-mode(0 ~ 1) 
+400109,null.null,Holding Registers,UINT,AI6-range(0 ~ 8) 
+400110,null.null,Holding Registers,UINT,AI7-filter(0 ~ 12) 
+400111,null.null,Holding Registers,UINT,AI7-samplerate(0 ~ 7) 
+400112,null.null,Holding Registers,UINT,AI7-mode(0 ~ 1) 
+400113,null.null,Holding Registers,UINT,AI7-range(0 ~ 8) 
+400114,null.null,Holding Registers,UINT,AI8-filter(0 ~ 12) 
+400115,null.null,Holding Registers,UINT,AI8-samplerate(0 ~ 7) 
+400116,null.null,Holding Registers,UINT,AI8-mode(0 ~ 1) 
+400117,null.null,Holding Registers,UINT,AI8-range(0 ~ 8) 
+300092,null.null,Input Registers,UINT,undefined
+300093,AutbusPADev4_slot0_var1.AutbusPADev4_slot0_var1,Input Registers,REAL,当前输出湿度值
+300095,AutbusPADev4_slot0_var2.AutbusPADev4_slot0_var2,Input Registers,REAL,当前输出温度值 
+300097,AutbusPADev4_slot0_alarm1.AutbusPADev4_slot0_alarm1,Input Registers,USINT,仪表正常
+300098,AutbusPADev4_slot0_alarm2.AutbusPADev4_slot0_alarm2,Input Registers,USINT,湿度传感器开路故障
+300099,AutbusPADev4_slot0_alarm3.AutbusPADev4_slot0_alarm3,Input Registers,USINT,湿度传感器短路故障
+300100,AutbusPADev4_slot0_alarm4.AutbusPADev4_slot0_alarm4,Input Registers,USINT,温度传感器开路故障
+300101,AutbusPADev4_slot0_alarm5.AutbusPADev4_slot0_alarm5,Input Registers,USINT,温度传感器短路故障
+300102,AutbusPADev4_slot0_alarm6.AutbusPADev4_slot0_alarm6,Input Registers,USINT,湿度超传感器极限故障
+300103,AutbusPADev4_slot0_alarm7.AutbusPADev4_slot0_alarm7,Input Registers,USINT,温度超传感器极限故障
+300104,AutbusPADev4_slot0_alarm8.AutbusPADev4_slot0_alarm8,Input Registers,USINT,湿度超量程上限故障
+300105,AutbusPADev4_slot0_alarm9.AutbusPADev4_slot0_alarm9,Input Registers,USINT,湿度超量程下限故障
+300106,AutbusPADev4_slot0_alarm10.AutbusPADev4_slot0_alarm10,Input Registers,USINT,温度超量程上限故障
+300107,AutbusPADev4_slot0_alarm11.AutbusPADev4_slot0_alarm11,Input Registers,USINT,温度超量程下限故障
+300108,AutbusPADev4_slot0_alarm12.AutbusPADev4_slot0_alarm12,Input Registers,USINT,环境温度超限故障
+300109,AutbusPADev4_slot0_alarm13.AutbusPADev4_slot0_alarm13,Input Registers,USINT,硬件故障-供电异常
+300110,AutbusPADev4_slot0_alarm14.AutbusPADev4_slot0_alarm14,Input Registers,USINT,硬件故障-模拟输出异常
+300111,AutbusPADev4_slot0_alarm15.AutbusPADev4_slot0_alarm15,Input Registers,USINT,其他硬件故障
+400118,null.null,Holding Registers,USINT,湿度显示单位(0 ~ 0) 
+400119,null.null,Holding Registers,USINT,温度显示单位(0 ~ 0) 
+400120,null.null,Holding Registers,USINT,写保护(0 ~ 1) 
+400121,null.null,Holding Registers,REAL,湿度量程上限(0 ~ 0) 
+400123,null.null,Holding Registers,REAL,湿度量程下限(0 ~ 0) 
+400125,null.null,Holding Registers,REAL,温度量程上限(0 ~ 0) ℃
+400127,null.null,Holding Registers,REAL,温度量程下限(0 ~ 0) ℃
+400129,null.null,Holding Registers,REAL,湿度上限标定设定点(0 ~ 0) 
+400131,null.null,Holding Registers,REAL,湿度下限标定设定点(0 ~ 0) 
+400133,null.null,Holding Registers,REAL,温度上限标定设定点(0 ~ 0) ℃
+400135,null.null,Holding Registers,REAL,温度下限标定设定点(0 ~ 0) ℃
+400137,null.null,Holding Registers,USINT,湿度传感器型号(0 ~ 4) 
+400138,null.null,Holding Registers,USINT,温度传感器型号(0 ~ 4) 
+400139,null.null,Holding Registers,REAL,湿度传感器上限(0 ~ 0) 
+400141,null.null,Holding Registers,REAL,湿度传感器下限(0 ~ 0) 
+400143,null.null,Holding Registers,REAL,温度传感器上限(0 ~ 0) ℃
+400145,null.null,Holding Registers,REAL,温度传感器下限(0 ~ 0) ℃
+400147,null.null,Holding Registers,REAL,湿度最小测范围(0 ~ 0) 
+400149,null.null,Holding Registers,REAL,温度最小测范围(0 ~ 0) ℃
+300112,null.null,Input Registers,UINT,undefined
+300038,wenshidu1_slot0_var1.wenshidu1_slot0_var1,Input Registers,REAL,当前输出湿度值
+300040,wenshidu1_slot0_var2.wenshidu1_slot0_var2,Input Registers,REAL,当前输出温度值 
+300042,wenshidu1_slot0_alarm1.wenshidu1_slot0_alarm1,Input Registers,USINT,仪表正常
+300043,wenshidu1_slot0_alarm2.wenshidu1_slot0_alarm2,Input Registers,USINT,湿度传感器开路故障
+300044,wenshidu1_slot0_alarm3.wenshidu1_slot0_alarm3,Input Registers,USINT,湿度传感器短路故障
+300045,wenshidu1_slot0_alarm4.wenshidu1_slot0_alarm4,Input Registers,USINT,温度传感器开路故障
+300046,wenshidu1_slot0_alarm5.wenshidu1_slot0_alarm5,Input Registers,USINT,温度传感器短路故障
+300047,wenshidu1_slot0_alarm6.wenshidu1_slot0_alarm6,Input Registers,USINT,湿度超传感器极限故障
+300048,wenshidu1_slot0_alarm7.wenshidu1_slot0_alarm7,Input Registers,USINT,温度超传感器极限故障
+300049,wenshidu1_slot0_alarm8.wenshidu1_slot0_alarm8,Input Registers,USINT,湿度超量程上限故障
+300050,wenshidu1_slot0_alarm9.wenshidu1_slot0_alarm9,Input Registers,USINT,湿度超量程下限故障
+300051,wenshidu1_slot0_alarm10.wenshidu1_slot0_alarm10,Input Registers,USINT,温度超量程上限故障
+300052,wenshidu1_slot0_alarm11.wenshidu1_slot0_alarm11,Input Registers,USINT,温度超量程下限故障
+300053,wenshidu1_slot0_alarm12.wenshidu1_slot0_alarm12,Input Registers,USINT,环境温度超限故障
+300054,wenshidu1_slot0_alarm13.wenshidu1_slot0_alarm13,Input Registers,USINT,硬件故障-供电异常
+300055,wenshidu1_slot0_alarm14.wenshidu1_slot0_alarm14,Input Registers,USINT,硬件故障-模拟输出异常
+300056,wenshidu1_slot0_alarm15.wenshidu1_slot0_alarm15,Input Registers,USINT,其他硬件故障
+400013,null.null,Holding Registers,USINT,湿度显示单位(0 ~ 0) 
+400014,null.null,Holding Registers,USINT,温度显示单位(0 ~ 0) 
+400015,null.null,Holding Registers,USINT,写保护(0 ~ 1) 
+400016,null.null,Holding Registers,REAL,湿度量程上限(0 ~ 0) 
+400018,null.null,Holding Registers,REAL,湿度量程下限(0 ~ 0) 
+400020,null.null,Holding Registers,REAL,温度量程上限(0 ~ 0) ℃
+400022,null.null,Holding Registers,REAL,温度量程下限(0 ~ 0) ℃
+400024,null.null,Holding Registers,REAL,湿度上限标定设定点(0 ~ 0) 
+400026,null.null,Holding Registers,REAL,湿度下限标定设定点(0 ~ 0) 
+400028,null.null,Holding Registers,REAL,温度上限标定设定点(0 ~ 0) ℃
+400030,null.null,Holding Registers,REAL,温度下限标定设定点(0 ~ 0) ℃
+400032,null.null,Holding Registers,USINT,湿度传感器型号(0 ~ 4) 
+400033,null.null,Holding Registers,USINT,温度传感器型号(0 ~ 4) 
+400034,null.null,Holding Registers,REAL,湿度传感器上限(0 ~ 0) 
+400036,null.null,Holding Registers,REAL,湿度传感器下限(0 ~ 0) 
+400038,null.null,Holding Registers,REAL,温度传感器上限(0 ~ 0) ℃
+400040,null.null,Holding Registers,REAL,温度传感器下限(0 ~ 0) ℃
+400042,null.null,Holding Registers,REAL,湿度最小测范围(0 ~ 0) 
+400044,null.null,Holding Registers,REAL,温度最小测范围(0 ~ 0) ℃
+300057,null.null,Input Registers,UINT,undefined
