@@ -1291,7 +1291,7 @@ int deleteDeviceNodes(UA_Server *server, GlobalData *global_data, int device_ind
     }
     
     // 申请互斥锁，保护设备列表和变量资源访问
-    pthread_mutex_lock(&global_data->var_update_mutex);
+    //pthread_mutex_lock(&global_data->var_update_mutex);
     
     DeviceNode *device = &global_data->devices[device_index];
     log_debug("Deleting device %s and its variables", device->name);
@@ -1323,7 +1323,7 @@ int deleteDeviceNodes(UA_Server *server, GlobalData *global_data, int device_ind
     log_debug("Device %s deleted successfully, cached variables retained for reconnection", device->name);
     
     // 释放互斥锁
-    pthread_mutex_unlock(&global_data->var_update_mutex);
+    //pthread_mutex_unlock(&global_data->var_update_mutex);
     
     return 0;
 }
@@ -1335,20 +1335,20 @@ int addDeviceNodes(UA_Server *server, GlobalData *global_data, int device_index,
     }
     
     // 申请互斥锁，保护设备列表和变量资源访问
-    pthread_mutex_lock(&global_data->var_update_mutex);
+    //pthread_mutex_lock(&global_data->var_update_mutex);
     
     DeviceNode *device = &global_data->devices[device_index];
     
     // 如果设备名称为空，说明已被删除，无法添加
     if (device->name[0] == '\0') {
-        pthread_mutex_unlock(&global_data->var_update_mutex);
+        //pthread_mutex_unlock(&global_data->var_update_mutex);
         return -1;
     }
     
     // 检查设备节点是否已经存在，如果存在则直接返回
     if (!UA_NodeId_isNull(&device->node_id)) {
         log_debug("Device node for %s already exists", device->name);
-        pthread_mutex_unlock(&global_data->var_update_mutex);
+        //pthread_mutex_unlock(&global_data->var_update_mutex);
         return 0;
     }
     
@@ -1357,7 +1357,7 @@ int addDeviceNodes(UA_Server *server, GlobalData *global_data, int device_index,
     // 设备的IPv6地址已经在modbusPollingThread中分配，直接使用
     if (device->ipv6_address[0] == '\0') {
         log_error("Device %s has no IPv6 address allocated", device->name);
-        pthread_mutex_unlock(&global_data->var_update_mutex);
+        //pthread_mutex_unlock(&global_data->var_update_mutex);
         return -1;
     }
     
@@ -1386,7 +1386,7 @@ int addDeviceNodes(UA_Server *server, GlobalData *global_data, int device_index,
         device->variables = (OPCUAVariable *)malloc(sizeof(OPCUAVariable) * var_count);
         if (!device->variables) {
             log_error("Failed to allocate variable memory for device %s", device->name);
-            pthread_mutex_unlock(&global_data->var_update_mutex);
+            //pthread_mutex_unlock(&global_data->var_update_mutex);
             return -1;
         }
         memset(device->variables, 0, sizeof(OPCUAVariable) * var_count);
@@ -1579,7 +1579,7 @@ int addDeviceNodes(UA_Server *server, GlobalData *global_data, int device_index,
     log_debug("Device %s added successfully", device->name);
     
     // 释放互斥锁
-    pthread_mutex_unlock(&global_data->var_update_mutex);
+    //pthread_mutex_unlock(&global_data->var_update_mutex);
     
     return 0;
 }
@@ -1628,7 +1628,7 @@ void updateOPCUAVariables(UA_Server *server, GlobalData *global_data) {
     }
     
     // 申请互斥锁
-    pthread_mutex_lock(&global_data->var_update_mutex);
+    //pthread_mutex_lock(&global_data->var_update_mutex);
     
     // 设置标志位，表示这是Modbus更新
     global_data->is_modbus_updating = true;
@@ -1678,7 +1678,7 @@ void updateOPCUAVariables(UA_Server *server, GlobalData *global_data) {
                     }
                     
                     // 更新OPC UA节点值
-                    UA_Server_writeValue(server, var->node_id, variant); //有可能都没加入opcua的数据模型，设置没用
+                    //UA_Server_writeValue(server, var->node_id, variant); //有可能都没加入opcua的数据模型，设置没用
                 }
             }
         }
@@ -1688,7 +1688,7 @@ void updateOPCUAVariables(UA_Server *server, GlobalData *global_data) {
     global_data->is_modbus_updating = false;
     
     // 释放互斥锁
-    pthread_mutex_unlock(&global_data->var_update_mutex);
+    //pthread_mutex_unlock(&global_data->var_update_mutex);
 }
 
 // Modbus轮询线程
@@ -1734,7 +1734,7 @@ void *modbusPollingThread(void *arg) {
         // 读取输入寄存器
         if (modbus_client_read_input_registers(&global_data->modbus_client, 0, 100, input_registers) == MODBUS_SUCCESS) {
             // 更新相关变量
-            pthread_mutex_lock(&global_data->var_update_mutex);
+            //pthread_mutex_lock(&global_data->var_update_mutex);
             for (int i = 0; i < global_data->device_count; i++) {
                 DeviceNode *device = &global_data->devices[i];
                 for (int j = 0; j < device->variable_count; j++) {
@@ -1777,7 +1777,7 @@ void *modbusPollingThread(void *arg) {
                     }
                 }
             }
-            pthread_mutex_unlock(&global_data->var_update_mutex);
+            //pthread_mutex_unlock(&global_data->var_update_mutex);
         } else {
             log_error("Failed to read input registers, connection may be lost");
             connected = 0;
@@ -1791,7 +1791,7 @@ void *modbusPollingThread(void *arg) {
         // 读取保持寄存器
         if (modbus_client_read_holding_registers(&global_data->modbus_client, 0, 100, holding_registers) == MODBUS_SUCCESS) {
             // 更新相关变量
-            pthread_mutex_lock(&global_data->var_update_mutex);
+            //pthread_mutex_lock(&global_data->var_update_mutex);
             for (int i = 0; i < global_data->device_count; i++) {
                 DeviceNode *device = &global_data->devices[i];
                 for (int j = 0; j < device->variable_count; j++) {
@@ -1831,7 +1831,7 @@ void *modbusPollingThread(void *arg) {
                     }
                 }
             }
-            pthread_mutex_unlock(&global_data->var_update_mutex);
+            //pthread_mutex_unlock(&global_data->var_update_mutex);
         } else {
             log_error("Failed to read holding registers, connection may be lost");
             connected = 0;
@@ -1844,7 +1844,7 @@ void *modbusPollingThread(void *arg) {
         // 读取离散输入
         if (modbus_client_read_discrete_inputs(&global_data->modbus_client, 0, 100, discrete_inputs) == MODBUS_SUCCESS) {
             // 更新相关变量
-            pthread_mutex_lock(&global_data->var_update_mutex);
+            //pthread_mutex_lock(&global_data->var_update_mutex);
             for (int i = 0; i < global_data->device_count; i++) {
                 DeviceNode *device = &global_data->devices[i];
                 for (int j = 0; j < device->variable_count; j++) {
@@ -1859,7 +1859,7 @@ void *modbusPollingThread(void *arg) {
                     }
                 }
             }
-            pthread_mutex_unlock(&global_data->var_update_mutex);
+            //pthread_mutex_unlock(&global_data->var_update_mutex);
         } else {
             log_error("Failed to read discrete inputs, connection may be lost");
             connected = 0;
@@ -1957,7 +1957,7 @@ void* printNodeVariablesThread(void* arg) {
         }
         
         // 申请互斥锁，保护设备列表访问
-        pthread_mutex_lock(&global_data->var_update_mutex);
+        //pthread_mutex_lock(&global_data->var_update_mutex);
         
         // 遍历所有设备
         for (int i = 0; i < global_data->device_count; i++) {
@@ -2058,7 +2058,7 @@ void* printNodeVariablesThread(void* arg) {
         }
         
         // 释放互斥锁
-        pthread_mutex_unlock(&global_data->var_update_mutex);
+        //pthread_mutex_unlock(&global_data->var_update_mutex);
         
         log_debug("===================================");
         

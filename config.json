@@ -1,16 +1,23 @@
 {
-    "description": "设备侧软件 - IPv6 组播 + 地址池配置",
+    "description": "Windows configuration - IPv6 multicast, address pool and device settings",
+
+    "device": {
+        "name": "newpro3101",
+        "model": "ATB-controler",
+        "opcua_port": 4840,
+        "opcua_path": "/autbus/controller"
+    },
 
     "ipv6_multicast": {
         "listen_port": 6060,
         "multicast_ip": "ff03::c",
-        "bind_nic_name": "以太网",
+        "bind_nic_name": "Ethernet",
         "nic_index": 12
     },
 
     "ipv6_address_pool": {
-        "start_address": "2001:eaca:0101:0000:001E:CD00:0201:0000",
-        "end_address": "2001:eaca:0101:0000:001E:CD00:0201:1005",
+        "start_address": "2001:eaca:0101:0000:001e:cd00:0201:0000",
+        "end_address": "2001:eaca:0101:0000:001e:cd00:0201:1005",
         "prefix_length": 64,
         "max_lease_count": 1000
     },
@@ -21,7 +28,7 @@
         "polling_interval": 1000,
         "reconnect_interval": 5000
     },
-    
+
     "log": {
         "enable_log": false,
         "log_level": "INFO",

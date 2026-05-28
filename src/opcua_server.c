@@ -41,6 +41,13 @@ typedef struct {
     int max_lease_count;
 } IPv6AddressPool;
 
+typedef struct {
+    char name[50];
+    char model[50];
+    int opcua_port;
+    char opcua_path[64];
+} DeviceConfig;
+
 // OPC UA变量结构体
 typedef struct {
     UA_NodeId node_id;
@@ -64,6 +71,7 @@ typedef struct {
 // 全局数据
 typedef struct {
     ModbusConfig modbus_config;
+    DeviceConfig device_config;
     IPv6MulticastConfig ipv6_multicast;
     IPv6AddressPool ipv6_pool;
     CSVParseResult csv_result;
@@ -92,6 +100,21 @@ static bool ensurePersistentIPv6OnInterface(GlobalData *global_data, const char 
 
     log_debug("Persistent IPv6 address %s for %s may already exist on interface %d",
              ipv6_address, owner_name, global_data->ipv6_multicast.nic_index);
+    return true;
+}
+
+static bool allocatePersistentIPv6(GlobalData *global_data, const char *owner_name, char *ipv6_address, size_t ipv6_address_size) {
+    if (!global_data || !owner_name || !ipv6_address || ipv6_address_size == 0) {
+        return false;
+    }
+
+    ipv6_address[0] = '\0';
+    if (!ipv6_allocate_address(owner_name, global_data->ipv6_multicast.nic_index, ipv6_address)) {
+        log_error("Failed to allocate IPv6 address for %s", owner_name);
+        return false;
+    }
+
+    ipv6_address[ipv6_address_size - 1] = '\0';
     return true;
 }
 
@@ -146,13 +169,55 @@ int addDeviceNodes(UA_Server *server, GlobalData *global_data, int device_index,
 static UA_StatusCode writeCachedValueToNode(UA_Server *server, OPCUAVariable *var);
 
 UA_Boolean running = true;
+extern void request_program_stop(void);
 
 void stopHandler(int sign) {
     UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "received ctrl-c");
     running = false;
+    request_program_stop();
+}
+
+#ifdef __cplusplus
+extern "C"
+#endif
+void opcua_server_stop(void) {
+    running = false;
+    request_program_stop();
 }
 
 // IPv6地址转GUID函数
+static bool ipv6ToGuidChecked(const char *ipv6Addr, UA_Guid *guid) {
+    if (!ipv6Addr || !guid) {
+        return false;
+    }
+
+    memset(guid, 0, sizeof(UA_Guid));
+
+    unsigned int a, b, c, d, e, f, g, h;
+    if (sscanf(ipv6Addr, "%x:%x:%x:%x:%x:%x:%x:%x", &a, &b, &c, &d, &e, &f, &g, &h) != 8) {
+        return false;
+    }
+
+    if (a > 0xFFFF || b > 0xFFFF || c > 0xFFFF || d > 0xFFFF ||
+        e > 0xFFFF || f > 0xFFFF || g > 0xFFFF || h > 0xFFFF) {
+        return false;
+    }
+
+    guid->data1 = (a << 16) | b;
+    guid->data2 = (UA_UInt16)c;
+    guid->data3 = (UA_UInt16)d;
+    guid->data4[0] = (UA_Byte)((e >> 8) & 0xFF);
+    guid->data4[1] = (UA_Byte)(e & 0xFF);
+    guid->data4[2] = (UA_Byte)((f >> 8) & 0xFF);
+    guid->data4[3] = (UA_Byte)(f & 0xFF);
+    guid->data4[4] = (UA_Byte)((g >> 8) & 0xFF);
+    guid->data4[5] = (UA_Byte)(g & 0xFF);
+    guid->data4[6] = (UA_Byte)((h >> 8) & 0xFF);
+    guid->data4[7] = (UA_Byte)(h & 0xFF);
+
+    return true;
+}
+
 UA_Guid ipv6ToGuid(const char *ipv6Addr) {
     UA_Guid guid;
     memset(&guid, 0, sizeof(UA_Guid));
@@ -179,7 +244,12 @@ UA_Guid ipv6ToGuid(const char *ipv6Addr) {
 
 // 创建带有IPv6地址作为GUID的节点
 UA_NodeId createNodeWithIPv6Id(UA_Server *server, const char *ipv6Addr, const char *name, UA_NodeId parentNodeId) {
-    UA_Guid guid = ipv6ToGuid(ipv6Addr);
+    UA_Guid guid;
+    if (!ipv6ToGuidChecked(ipv6Addr, &guid)) {
+        log_error("Cannot create object node %s with invalid IPv6 address: %s",
+                  name ? name : "(null)", ipv6Addr ? ipv6Addr : "(null)");
+        return UA_NODEID_NULL;
+    }
     UA_NodeId nodeId = UA_NODEID_GUID(1, guid);
     
     UA_ObjectAttributes objAttr = UA_ObjectAttributes_default;
@@ -203,7 +273,12 @@ UA_NodeId createObjectNode(UA_Server *server, const char *ipv6Addr, const char *
 // 创建变量节点
 UA_NodeId createVariableNode(UA_Server *server, const char *ipv6Addr, const char *name, UA_NodeId parentNodeId, 
                              UA_DataType *dataType, UA_Variant *value, UA_Byte accessLevel, GlobalData *global_data) {
-    UA_Guid guid = ipv6ToGuid(ipv6Addr);
+    UA_Guid guid;
+    if (!ipv6ToGuidChecked(ipv6Addr, &guid)) {
+        log_error("Cannot create variable node %s with invalid IPv6 address: %s",
+                  name ? name : "(null)", ipv6Addr ? ipv6Addr : "(null)");
+        return UA_NODEID_NULL;
+    }
     UA_NodeId nodeId = UA_NODEID_GUID(1, guid);
     
     UA_VariableAttributes varAttr = UA_VariableAttributes_default;
@@ -251,9 +326,24 @@ UA_NodeId createVariableNode(UA_Server *server, const char *ipv6Addr, const char
 }
 
 // 创建spssps设备节点及其子节点
-UA_NodeId createSpsspsDevice(UA_Server *server) {
+UA_NodeId createSpsspsDevice(UA_Server *server, GlobalData *global_data, UA_NodeId *busesNodeIdOut) {
+    if (!server || !global_data || !busesNodeIdOut) {
+        return UA_NODEID_NULL;
+    }
+
+    *busesNodeIdOut = UA_NODEID_NULL;
+    char owner_name[128];
+    char spssps_ipv6[40];
+    char device_info_ipv6[40];
+    char buses_ipv6[40];
+
+    snprintf(owner_name, sizeof(owner_name), "%s", global_data->device_config.name);
+    if (!ipv6_get_device_address(owner_name, spssps_ipv6, sizeof(spssps_ipv6)) &&
+        !allocatePersistentIPv6(global_data, owner_name, spssps_ipv6, sizeof(spssps_ipv6))) {
+        return UA_NODEID_NULL;
+    }
     // 创建spssps设备节点
-    UA_NodeId spsspsNodeId = createObjectNode(server, (char*)"2001:eaca:101:0:001E:CD00:0100:0000", (char*)"spssps", 
+    UA_NodeId spsspsNodeId = createObjectNode(server, spssps_ipv6, global_data->device_config.name,
                                              UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER));
     
     // 创建DeviceInfo属性
@@ -261,30 +351,61 @@ UA_NodeId createSpsspsDevice(UA_Server *server) {
     UA_Variant_init(&deviceInfoValue);
     UA_String deviceInfoString = UA_STRING((char*)"Device Information");
     UA_Variant_setScalar(&deviceInfoValue, &deviceInfoString, &UA_TYPES[UA_TYPES_STRING]);
-    createVariableNode(server, (char*)"2001:eaca:101:0:001E:CD00:0100:0001", (char*)"DeviceInfo", spsspsNodeId, 
+    snprintf(owner_name, sizeof(owner_name), "opcua.%s.DeviceInfo", global_data->device_config.name);
+    if (!ipv6_get_device_address(owner_name, device_info_ipv6, sizeof(device_info_ipv6)) &&
+        !allocatePersistentIPv6(global_data, owner_name, device_info_ipv6, sizeof(device_info_ipv6))) {
+        return spsspsNodeId;
+    }
+    createVariableNode(server, device_info_ipv6, (char*)"DeviceInfo", spsspsNodeId,
                       &UA_TYPES[UA_TYPES_STRING], &deviceInfoValue, UA_ACCESSLEVELMASK_READ, NULL);
     
     // 创建Buses对象
-    UA_NodeId busesNodeId = createObjectNode(server, (char*)"2001:eaca:101:0:001E:CD00:0100:0002", (char*)"Buses", spsspsNodeId);
+    snprintf(owner_name, sizeof(owner_name), "opcua.%s.Buses", global_data->device_config.name);
+    if (!ipv6_get_device_address(owner_name, buses_ipv6, sizeof(buses_ipv6)) &&
+        !allocatePersistentIPv6(global_data, owner_name, buses_ipv6, sizeof(buses_ipv6))) {
+        return spsspsNodeId;
+    }
+    *busesNodeIdOut = createObjectNode(server, buses_ipv6, (char*)"Buses", spsspsNodeId);
     
     return spsspsNodeId;
 }
 
 // 创建Bus 0对象及其子节点
-UA_NodeId createBus0(UA_Server *server, UA_NodeId busesNodeId) {
+UA_NodeId createBus0(UA_Server *server, GlobalData *global_data, UA_NodeId busesNodeId, UA_NodeId *nodesNodeIdOut) {
+    if (!server || !global_data || !nodesNodeIdOut) {
+        return UA_NODEID_NULL;
+    }
+
+    *nodesNodeIdOut = UA_NODEID_NULL;
+    char owner_name[128];
+    char bus0_ipv6[40];
+    char bus_status_ipv6[40];
+    char nodes_ipv6[40];
+
     // 创建Bus 0对象
-    UA_NodeId bus0NodeId = createObjectNode(server, (char*)"2001:eaca:101:0:001E:CD00:0200:0000", (char*)"Bus 0", busesNodeId);
+    snprintf(owner_name, sizeof(owner_name), "opcua.%s.Bus0", global_data->device_config.name);
+    if (!allocatePersistentIPv6(global_data, owner_name, bus0_ipv6, sizeof(bus0_ipv6))) {
+        return UA_NODEID_NULL;
+    }
+    UA_NodeId bus0NodeId = createObjectNode(server, bus0_ipv6, (char*)"Bus 0", busesNodeId);
     
     // 创建BusStatus变量
     UA_Variant busStatusValue;
     UA_Variant_init(&busStatusValue);
     UA_Int32 status = 0;
     UA_Variant_setScalar(&busStatusValue, &status, &UA_TYPES[UA_TYPES_INT32]);
-    createVariableNode(server, (char*)"2001:eaca:101:0:001E:CD00:0200:0001", (char*)"BusStatus", bus0NodeId, 
-                      &UA_TYPES[UA_TYPES_INT32], &busStatusValue, UA_ACCESSLEVELMASK_READ, NULL);
+    snprintf(owner_name, sizeof(owner_name), "opcua.%s.Bus0.BusStatus", global_data->device_config.name);
+    if (allocatePersistentIPv6(global_data, owner_name, bus_status_ipv6, sizeof(bus_status_ipv6))) {
+        createVariableNode(server, bus_status_ipv6, (char*)"BusStatus", bus0NodeId,
+                          &UA_TYPES[UA_TYPES_INT32], &busStatusValue, UA_ACCESSLEVELMASK_READ, NULL);
+    }
     
     // 创建Nodes对象
-    UA_NodeId nodesNodeId = createObjectNode(server, (char*)"2001:eaca:101:0:001E:CD00:0200:0002", (char*)"Nodes", bus0NodeId);
+    snprintf(owner_name, sizeof(owner_name), "opcua.%s.Bus0.Nodes", global_data->device_config.name);
+    if (!allocatePersistentIPv6(global_data, owner_name, nodes_ipv6, sizeof(nodes_ipv6))) {
+        return bus0NodeId;
+    }
+    *nodesNodeIdOut = createObjectNode(server, nodes_ipv6, (char*)"Nodes", bus0NodeId);
     
     return bus0NodeId;
 }
@@ -460,7 +581,10 @@ void cycleCallback(UA_Server *server, void *data)
 }
 
 
-int opcua_server_main(void) 
+#ifdef __cplusplus
+extern "C"
+#endif
+int opcua_server_main(const char *device_name) 
 {
     signal(SIGINT, stopHandler);
     signal(SIGTERM, stopHandler);
@@ -469,22 +593,28 @@ int opcua_server_main(void)
     UA_ServerConfig_setDefault(UA_Server_getConfig(server));
     
     // 创建spssps设备节点及其子节点
-    UA_NodeId spsspsNodeId = createSpsspsDevice(server);
+    UA_NodeId spsspsNodeId = UA_NODEID_NULL;
     
     // 获取Buses节点ID
-    UA_NodeId busesNodeId = UA_NODEID_GUID(1, ipv6ToGuid((char*)"2001:eaca:101:0:001E:CD00:0100:0002"));
+    UA_NodeId busesNodeId = UA_NODEID_NULL;
     
     // 创建Bus 0对象及其子节点
-    UA_NodeId bus0NodeId = createBus0(server, busesNodeId);
+    UA_NodeId bus0NodeId = UA_NODEID_NULL;
     
     // 获取Nodes节点ID
-    UA_NodeId nodesNodeId = UA_NODEID_GUID(1, ipv6ToGuid((char*)"2001:eaca:101:0:001E:CD00:0200:0002"));
+    UA_NodeId nodesNodeId = UA_NODEID_NULL;
     
     // 初始化全局数据
     GlobalData global_data;
     memset(&global_data, 0, sizeof(global_data));
     global_data.server = server;
     global_data.nodesNodeId = nodesNodeId;
+    strncpy(global_data.device_config.name,
+            (device_name && device_name[0] != '\0') ? device_name : "spssps",
+            sizeof(global_data.device_config.name) - 1);
+    strncpy(global_data.device_config.model, "ATB-5000", sizeof(global_data.device_config.model) - 1);
+    global_data.device_config.opcua_port = 4840;
+    strncpy(global_data.device_config.opcua_path, "/autbus/controller", sizeof(global_data.device_config.opcua_path) - 1);
     
     // 初始化支持递归的互斥锁
     pthread_mutexattr_t attr;
@@ -501,6 +631,21 @@ int opcua_server_main(void)
     }
     
     // 解析CSV文件 - 尝试多种路径
+    spsspsNodeId = createSpsspsDevice(server, &global_data, &busesNodeId);
+    if (UA_NodeId_isNull(&spsspsNodeId) || UA_NodeId_isNull(&busesNodeId)) {
+        log_error("Failed to create root OPC UA device nodes");
+        UA_Server_delete(server);
+        return EXIT_FAILURE;
+    }
+
+    bus0NodeId = createBus0(server, &global_data, busesNodeId, &nodesNodeId);
+    if (UA_NodeId_isNull(&bus0NodeId) || UA_NodeId_isNull(&nodesNodeId)) {
+        log_error("Failed to create Bus 0 or Nodes OPC UA nodes");
+        UA_Server_delete(server);
+        return EXIT_FAILURE;
+    }
+    global_data.nodesNodeId = nodesNodeId;
+
     CSVParseResult csv_result = parseCSV("./uploadtable.csv");
     if (csv_result.count == 0) {
         csv_result = parseCSV("../uploadtable.csv");
@@ -629,11 +774,38 @@ int loadConfig(GlobalData *global_data) {
     }
     
     // 解析modbus_tcp配置
+    cJSON *device = cJSON_GetObjectItem(root, "device");
+    if (device) {
+        cJSON *name = cJSON_GetObjectItem(device, "name");
+        if (name && cJSON_IsString(name) && name->valuestring[0] != '\0') {
+            strncpy(global_data->device_config.name, name->valuestring, sizeof(global_data->device_config.name) - 1);
+            global_data->device_config.name[sizeof(global_data->device_config.name) - 1] = '\0';
+        }
+
+        cJSON *model = cJSON_GetObjectItem(device, "model");
+        if (model && cJSON_IsString(model) && model->valuestring[0] != '\0') {
+            strncpy(global_data->device_config.model, model->valuestring, sizeof(global_data->device_config.model) - 1);
+            global_data->device_config.model[sizeof(global_data->device_config.model) - 1] = '\0';
+        }
+
+        cJSON *opcua_port = cJSON_GetObjectItem(device, "opcua_port");
+        if (opcua_port && cJSON_IsNumber(opcua_port)) {
+            global_data->device_config.opcua_port = opcua_port->valueint;
+        }
+
+        cJSON *opcua_path = cJSON_GetObjectItem(device, "opcua_path");
+        if (opcua_path && cJSON_IsString(opcua_path) && opcua_path->valuestring[0] != '\0') {
+            strncpy(global_data->device_config.opcua_path, opcua_path->valuestring, sizeof(global_data->device_config.opcua_path) - 1);
+            global_data->device_config.opcua_path[sizeof(global_data->device_config.opcua_path) - 1] = '\0';
+        }
+    }
+
     cJSON *modbus_tcp = cJSON_GetObjectItem(root, "modbus_tcp");
     if (modbus_tcp) {
         cJSON *server_ip = cJSON_GetObjectItem(modbus_tcp, "server_ip");
         if (server_ip && cJSON_IsString(server_ip)) {
             strncpy(global_data->modbus_config.server_ip, server_ip->valuestring, sizeof(global_data->modbus_config.server_ip) - 1);
+            global_data->modbus_config.server_ip[sizeof(global_data->modbus_config.server_ip) - 1] = '\0';
         }
         
         cJSON *server_port = cJSON_GetObjectItem(modbus_tcp, "server_port");
@@ -666,6 +838,7 @@ int loadConfig(GlobalData *global_data) {
         cJSON *multicast_ip = cJSON_GetObjectItem(ipv6_multicast, "multicast_ip");
         if (multicast_ip && cJSON_IsString(multicast_ip)) {
             strncpy(global_data->ipv6_multicast.multicast_ip, multicast_ip->valuestring, sizeof(global_data->ipv6_multicast.multicast_ip) - 1);
+            global_data->ipv6_multicast.multicast_ip[sizeof(global_data->ipv6_multicast.multicast_ip) - 1] = '\0';
         }
         
         cJSON *nic_index = cJSON_GetObjectItem(ipv6_multicast, "nic_index");
@@ -680,11 +853,13 @@ int loadConfig(GlobalData *global_data) {
         cJSON *start_address = cJSON_GetObjectItem(ipv6_pool, "start_address");
         if (start_address && cJSON_IsString(start_address)) {
             strncpy(global_data->ipv6_pool.start_address, start_address->valuestring, sizeof(global_data->ipv6_pool.start_address) - 1);
+            global_data->ipv6_pool.start_address[sizeof(global_data->ipv6_pool.start_address) - 1] = '\0';
         }
         
         cJSON *end_address = cJSON_GetObjectItem(ipv6_pool, "end_address");
         if (end_address && cJSON_IsString(end_address)) {
             strncpy(global_data->ipv6_pool.end_address, end_address->valuestring, sizeof(global_data->ipv6_pool.end_address) - 1);
+            global_data->ipv6_pool.end_address[sizeof(global_data->ipv6_pool.end_address) - 1] = '\0';
         }
         
         cJSON *prefix_length = cJSON_GetObjectItem(ipv6_pool, "prefix_length");
@@ -1103,7 +1278,8 @@ int createDeviceNodes(UA_Server *server, GlobalData *global_data, UA_NodeId node
         CSVRecord *record = &global_data->csv_result.records[i];
         if (strcmp(record->deviceName, current_device) != 0) {
             device_count++;
-            strcpy(current_device, record->deviceName);
+            strncpy(current_device, record->deviceName, sizeof(current_device) - 1);
+            current_device[sizeof(current_device) - 1] = '\0';
             log_debug("Found device %s, total devices: %d", current_device, device_count);
         }
     }
@@ -1117,6 +1293,7 @@ int createDeviceNodes(UA_Server *server, GlobalData *global_data, UA_NodeId node
         log_error("Failed to allocate device node memory");
         return -1;
     }
+    memset(global_data->devices, 0, sizeof(DeviceNode) * device_count);
     log_debug("Device node memory allocated successfully");
     
     global_data->device_count = device_count;
@@ -1136,7 +1313,8 @@ int createDeviceNodes(UA_Server *server, GlobalData *global_data, UA_NodeId node
         // 检查是否是新设备
         if (device_index == 0 || strcmp(record->deviceName, global_data->devices[device_index - 1].name) != 0) {
             // 初始化设备节点结构，但不创建OPC UA节点
-            strcpy(global_data->devices[device_index].name, record->deviceName);
+            strncpy(global_data->devices[device_index].name, record->deviceName, sizeof(global_data->devices[device_index].name) - 1);
+            global_data->devices[device_index].name[sizeof(global_data->devices[device_index].name) - 1] = '\0';
             global_data->devices[device_index].variable_count = 0;
             global_data->devices[device_index].variables = NULL;
             
@@ -1178,7 +1356,8 @@ int createDeviceNodes(UA_Server *server, GlobalData *global_data, UA_NodeId node
                 device->variables[var_index].modbus_addr = record->modbusAddr;
                 device->variables[var_index].register_type = record->registerType;
                 device->variables[var_index].plc_datatype = record->plcDatatype;
-                strcpy(device->variables[var_index].name, record->nodeName);
+                strncpy(device->variables[var_index].name, record->nodeName, sizeof(device->variables[var_index].name) - 1);
+                device->variables[var_index].name[sizeof(device->variables[var_index].name) - 1] = '\0';
                 
                 // 初始化IPv6地址为空字符串
                 device->variables[var_index].ipv6_address[0] = '\0';
@@ -1287,7 +1466,7 @@ int deleteDeviceNodes(UA_Server *server, GlobalData *global_data, int device_ind
     }
     
     // 申请互斥锁，保护设备列表和变量资源访问
-    pthread_mutex_lock(&global_data->var_update_mutex);
+    //pthread_mutex_lock(&global_data->var_update_mutex);
     
     DeviceNode *device = &global_data->devices[device_index];
     log_debug("Deleting device %s and its variables", device->name);
@@ -1319,7 +1498,7 @@ int deleteDeviceNodes(UA_Server *server, GlobalData *global_data, int device_ind
     log_debug("Device %s deleted successfully, cached variables retained for reconnection", device->name);
     
     // 释放互斥锁
-    pthread_mutex_unlock(&global_data->var_update_mutex);
+    //pthread_mutex_unlock(&global_data->var_update_mutex);
     
     return 0;
 }
@@ -1331,20 +1510,20 @@ int addDeviceNodes(UA_Server *server, GlobalData *global_data, int device_index,
     }
     
     // 申请互斥锁，保护设备列表和变量资源访问
-    pthread_mutex_lock(&global_data->var_update_mutex);
+    //pthread_mutex_lock(&global_data->var_update_mutex);
     
     DeviceNode *device = &global_data->devices[device_index];
     
     // 如果设备名称为空，说明已被删除，无法添加
     if (device->name[0] == '\0') {
-        pthread_mutex_unlock(&global_data->var_update_mutex);
+        //pthread_mutex_unlock(&global_data->var_update_mutex);
         return -1;
     }
     
     // 检查设备节点是否已经存在，如果存在则直接返回
     if (!UA_NodeId_isNull(&device->node_id)) {
         log_debug("Device node for %s already exists", device->name);
-        pthread_mutex_unlock(&global_data->var_update_mutex);
+        //pthread_mutex_unlock(&global_data->var_update_mutex);
         return 0;
     }
     
@@ -1353,7 +1532,7 @@ int addDeviceNodes(UA_Server *server, GlobalData *global_data, int device_index,
     // 设备的IPv6地址已经在modbusPollingThread中分配，直接使用
     if (device->ipv6_address[0] == '\0') {
         log_error("Device %s has no IPv6 address allocated", device->name);
-        pthread_mutex_unlock(&global_data->var_update_mutex);
+        //pthread_mutex_unlock(&global_data->var_update_mutex);
         return -1;
     }
     
@@ -1382,7 +1561,7 @@ int addDeviceNodes(UA_Server *server, GlobalData *global_data, int device_index,
         device->variables = (OPCUAVariable *)malloc(sizeof(OPCUAVariable) * var_count);
         if (!device->variables) {
             log_error("Failed to allocate variable memory for device %s", device->name);
-            pthread_mutex_unlock(&global_data->var_update_mutex);
+            //pthread_mutex_unlock(&global_data->var_update_mutex);
             return -1;
         }
         memset(device->variables, 0, sizeof(OPCUAVariable) * var_count);
@@ -1467,7 +1646,8 @@ int addDeviceNodes(UA_Server *server, GlobalData *global_data, int device_index,
             device->variables[var_index].modbus_addr = record->modbusAddr;
             device->variables[var_index].register_type = record->registerType;
             device->variables[var_index].plc_datatype = record->plcDatatype;
-            strcpy(device->variables[var_index].name, record->nodeName);
+            strncpy(device->variables[var_index].name, record->nodeName, sizeof(device->variables[var_index].name) - 1);
+            device->variables[var_index].name[sizeof(device->variables[var_index].name) - 1] = '\0';
             
             if (device->variables[var_index].ipv6_address[0] != '\0') {
                 log_debug("Reusing IPv6 address %s for variable %s",
@@ -1575,7 +1755,7 @@ int addDeviceNodes(UA_Server *server, GlobalData *global_data, int device_index,
     log_debug("Device %s added successfully", device->name);
     
     // 释放互斥锁
-    pthread_mutex_unlock(&global_data->var_update_mutex);
+   // pthread_mutex_unlock(&global_data->var_update_mutex);
     
     return 0;
 }
@@ -1624,7 +1804,7 @@ void updateOPCUAVariables(UA_Server *server, GlobalData *global_data) {
     }
     
     // 申请互斥锁
-    pthread_mutex_lock(&global_data->var_update_mutex);
+    //pthread_mutex_lock(&global_data->var_update_mutex);
     
     // 设置标志位，表示这是Modbus更新
     global_data->is_modbus_updating = true;
@@ -1674,7 +1854,7 @@ void updateOPCUAVariables(UA_Server *server, GlobalData *global_data) {
                     }
                     
                     // 更新OPC UA节点值
-                    UA_Server_writeValue(server, var->node_id, variant); //有可能都没加入opcua的数据模型，设置没用
+                    //UA_Server_writeValue(server, var->node_id, variant); //有可能都没加入opcua的数据模型，设置没用
                 }
             }
         }
@@ -1684,7 +1864,7 @@ void updateOPCUAVariables(UA_Server *server, GlobalData *global_data) {
     global_data->is_modbus_updating = false;
     
     // 释放互斥锁
-    pthread_mutex_unlock(&global_data->var_update_mutex);
+    //pthread_mutex_unlock(&global_data->var_update_mutex);
 }
 
 // Modbus轮询线程
@@ -1730,7 +1910,7 @@ void *modbusPollingThread(void *arg) {
         // 读取输入寄存器
         if (modbus_client_read_input_registers(&global_data->modbus_client, 0, 100, input_registers) == MODBUS_SUCCESS) {
             // 更新相关变量
-            pthread_mutex_lock(&global_data->var_update_mutex);
+            //pthread_mutex_lock(&global_data->var_update_mutex);
             for (int i = 0; i < global_data->device_count; i++) {
                 DeviceNode *device = &global_data->devices[i];
                 for (int j = 0; j < device->variable_count; j++) {
@@ -1773,7 +1953,7 @@ void *modbusPollingThread(void *arg) {
                     }
                 }
             }
-            pthread_mutex_unlock(&global_data->var_update_mutex);
+            //pthread_mutex_unlock(&global_data->var_update_mutex);
         } else {
             log_error("Failed to read input registers, connection may be lost");
             connected = 0;
@@ -1787,7 +1967,7 @@ void *modbusPollingThread(void *arg) {
         // 读取保持寄存器
         if (modbus_client_read_holding_registers(&global_data->modbus_client, 0, 100, holding_registers) == MODBUS_SUCCESS) {
             // 更新相关变量
-            pthread_mutex_lock(&global_data->var_update_mutex);
+            //pthread_mutex_lock(&global_data->var_update_mutex);
             for (int i = 0; i < global_data->device_count; i++) {
                 DeviceNode *device = &global_data->devices[i];
                 for (int j = 0; j < device->variable_count; j++) {
@@ -1827,7 +2007,7 @@ void *modbusPollingThread(void *arg) {
                     }
                 }
             }
-            pthread_mutex_unlock(&global_data->var_update_mutex);
+            //pthread_mutex_unlock(&global_data->var_update_mutex);
         } else {
             log_error("Failed to read holding registers, connection may be lost");
             connected = 0;
@@ -1840,7 +2020,7 @@ void *modbusPollingThread(void *arg) {
         // 读取离散输入
         if (modbus_client_read_discrete_inputs(&global_data->modbus_client, 0, 100, discrete_inputs) == MODBUS_SUCCESS) {
             // 更新相关变量
-            pthread_mutex_lock(&global_data->var_update_mutex);
+            //pthread_mutex_lock(&global_data->var_update_mutex);
             for (int i = 0; i < global_data->device_count; i++) {
                 DeviceNode *device = &global_data->devices[i];
                 for (int j = 0; j < device->variable_count; j++) {
@@ -1855,7 +2035,7 @@ void *modbusPollingThread(void *arg) {
                     }
                 }
             }
-            pthread_mutex_unlock(&global_data->var_update_mutex);
+            //pthread_mutex_unlock(&global_data->var_update_mutex);
         } else {
             log_error("Failed to read discrete inputs, connection may be lost");
             connected = 0;
@@ -1953,7 +2133,7 @@ void* printNodeVariablesThread(void* arg) {
         }
         
         // 申请互斥锁，保护设备列表访问
-        pthread_mutex_lock(&global_data->var_update_mutex);
+        //pthread_mutex_lock(&global_data->var_update_mutex);
         
         // 遍历所有设备
         for (int i = 0; i < global_data->device_count; i++) {
@@ -2054,7 +2234,7 @@ void* printNodeVariablesThread(void* arg) {
         }
         
         // 释放互斥锁
-        pthread_mutex_unlock(&global_data->var_update_mutex);
+        //pthread_mutex_unlock(&global_data->var_update_mutex);
         
         log_debug("===================================");
         

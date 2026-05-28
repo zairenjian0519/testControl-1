@@ -10,9 +10,22 @@
 #include <string>
 #include <sstream>
 #include <getopt.h>
+#include <signal.h>
 #include "cJSON.h"
 #include "log_manager.h"
 #include "ipv6_manager.h"
+
+extern volatile bool g_main_loop_running;
+int g_udp_socket = -1;
+
+void request_program_stop(void)
+{
+    g_main_loop_running = false;
+    if (g_udp_socket != -1) {
+        closesocket(g_udp_socket);
+        g_udp_socket = -1;
+    }
+}
 
 #define BUF_LEN 256  
 
@@ -25,6 +38,13 @@ typedef struct {
     long log_file_size;
 } LogConfigFromFile;
 
+typedef struct {
+    std::string name;
+    std::string model;
+    int opcua_port;
+    std::string opcua_path;
+} DeviceConfigFromFile;
+
 // 简单的JSON配置结构体
 typedef struct {
     int listen_port;
@@ -34,6 +54,7 @@ typedef struct {
     std::string ipv6_end_address;
     int ipv6_prefix_length;
     int ipv6_max_lease_count;
+    DeviceConfigFromFile device_config;
     LogConfigFromFile log_config;
 } Ipv6MulticastConfig;
 
@@ -47,6 +68,10 @@ Ipv6MulticastConfig read_ipv6_config(const std::string& config_file) {
     config.log_config.log_file = "application.log";
     config.log_config.log_file_count = 2;
     config.log_config.log_file_size = 1024 * 1024; // 默认1MB
+    config.device_config.name = "spssps";
+    config.device_config.model = "ATB-5000";
+    config.device_config.opcua_port = 4840;
+    config.device_config.opcua_path = "/autbus/controller";
     config.ipv6_prefix_length = 0;
     config.ipv6_max_lease_count = 0;
     std::string content;
@@ -74,6 +99,29 @@ Ipv6MulticastConfig read_ipv6_config(const std::string& config_file) {
     }
     
     // 获取ipv6_multicast对象
+    cJSON *device = cJSON_GetObjectItem(root, "device");
+    if (device != NULL) {
+        cJSON *name = cJSON_GetObjectItem(device, "name");
+        if (name != NULL && cJSON_IsString(name) && name->valuestring[0] != '\0') {
+            config.device_config.name = name->valuestring;
+        }
+
+        cJSON *model = cJSON_GetObjectItem(device, "model");
+        if (model != NULL && cJSON_IsString(model) && model->valuestring[0] != '\0') {
+            config.device_config.model = model->valuestring;
+        }
+
+        cJSON *opcua_port = cJSON_GetObjectItem(device, "opcua_port");
+        if (opcua_port != NULL && cJSON_IsNumber(opcua_port)) {
+            config.device_config.opcua_port = opcua_port->valueint;
+        }
+
+        cJSON *opcua_path = cJSON_GetObjectItem(device, "opcua_path");
+        if (opcua_path != NULL && cJSON_IsString(opcua_path) && opcua_path->valuestring[0] != '\0') {
+            config.device_config.opcua_path = opcua_path->valuestring;
+        }
+    }
+
     cJSON *ipv6_multicast = cJSON_GetObjectItem(root, "ipv6_multicast");
     if (ipv6_multicast != NULL) {
         // 获取listen_port
@@ -175,6 +223,10 @@ static void log_ipv6_config_debug(const Ipv6MulticastConfig& config) {
     log_debug("ipv6_address_pool.end_address: %s", config.ipv6_end_address.c_str());
     log_debug("ipv6_address_pool.prefix_length: %d", config.ipv6_prefix_length);
     log_debug("ipv6_address_pool.max_lease_count: %d", config.ipv6_max_lease_count);
+    log_debug("device.name: %s", config.device_config.name.c_str());
+    log_debug("device.model: %s", config.device_config.model.c_str());
+    log_debug("device.opcua_port: %d", config.device_config.opcua_port);
+    log_debug("device.opcua_path: %s", config.device_config.opcua_path.c_str());
     log_debug("log.enable_log: %s", config.log_config.enable_log ? "true" : "false");
     log_debug("log.log_level: %s", config.log_config.log_level.c_str());
     log_debug("log.log_file: %s", config.log_config.log_file.c_str());
@@ -182,8 +234,15 @@ static void log_ipv6_config_debug(const Ipv6MulticastConfig& config) {
     log_debug("log.log_file_size: %ld", config.log_config.log_file_size);
 }
 
-int main_loop(int serversocket, int nic_index) ;
-int opcua_server_main(void);
+int main_loop(int serversocket, int nic_index, const char *device_name, const char *device_model, int opcua_port, const char *opcua_path) ;
+extern "C" int opcua_server_main(const char *device_name);
+extern "C" void opcua_server_stop(void);
+
+static void stop_program(int signum)
+{
+    (void)signum;
+    request_program_stop();
+}
 
 // 打印帮助信息
 void print_help(const char* program_name)
@@ -197,6 +256,9 @@ void print_help(const char* program_name)
 }
 
 int main(int argc, char* argv[]) {
+    signal(SIGINT, stop_program);
+    signal(SIGTERM, stop_program);
+
     // 先从配置文件读取配置
     Ipv6MulticastConfig config = read_ipv6_config("config.json");
     
@@ -313,8 +375,12 @@ int main(int argc, char* argv[]) {
     if ((l_nServer = socket(AF_INET6, SOCK_DGRAM, 0)) < 0)
     {
         perror("创建失败");
+        ipv6_remove_all_allocated_addresses(config.nic_index);
+        ipv6_manager_cleanup();
+        log_manager_cleanup();
         return -1;
     }
+    g_udp_socket = l_nServer;
     bind(l_nServer, (struct sockaddr*)&addr, sizeof(addr));
     //ipv6_mreq结构提供了用于IPv6地址的多播组的信息。
     struct ipv6_mreq group;
@@ -329,8 +395,10 @@ int main(int argc, char* argv[]) {
 	hints.ai_family = AF_INET6;
 	hints.ai_flags = AI_NUMERICHOST;
 	
-	if (getaddrinfo(config.multicast_ip.c_str(), NULL, &hints, &res) != 0) {
+    if (getaddrinfo(config.multicast_ip.c_str(), NULL, &hints, &res) != 0) {
 		log_error("getaddrinfo failed for %s", config.multicast_ip.c_str());
+        ipv6_remove_all_allocated_addresses(config.nic_index);
+        ipv6_manager_cleanup();
         log_manager_cleanup();
         return 1;
 	}
@@ -353,7 +421,7 @@ int main(int argc, char* argv[]) {
 	// ==============================
 	// 创建 C++ 线程，运行 opcua_server
 	// ==============================
-	std::thread opcua_thread(opcua_server_main);
+	std::thread opcua_thread(opcua_server_main, config.device_config.name.c_str());
 	
 
     // Main loop
@@ -362,7 +430,17 @@ int main(int argc, char* argv[]) {
     log_info("UDP端口: %d", config.listen_port);
     log_info("按Ctrl+C退出\n");
 
-	main_loop(l_nServer, config.nic_index);
+	main_loop(l_nServer,
+              config.nic_index,
+              config.device_config.name.c_str(),
+              config.device_config.model.c_str(),
+              config.device_config.opcua_port,
+              config.device_config.opcua_path.c_str());
+
+    opcua_server_stop();
+    if (opcua_thread.joinable()) {
+        opcua_thread.join();
+    }
 
 	#if 0
     while (1)
@@ -389,6 +467,7 @@ int main(int argc, char* argv[]) {
 	#endif
 
     // 清理日志管理器
+    ipv6_remove_all_allocated_addresses(config.nic_index);
     ipv6_manager_cleanup();
     log_manager_cleanup();
     

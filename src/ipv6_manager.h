@@ -27,6 +27,8 @@ bool ipv6_add_address_to_interface(int nic_index, const char *ipv6_address, int 
 
 bool ipv6_remove_address_from_interface(int nic_index, const char *ipv6_address);
 
+void ipv6_remove_all_allocated_addresses(int nic_index);
+
 /**
  * @brief 初始化IPv6地址管理器
  * @param start_addr 地址池起始地址

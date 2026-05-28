@@ -7,6 +7,8 @@
 #include <stdint.h>  // C / C++ 通用
 #include "ipv6_manager.h"
 
+volatile bool g_main_loop_running = true;
+
 
 // Link with ws2_32.lib
 #pragma comment(lib, "ws2_32.lib")
@@ -319,7 +321,10 @@ bool addpParseScanRequest(const uint8_t* buffer, int size, uint32_t* sequenceNum
 
 int addpBuildDeviceResponse(const DeviceInfo* device, uint32_t sequenceNumber, const uint8_t* clientMac, const uint8_t* clientIpv6, uint8_t* buffer) {
     // Calculate response size
-    int responseSize = 32 + 90 + (device->busCount * 34);
+    int responseSize = 32 + 122 + (device->busCount * 34);
+    if (responseSize > 1024) {
+        return 0;
+    }
     
     // Build header
     writeUint16LE(buffer, ADDP_PROTOCOL_ID);
@@ -376,10 +381,13 @@ void deviceInit(DeviceInfo* device, const char* deviceName, const char* model, c
         memcpy(device->ipv6Address, &addr, 16);
     }
     
-    // Set MAC address
-    sscanf(macAddress, "%02x:%02x:%02x:%02x:%02x:%02x", 
-           (unsigned int*)&device->macAddress[0], (unsigned int*)&device->macAddress[1], (unsigned int*)&device->macAddress[2],
-           (unsigned int*)&device->macAddress[3], (unsigned int*)&device->macAddress[4], (unsigned int*)&device->macAddress[5]);
+    unsigned int mac[6] = {0};
+    if (sscanf(macAddress, "%02x:%02x:%02x:%02x:%02x:%02x",
+               &mac[0], &mac[1], &mac[2], &mac[3], &mac[4], &mac[5]) == 6) {
+        for (int i = 0; i < 6; i++) {
+            device->macAddress[i] = static_cast<uint8_t>(mac[i] & 0xFF);
+        }
+    }
     
     // Initialize other fields
     device->busCount = 0;
@@ -436,9 +444,12 @@ void devicePrintInfo(const DeviceInfo* device) {
     }
 }
 
-int main_loop(int serversocket, int nic_index) 
+int main_loop(int serversocket, int nic_index, const char *device_name, const char *device_model, int opcua_port, const char *opcua_path) 
 {
     std::cout << "=== AUTBUS Controller Simulator ===" << std::endl;
+    const char *effective_device_name = (device_name && device_name[0] != '\0') ? device_name : "spssps";
+    const char *effective_device_model = (device_model && device_model[0] != '\0') ? device_model : "ATB-5000";
+    const char *effective_opcua_path = (opcua_path && opcua_path[0] != '\0') ? opcua_path : "/autbus/controller";
     
     // Initialize network
     Network network;
@@ -466,7 +477,7 @@ int main_loop(int serversocket, int nic_index)
     
     // 从IPv6内存池分配地址
     char ipv6_address[INET6_ADDRSTRLEN] = {0};
-    if (!ipv6_allocate_address("spssps", nic_index, ipv6_address)) {
+    if (!ipv6_allocate_address(effective_device_name, nic_index, ipv6_address)) {
         std::cerr << "Failed to allocate IPv6 address" << std::endl;
         networkCleanup(&network);
         return 1;
@@ -484,14 +495,14 @@ int main_loop(int serversocket, int nic_index)
 	memset(&device, 0, sizeof(device));
 	
     // 使用动态分配的IPv6地址和获取的MAC地址初始化设备
-    deviceInit(&device, "spssps", "ATB-5000", ipv6_address, mac_address);
+    deviceInit(&device, effective_device_name, effective_device_model, ipv6_address, mac_address);
     
     // Add buses
     deviceAddBus(&device, 0, "AUTBUS Bus 0", 3); // 1 MN + 2 TN
     deviceAddBus(&device, 1, "AUTBUS Bus 1", 2); // 1 MN + 1 TN
     
     // Set OPC UA information
-    deviceSetOpcuaInfo(&device, 4840, "/autbus/controller");
+    deviceSetOpcuaInfo(&device, static_cast<uint16_t>(opcua_port), effective_opcua_path);
     
     // Print device information
     devicePrintInfo(&device);
@@ -500,9 +511,13 @@ int main_loop(int serversocket, int nic_index)
     uint8_t buffer[1024];
     struct sockaddr_in6 senderAddr;
     
-    while (true) {
+    while (g_main_loop_running) {
         int size = 0;
         ErrorCode result = networkReceiveData(&network, buffer, &size, &senderAddr);
+
+        if (!g_main_loop_running) {
+            break;
+        }
         
         if (result == SUCCESS && size > 0) {
             std::cout << "\nReceived UDP packet:" << std::endl;
@@ -546,6 +561,10 @@ int main_loop(int serversocket, int nic_index)
                     clientIpv6,
                     buffer
                 );
+                if (responseSize <= 0) {
+                    std::cerr << "  Failed to build response: buffer too small" << std::endl;
+                    continue;
+                }
                 
                 // Send response
                 std::cout << "  Sending device response (" << responseSize << " bytes)..." << std::endl;
@@ -578,10 +597,6 @@ int main_loop(int serversocket, int nic_index)
     
     // Cleanup
     // 释放分配的IPv6地址
-    char ipv6_str[INET6_ADDRSTRLEN] = {0};
-    ipv6ToString(device.ipv6Address, ipv6_str, sizeof(ipv6_str));
-    ipv6_release_address("spssps", nic_index, ipv6_str);
-    
     networkCleanup(&network);
     if (device.buses) {
         delete[] device.buses;

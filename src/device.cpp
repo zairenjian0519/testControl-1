@@ -23,10 +23,13 @@ void DeviceInfo::init(const char* deviceName, const char* model, const char* ipv
         memcpy(this->ipv6Address, &addr, 16);
     }
     
-    // Set MAC address
-    sscanf(macAddress, "%02x:%02x:%02x:%02x:%02x:%02x", 
-           &this->macAddress[0], &this->macAddress[1], &this->macAddress[2],
-           &this->macAddress[3], &this->macAddress[4], &this->macAddress[5]);
+    unsigned int mac[6] = {0};
+    if (sscanf(macAddress, "%02x:%02x:%02x:%02x:%02x:%02x",
+               &mac[0], &mac[1], &mac[2], &mac[3], &mac[4], &mac[5]) == 6) {
+        for (int i = 0; i < 6; i++) {
+            this->macAddress[i] = static_cast<uint8_t>(mac[i] & 0xFF);
+        }
+    }
 }
 
 void DeviceInfo::addBus(uint8_t busId, const char* description, uint8_t nodeCount) {

@@ -2,6 +2,12 @@
 
 // 解析一行CSV数据
 static int parseCSVLine(char *line, CSVRecord *record, char *lastValidName) {
+    if (!line || !record) {
+        return 0;
+    }
+
+    memset(record, 0, sizeof(*record));
+
     char *token;
     char *saveptr;
     int fieldIndex = 0;
@@ -39,7 +45,8 @@ static int parseCSVLine(char *line, CSVRecord *record, char *lastValidName) {
     } else {
         // 更新最后一个有效的name
         if (lastValidName) {
-            strncpy(lastValidName, record->name, 100);
+            strncpy(lastValidName, record->name, 99);
+            lastValidName[99] = '\0';
         }
     }
     
@@ -74,20 +81,25 @@ static int parseCSVLine(char *line, CSVRecord *record, char *lastValidName) {
     if (dot) {
         // 复制第一个点之前的内容
         char temp_name[200];
-        int len = dot - record->name;
-        if (len < sizeof(temp_name)) {
-            strncpy(temp_name, record->name, len);
-            temp_name[len] = '\0';
+        size_t len = (size_t)(dot - record->name);
+        if (len >= sizeof(temp_name)) {
+            len = sizeof(temp_name) - 1;
         }
+        memcpy(temp_name, record->name, len);
+        temp_name[len] = '\0';
         
         // 提取第一个_分隔的字段作为设备名称
         char *first_underscore = strchr(temp_name, '_');
         if (first_underscore) {
-            int device_len = first_underscore - temp_name;
-            if (device_len < sizeof(record->deviceName)) {
-                strncpy(record->deviceName, temp_name, device_len);
-                record->deviceName[device_len] = '\0';
+            size_t device_len = (size_t)(first_underscore - temp_name);
+            if (device_len >= sizeof(record->deviceName)) {
+                device_len = sizeof(record->deviceName) - 1;
             }
+            memcpy(record->deviceName, temp_name, device_len);
+            record->deviceName[device_len] = '\0';
+        } else {
+            strncpy(record->deviceName, temp_name, sizeof(record->deviceName) - 1);
+            record->deviceName[sizeof(record->deviceName) - 1] = '\0';
         }
         
         // 构建节点名称
@@ -100,13 +112,14 @@ static int parseCSVLine(char *line, CSVRecord *record, char *lastValidName) {
             if (first_underscore) {
                 char *second_underscore = strchr(first_underscore + 1, '_');
                 if (second_underscore) {
-                    int name_len = second_underscore - temp_name;
+                    size_t name_len = (size_t)(second_underscore - temp_name);
                     char temp_name_prefix[200];
-                    if (name_len < sizeof(temp_name_prefix)) {
-                        strncpy(temp_name_prefix, temp_name, name_len);
-                        temp_name_prefix[name_len] = '\0';
-                        snprintf(record->nodeName, sizeof(record->nodeName), "%s_%s", temp_name_prefix, record->desc);
+                    if (name_len >= sizeof(temp_name_prefix)) {
+                        name_len = sizeof(temp_name_prefix) - 1;
                     }
+                    memcpy(temp_name_prefix, temp_name, name_len);
+                    temp_name_prefix[name_len] = '\0';
+                    snprintf(record->nodeName, sizeof(record->nodeName), "%s_%s", temp_name_prefix, record->desc);
                 } else {
                     // 如果没有第二个下划线，使用整个temp_name
                     snprintf(record->nodeName, sizeof(record->nodeName), "%s_%s", temp_name, record->desc);
@@ -118,6 +131,10 @@ static int parseCSVLine(char *line, CSVRecord *record, char *lastValidName) {
         }
     }
     
+    if (record->deviceName[0] == '\0' || record->nodeName[0] == '\0') {
+        return 0;
+    }
+
     return fieldIndex == 5;
 }
 

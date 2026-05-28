@@ -38,6 +38,7 @@ typedef struct {
     char end_addr[40];
     int prefix_len;
     AllocatedAddrNode *allocated_addrs;  // 已分配地址链表
+    AllocatedAddrNode *interface_addrs;  // 本程序实际添加到网口的地址链表
     uint32_t next_addr_counter;           // 下一个要分配的地址计数器
     pthread_mutex_t lock;                 // 互斥锁，保护地址池的并发访问
 } IPv6AddressPool;
@@ -197,7 +198,8 @@ static bool add_address_to_allocated(const char *addr)
         return false;
     }
     
-    strcpy(new_node->addr, addr);
+    strncpy(new_node->addr, addr, sizeof(new_node->addr) - 1);
+    new_node->addr[sizeof(new_node->addr) - 1] = '\0';
     
     // 加锁保护
     pthread_mutex_lock(&g_ipv6_pool.lock);
@@ -212,6 +214,25 @@ static bool add_address_to_allocated(const char *addr)
 }
 
 // 从已分配列表中删除地址
+static bool add_address_to_interface_allocated(const char *addr)
+{
+    AllocatedAddrNode *new_node = (AllocatedAddrNode *)malloc(sizeof(AllocatedAddrNode));
+    if (new_node == NULL) {
+        log_error("Memory allocation failed for interface address list");
+        return false;
+    }
+
+    strncpy(new_node->addr, addr, sizeof(new_node->addr) - 1);
+    new_node->addr[sizeof(new_node->addr) - 1] = '\0';
+
+    pthread_mutex_lock(&g_ipv6_pool.lock);
+    new_node->next = g_ipv6_pool.interface_addrs;
+    g_ipv6_pool.interface_addrs = new_node;
+    pthread_mutex_unlock(&g_ipv6_pool.lock);
+
+    return true;
+}
+
 static void remove_address_from_allocated(const char *addr)
 {
     AllocatedAddrNode *current = NULL;
@@ -340,7 +361,8 @@ static bool generate_ipv6_address(const char *device_name, char *ipv6_address, s
         return false;
     }
     
-    strcpy(new_node->addr, ipv6_address);
+    strncpy(new_node->addr, ipv6_address, sizeof(new_node->addr) - 1);
+    new_node->addr[sizeof(new_node->addr) - 1] = '\0';
     new_node->next = g_ipv6_pool.allocated_addrs;
     g_ipv6_pool.allocated_addrs = new_node;
     
@@ -487,7 +509,7 @@ bool ipv6_add_address_to_interface(int nic_index, const char *ipv6_address, int 
     
     // 由于AddIPAddress只支持IPv4，我们使用netsh命令来添加IPv6地址
     char cmd[256];
-    sprintf(cmd, "netsh interface ipv6 add address %d %s/%d", nic_index, ipv6_address, prefix_len);
+    snprintf(cmd, sizeof(cmd), "netsh interface ipv6 add address %d %s/%d", nic_index, ipv6_address, prefix_len);
     
     // 执行命令
     int result = system(cmd);
@@ -497,6 +519,8 @@ bool ipv6_add_address_to_interface(int nic_index, const char *ipv6_address, int 
         WSACleanup();
         return false;
     }
+
+    add_address_to_interface_allocated(ipv6_address);
 
     free(adapter_addresses);
     WSACleanup();
@@ -565,7 +589,7 @@ bool ipv6_remove_address_from_interface(int nic_index, const char *ipv6_address)
 
     // 由于DeleteIPAddress只支持IPv4，我们使用netsh命令来删除IPv6地址
     char cmd[256];
-    sprintf(cmd, "netsh interface ipv6 delete address %d %s", nic_index, ipv6_address);
+    snprintf(cmd, sizeof(cmd), "netsh interface ipv6 delete address %d %s", nic_index, ipv6_address);
     
     // 执行命令
     int result = system(cmd);
@@ -743,6 +767,65 @@ bool ipv6_release_address(const char *device_name, int nic_index, const char *ip
 }
 
 // 初始化IPv6地址管理器
+void ipv6_remove_all_allocated_addresses(int nic_index)
+{
+    if (nic_index <= 0) {
+        return;
+    }
+
+    pthread_mutex_lock(&g_ipv6_pool.lock);
+
+    size_t address_count = 0;
+    AllocatedAddrNode *current = g_ipv6_pool.interface_addrs;
+    while (current != NULL) {
+        address_count++;
+        current = current->next;
+    }
+
+    char (*addresses)[40] = NULL;
+    if (address_count > 0) {
+        addresses = (char (*)[40])calloc(address_count, sizeof(*addresses));
+        if (addresses == NULL) {
+            pthread_mutex_unlock(&g_ipv6_pool.lock);
+            log_error("Failed to allocate cleanup address snapshot");
+            return;
+        }
+    }
+
+    current = g_ipv6_pool.interface_addrs;
+    for (size_t i = 0; current != NULL && i < address_count; i++) {
+        strncpy(addresses[i], current->addr, sizeof(addresses[i]) - 1);
+        addresses[i][sizeof(addresses[i]) - 1] = '\0';
+        current = current->next;
+    }
+
+    pthread_mutex_unlock(&g_ipv6_pool.lock);
+
+    for (size_t i = 0; i < address_count; i++) {
+        if (addresses[i][0] == '\0') {
+            continue;
+        }
+
+        if (ipv6_remove_address_from_interface(nic_index, addresses[i])) {
+            log_info("Removed allocated IPv6 address %s from interface %d",
+                     addresses[i], nic_index);
+        } else {
+            log_warn("Failed to remove allocated IPv6 address %s from interface %d",
+                     addresses[i], nic_index);
+        }
+    }
+
+    free(addresses);
+
+    pthread_mutex_lock(&g_ipv6_pool.lock);
+    while (g_ipv6_pool.interface_addrs != NULL) {
+        AllocatedAddrNode *temp = g_ipv6_pool.interface_addrs;
+        g_ipv6_pool.interface_addrs = temp->next;
+        free(temp);
+    }
+    pthread_mutex_unlock(&g_ipv6_pool.lock);
+}
+
 bool ipv6_manager_init(const char *start_addr, const char *end_addr, int prefix_len)
 {
     if (!start_addr || !end_addr) {
@@ -762,6 +845,12 @@ bool ipv6_manager_init(const char *start_addr, const char *end_addr, int prefix_
     while (g_ipv6_pool.allocated_addrs != NULL) {
         AllocatedAddrNode *temp = g_ipv6_pool.allocated_addrs;
         g_ipv6_pool.allocated_addrs = temp->next;
+        free(temp);
+    }
+
+    while (g_ipv6_pool.interface_addrs != NULL) {
+        AllocatedAddrNode *temp = g_ipv6_pool.interface_addrs;
+        g_ipv6_pool.interface_addrs = temp->next;
         free(temp);
     }
 
