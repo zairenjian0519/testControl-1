@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <stdbool.h>
+#include <errno.h>
 
 #include "open62541.h"
 #include "csv_parser.h"
@@ -39,6 +40,9 @@ typedef struct {
     char end_address[40];
     int prefix_length;
     int max_lease_count;
+    bool skip_as_source;
+    unsigned int batch_add_limit;
+    unsigned int batch_add_delay_ms;
 } IPv6AddressPool;
 
 typedef struct {
@@ -68,6 +72,18 @@ typedef struct {
     int variable_count;
 } DeviceNode;
 
+typedef struct {
+    RegisterType register_type;
+    int start_addr;
+    int count;
+} ModbusReadBlock;
+
+typedef struct {
+    ModbusReadBlock *blocks;
+    int block_count;
+    int block_capacity;
+} ModbusReadPlan;
+
 // 全局数据
 typedef struct {
     ModbusConfig modbus_config;
@@ -78,6 +94,7 @@ typedef struct {
     DeviceNode *devices;
     int device_count;
     ModbusClient modbus_client;
+    ModbusReadPlan modbus_read_plan;
     UA_Server *server;
     UA_NodeId nodesNodeId;  // 用于动态添加设备节点
     bool is_modbus_updating;  // 标志位，用于区分Modbus更新和外部OPC UA客户端更新
@@ -168,11 +185,467 @@ int deleteDeviceNodes(UA_Server *server, GlobalData *global_data, int device_ind
 int addDeviceNodes(UA_Server *server, GlobalData *global_data, int device_index, UA_NodeId nodesNodeId);
 static UA_StatusCode writeCachedValueToNode(UA_Server *server, OPCUAVariable *var);
 
+#define MODBUS_PDU_READ_BASE_ADDR 0
+#define MODBUS_MAX_READ_REGISTERS 125
+#define MODBUS_MAX_READ_BITS 2000
+
+typedef struct {
+    RegisterType register_type;
+    int start_addr;
+    int end_addr;
+} ModbusReadRange;
+
+static const char *register_type_to_string(RegisterType type)
+{
+    switch (type) {
+        case REGISTER_TYPE_DISCRETE_INPUT:
+            return "Discrete Inputs";
+        case REGISTER_TYPE_COIL:
+            return "Coils";
+        case REGISTER_TYPE_INPUT_REGISTER:
+            return "Input Registers";
+        case REGISTER_TYPE_HOLDING_REGISTER:
+            return "Holding Registers";
+        default:
+            return "Unknown";
+    }
+}
+
+static int modbus_reference_to_pdu_addr(RegisterType type, int ref_addr)
+{
+    switch (type) {
+        case REGISTER_TYPE_COIL:
+            if (ref_addr >= 200001) {
+                return ref_addr - 200001;
+            }
+            if (ref_addr >= 20001) {
+                return ref_addr - 20001;
+            }
+            return ref_addr - 1;
+
+        case REGISTER_TYPE_DISCRETE_INPUT:
+            if (ref_addr >= 100001) {
+                return ref_addr - 100001;
+            }
+            if (ref_addr >= 10001) {
+                return ref_addr - 10001;
+            }
+            return ref_addr - 1;
+
+        case REGISTER_TYPE_INPUT_REGISTER:
+            if (ref_addr >= 300001) {
+                return ref_addr - 300001;
+            }
+            if (ref_addr >= 30001) {
+                return ref_addr - 30001;
+            }
+            return ref_addr - 1;
+
+        case REGISTER_TYPE_HOLDING_REGISTER:
+            if (ref_addr >= 400001) {
+                return ref_addr - 400001;
+            }
+            if (ref_addr >= 40001) {
+                return ref_addr - 40001;
+            }
+            return ref_addr - 1;
+
+        default:
+            return -1;
+    }
+}
+
+static int modbus_read_max_count(RegisterType type)
+{
+    switch (type) {
+        case REGISTER_TYPE_INPUT_REGISTER:
+        case REGISTER_TYPE_HOLDING_REGISTER:
+            return MODBUS_MAX_READ_REGISTERS;
+        case REGISTER_TYPE_DISCRETE_INPUT:
+        case REGISTER_TYPE_COIL:
+            return MODBUS_MAX_READ_BITS;
+        default:
+            return 0;
+    }
+}
+
+static int modbus_datatype_point_width(RegisterType type, PLCDatatype plc_type)
+{
+    if (type == REGISTER_TYPE_DISCRETE_INPUT || type == REGISTER_TYPE_COIL) {
+        return 1;
+    }
+
+    switch (plc_type) {
+        case PLC_TYPE_REAL:
+        case PLC_TYPE_DINT:
+            return 2;
+        case PLC_TYPE_ULINT:
+            return 4;
+        case PLC_TYPE_BOOL:
+        case PLC_TYPE_USINT:
+        case PLC_TYPE_UINT:
+        case PLC_TYPE_INT:
+            return 1;
+        default:
+            return 1;
+    }
+}
+
+static int compare_modbus_read_ranges(const void *lhs, const void *rhs)
+{
+    const ModbusReadRange *a = (const ModbusReadRange *)lhs;
+    const ModbusReadRange *b = (const ModbusReadRange *)rhs;
+
+    if (a->register_type != b->register_type) {
+        return (int)a->register_type - (int)b->register_type;
+    }
+    if (a->start_addr != b->start_addr) {
+        return a->start_addr - b->start_addr;
+    }
+    return a->end_addr - b->end_addr;
+}
+
+static bool append_modbus_read_block(ModbusReadPlan *plan, RegisterType type, int start_addr, int count)
+{
+    if (!plan || count <= 0) {
+        return false;
+    }
+
+    if (plan->block_count >= plan->block_capacity) {
+        int new_capacity = plan->block_capacity == 0 ? 16 : plan->block_capacity * 2;
+        ModbusReadBlock *new_blocks = (ModbusReadBlock *)realloc(
+            plan->blocks, sizeof(ModbusReadBlock) * new_capacity);
+        if (!new_blocks) {
+            return false;
+        }
+        plan->blocks = new_blocks;
+        plan->block_capacity = new_capacity;
+    }
+
+    ModbusReadBlock *block = &plan->blocks[plan->block_count++];
+    block->register_type = type;
+    block->start_addr = start_addr;
+    block->count = count;
+    return true;
+}
+
+static bool append_modbus_read_range(ModbusReadRange **ranges,
+                                     int *range_count,
+                                     int *range_capacity,
+                                     RegisterType type,
+                                     int start_addr,
+                                     int width)
+{
+    if (!ranges || !range_count || !range_capacity || width <= 0) {
+        return false;
+    }
+
+    if (*range_count >= *range_capacity) {
+        int new_capacity = *range_capacity == 0 ? 64 : (*range_capacity * 2);
+        ModbusReadRange *new_ranges = (ModbusReadRange *)realloc(
+            *ranges, sizeof(ModbusReadRange) * new_capacity);
+        if (!new_ranges) {
+            return false;
+        }
+        *ranges = new_ranges;
+        *range_capacity = new_capacity;
+    }
+
+    ModbusReadRange *range = &(*ranges)[(*range_count)++];
+    range->register_type = type;
+    range->start_addr = start_addr;
+    range->end_addr = start_addr + width - 1;
+    return true;
+}
+
+static bool flush_modbus_read_range(ModbusReadPlan *plan, RegisterType type, int start_addr, int end_addr)
+{
+    int max_count = modbus_read_max_count(type);
+    if (!plan || max_count <= 0 || start_addr < 0 || end_addr < start_addr) {
+        return false;
+    }
+
+    int next_start = start_addr;
+    while (next_start <= end_addr) {
+        int remaining = end_addr - next_start + 1;
+        int count = remaining > max_count ? max_count : remaining;
+        if (!append_modbus_read_block(plan, type, next_start, count)) {
+            return false;
+        }
+        next_start += count;
+    }
+
+    return true;
+}
+
+static void free_modbus_read_plan(ModbusReadPlan *plan)
+{
+    if (!plan) {
+        return;
+    }
+
+    free(plan->blocks);
+    plan->blocks = NULL;
+    plan->block_count = 0;
+    plan->block_capacity = 0;
+}
+
+static bool build_modbus_read_plan(GlobalData *global_data)
+{
+    if (!global_data) {
+        return false;
+    }
+
+    free_modbus_read_plan(&global_data->modbus_read_plan);
+
+    ModbusReadRange *ranges = NULL;
+    int range_count = 0;
+    int range_capacity = 0;
+
+    for (int i = 0; i < global_data->device_count; i++) {
+        DeviceNode *device = &global_data->devices[i];
+        for (int j = 0; j < device->variable_count; j++) {
+            OPCUAVariable *var = &device->variables[j];
+            int max_count = modbus_read_max_count(var->register_type);
+            if (max_count <= 0 || !var->value) {
+                continue;
+            }
+
+            int pdu_addr = modbus_reference_to_pdu_addr(var->register_type, var->modbus_addr);
+            if (pdu_addr < MODBUS_PDU_READ_BASE_ADDR) {
+                log_warn("Skipping invalid Modbus read address: variable=%s modbus_addr=%d register_type=%s pdu_addr=%d",
+                         var->name, var->modbus_addr, register_type_to_string(var->register_type), pdu_addr);
+                continue;
+            }
+
+            int width = modbus_datatype_point_width(var->register_type, var->plc_datatype);
+            if (!append_modbus_read_range(&ranges, &range_count, &range_capacity,
+                                          var->register_type, pdu_addr, width)) {
+                free(ranges);
+                return false;
+            }
+        }
+    }
+
+    if (range_count == 0) {
+        log_warn("Modbus read plan is empty; no readable variables were found in uploadtable.csv");
+        return true;
+    }
+
+    qsort(ranges, (size_t)range_count, sizeof(ModbusReadRange), compare_modbus_read_ranges);
+
+    RegisterType current_type = ranges[0].register_type;
+    int current_start = ranges[0].start_addr;
+    int current_end = ranges[0].end_addr;
+
+    for (int i = 1; i < range_count; i++) {
+        ModbusReadRange *range = &ranges[i];
+        int max_count = modbus_read_max_count(current_type);
+        bool same_type = range->register_type == current_type;
+        bool fits_in_block = same_type && (range->end_addr - current_start + 1 <= max_count);
+
+        if (fits_in_block) {
+            if (range->end_addr > current_end) {
+                current_end = range->end_addr;
+            }
+            continue;
+        }
+
+        if (!flush_modbus_read_range(&global_data->modbus_read_plan,
+                                     current_type, current_start, current_end)) {
+            free(ranges);
+            free_modbus_read_plan(&global_data->modbus_read_plan);
+            return false;
+        }
+
+        current_type = range->register_type;
+        current_start = range->start_addr;
+        current_end = range->end_addr;
+    }
+
+    if (!flush_modbus_read_range(&global_data->modbus_read_plan,
+                                 current_type, current_start, current_end)) {
+        free(ranges);
+        free_modbus_read_plan(&global_data->modbus_read_plan);
+        return false;
+    }
+
+    log_info("Built Modbus read plan with %d block(s) from %d variable range(s)",
+             global_data->modbus_read_plan.block_count, range_count);
+    for (int i = 0; i < global_data->modbus_read_plan.block_count; i++) {
+        ModbusReadBlock *block = &global_data->modbus_read_plan.blocks[i];
+        log_debug("Modbus read block %d: type=%s start=%d count=%d end=%d",
+                  i + 1,
+                  register_type_to_string(block->register_type),
+                  block->start_addr,
+                  block->count,
+                  block->start_addr + block->count - 1);
+    }
+
+    free(ranges);
+    return true;
+}
+
+static void update_variable_from_registers(OPCUAVariable *var,
+                                           const uint16_t *registers,
+                                           int index,
+                                           int available)
+{
+    if (!var || !var->value || !registers || index < 0 || index >= available) {
+        return;
+    }
+
+    switch (var->plc_datatype) {
+        case PLC_TYPE_BOOL:
+            *((UA_Boolean *)var->value) = registers[index] != 0;
+            break;
+        case PLC_TYPE_USINT:
+            *((UA_Byte *)var->value) = registers[index] & 0xFF;
+            break;
+        case PLC_TYPE_UINT:
+            *((UA_UInt16 *)var->value) = registers[index];
+            break;
+        case PLC_TYPE_ULINT:
+            if (index + 3 < available) {
+                *((UA_UInt64 *)var->value) = ((UA_UInt64)registers[index + 3] << 48) |
+                                             ((UA_UInt64)registers[index + 2] << 32) |
+                                             ((UA_UInt64)registers[index + 1] << 16) |
+                                             (UA_UInt64)registers[index];
+            }
+            break;
+        case PLC_TYPE_INT:
+            *((UA_Int16 *)var->value) = (UA_Int16)registers[index];
+            break;
+        case PLC_TYPE_DINT:
+            if (index + 1 < available) {
+                uint32_t raw = ((uint32_t)registers[index + 1] << 16) | registers[index];
+                *((UA_Int32 *)var->value) = (UA_Int32)raw;
+            }
+            break;
+        case PLC_TYPE_REAL:
+            if (index + 1 < available) {
+                uint32_t raw = ((uint32_t)registers[index + 1] << 16) | registers[index];
+                float float_value = 0.0f;
+                memcpy(&float_value, &raw, sizeof(float_value));
+                *((UA_Float *)var->value) = float_value;
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+static void update_variables_from_register_block(GlobalData *global_data,
+                                                 const ModbusReadBlock *block,
+                                                 const uint16_t *registers)
+{
+    if (!global_data || !block || !registers) {
+        return;
+    }
+
+    int block_end = block->start_addr + block->count - 1;
+    for (int i = 0; i < global_data->device_count; i++) {
+        DeviceNode *device = &global_data->devices[i];
+        for (int j = 0; j < device->variable_count; j++) {
+            OPCUAVariable *var = &device->variables[j];
+            if (var->register_type != block->register_type || !var->value) {
+                continue;
+            }
+
+            int pdu_addr = modbus_reference_to_pdu_addr(var->register_type, var->modbus_addr);
+            int width = modbus_datatype_point_width(var->register_type, var->plc_datatype);
+            if (pdu_addr < block->start_addr || pdu_addr + width - 1 > block_end) {
+                continue;
+            }
+
+            update_variable_from_registers(var, registers, pdu_addr - block->start_addr, block->count);
+        }
+    }
+}
+
+static void update_variables_from_bit_block(GlobalData *global_data,
+                                            const ModbusReadBlock *block,
+                                            const uint8_t *bits)
+{
+    if (!global_data || !block || !bits) {
+        return;
+    }
+
+    int block_end = block->start_addr + block->count - 1;
+    for (int i = 0; i < global_data->device_count; i++) {
+        DeviceNode *device = &global_data->devices[i];
+        for (int j = 0; j < device->variable_count; j++) {
+            OPCUAVariable *var = &device->variables[j];
+            if (var->register_type != block->register_type || !var->value) {
+                continue;
+            }
+
+            int pdu_addr = modbus_reference_to_pdu_addr(var->register_type, var->modbus_addr);
+            if (pdu_addr < block->start_addr || pdu_addr > block_end) {
+                continue;
+            }
+
+            *((UA_Boolean *)var->value) = bits[pdu_addr - block->start_addr] != 0;
+        }
+    }
+}
+
+static bool read_modbus_block(ModbusClient *client, const ModbusReadBlock *block, GlobalData *global_data)
+{
+    if (!client || !block || !global_data) {
+        return false;
+    }
+
+    uint16_t registers[MODBUS_MAX_READ_REGISTERS];
+    uint8_t bits[MODBUS_MAX_READ_BITS];
+    int result = MODBUS_ERROR_READ;
+
+    switch (block->register_type) {
+        case REGISTER_TYPE_INPUT_REGISTER:
+            result = modbus_client_read_input_registers(client, block->start_addr, block->count, registers);
+            if (result == MODBUS_SUCCESS) {
+                update_variables_from_register_block(global_data, block, registers);
+            }
+            break;
+        case REGISTER_TYPE_HOLDING_REGISTER:
+            result = modbus_client_read_holding_registers(client, block->start_addr, block->count, registers);
+            if (result == MODBUS_SUCCESS) {
+                update_variables_from_register_block(global_data, block, registers);
+            }
+            break;
+        case REGISTER_TYPE_DISCRETE_INPUT:
+            result = modbus_client_read_discrete_inputs(client, block->start_addr, block->count, bits);
+            if (result == MODBUS_SUCCESS) {
+                update_variables_from_bit_block(global_data, block, bits);
+            }
+            break;
+        case REGISTER_TYPE_COIL:
+            result = modbus_client_read_coils(client, block->start_addr, block->count, bits);
+            if (result == MODBUS_SUCCESS) {
+                update_variables_from_bit_block(global_data, block, bits);
+            }
+            break;
+        default:
+            return true;
+    }
+
+    if (result != MODBUS_SUCCESS) {
+        log_error("Failed to read Modbus block: type=%s start=%d count=%d end=%d",
+                  register_type_to_string(block->register_type),
+                  block->start_addr,
+                  block->count,
+                  block->start_addr + block->count - 1);
+        return false;
+    }
+
+    return true;
+}
+
 UA_Boolean running = true;
 extern void request_program_stop(void);
 
 void stopHandler(int sign) {
-    UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "received ctrl-c");
+    (void)sign;
     running = false;
     request_program_stop();
 }
@@ -294,6 +767,7 @@ UA_NodeId createVariableNode(UA_Server *server, const char *ipv6Addr, const char
     }
     
     varAttr.accessLevel = accessLevel;
+    varAttr.userAccessLevel = accessLevel;
     varAttr.value = *value;
     
     UA_QualifiedName browseName = UA_QUALIFIEDNAME(1, (char*)name);
@@ -586,9 +1060,6 @@ extern "C"
 #endif
 int opcua_server_main(const char *device_name) 
 {
-    signal(SIGINT, stopHandler);
-    signal(SIGTERM, stopHandler);
-
     UA_Server *server = UA_Server_new();
     UA_ServerConfig_setDefault(UA_Server_getConfig(server));
     
@@ -672,11 +1143,19 @@ int opcua_server_main(const char *device_name)
     }
     log_debug("Device nodes created successfully");
 
+    if (!build_modbus_read_plan(&global_data)) {
+        log_error("Failed to build Modbus read plan");
+        freeCSVResult(&global_data.csv_result);
+        UA_Server_delete(server);
+        return EXIT_FAILURE;
+    }
+
     // 启动Modbus轮询线程
     log_debug("Starting to create Modbus polling thread");
     pthread_t modbus_thread;
     if (pthread_create(&modbus_thread, NULL, modbusPollingThread, (void *)&global_data) != 0) {
         log_error("Failed to create Modbus polling thread");
+        free_modbus_read_plan(&global_data.modbus_read_plan);
         freeCSVResult(&global_data.csv_result);
         UA_Server_delete(server);
         return EXIT_FAILURE;
@@ -684,9 +1163,11 @@ int opcua_server_main(const char *device_name)
     log_debug("Modbus polling thread created successfully");
     
     // 启动定时打印节点变量信息的线程
-    log_debug("Starting to create node variables printing thread");
+    log_debug("Skipping node variables printing thread startup");
     pthread_t print_thread = 0;
     bool print_thread_created = false;
+    log_debug("Node variables printing thread disabled");
+#if 0
     if (pthread_create(&print_thread, NULL, printNodeVariablesThread, (void *)&global_data) != 0) {
         log_error("Failed to create node variables printing thread");
         // 不影响主程序运行，仅记录错误
@@ -695,6 +1176,7 @@ int opcua_server_main(const char *device_name)
         print_thread_created = true;
         log_debug("Node variables printing thread created successfully");
     }
+#endif
 
     // 运行OPC UA服务器
     log_debug("Starting OPC UA server");
@@ -703,6 +1185,7 @@ int opcua_server_main(const char *device_name)
     
     // 清理资源
     pthread_join(modbus_thread, NULL);
+    free_modbus_read_plan(&global_data.modbus_read_plan);
     
     // 取消并清理定时打印线程
     if (print_thread_created && pthread_cancel(print_thread) == 0) {
@@ -735,6 +1218,10 @@ int loadConfig(GlobalData *global_data) {
     if (!global_data) {
         return -1;
     }
+
+    global_data->ipv6_pool.skip_as_source = true;
+    global_data->ipv6_pool.batch_add_limit = 300;
+    global_data->ipv6_pool.batch_add_delay_ms = 4000;
     
     // 打开配置文件 - 尝试多种路径
     FILE *file = fopen("./config.json", "r");
@@ -871,7 +1358,26 @@ int loadConfig(GlobalData *global_data) {
         if (max_lease_count && cJSON_IsNumber(max_lease_count)) {
             global_data->ipv6_pool.max_lease_count = max_lease_count->valueint;
         }
+
+        cJSON *skip_as_source = cJSON_GetObjectItem(ipv6_pool, "skip_as_source");
+        if (skip_as_source && cJSON_IsBool(skip_as_source)) {
+            global_data->ipv6_pool.skip_as_source = cJSON_IsTrue(skip_as_source);
+        }
+
+        cJSON *batch_add_limit = cJSON_GetObjectItem(ipv6_pool, "batch_add_limit");
+        if (batch_add_limit && cJSON_IsNumber(batch_add_limit) && batch_add_limit->valueint >= 0) {
+            global_data->ipv6_pool.batch_add_limit = (unsigned int)batch_add_limit->valueint;
+        }
+
+        cJSON *batch_add_delay_ms = cJSON_GetObjectItem(ipv6_pool, "batch_add_delay_ms");
+        if (batch_add_delay_ms && cJSON_IsNumber(batch_add_delay_ms) && batch_add_delay_ms->valueint >= 0) {
+            global_data->ipv6_pool.batch_add_delay_ms = (unsigned int)batch_add_delay_ms->valueint;
+        }
     }
+
+    ipv6_manager_set_add_options(global_data->ipv6_pool.skip_as_source,
+                                  global_data->ipv6_pool.batch_add_limit,
+                                  global_data->ipv6_pool.batch_add_delay_ms);
     
     cJSON_Delete(root);
     
@@ -1096,6 +1602,13 @@ static UA_StatusCode writeVariableCallback(UA_Server *server, const UA_NodeId *s
     
     // 根据数据类型处理写入操作
     bool modbus_write_success = false;
+    int pdu_addr = modbus_reference_to_pdu_addr(var->register_type, var->modbus_addr);
+    if (pdu_addr < 0) {
+        log_error("Invalid Modbus address for variable %s, modbus_addr=%d, register_type=%s",
+                  var->name, var->modbus_addr, register_type_to_string(var->register_type));
+        pthread_mutex_unlock(&global_data->var_update_mutex);
+        return UA_STATUSCODE_BADINTERNALERROR;
+    }
     
     switch (var->register_type) {
         case REGISTER_TYPE_HOLDING_REGISTER: {
@@ -1105,23 +1618,20 @@ static UA_StatusCode writeVariableCallback(UA_Server *server, const UA_NodeId *s
                     if (dataValue->value.type == &UA_TYPES[UA_TYPES_BOOLEAN]) {
                         UA_Boolean bool_val = *(UA_Boolean *)dataValue->value.data;
                         uint16_t reg_val = bool_val ? 1 : 0;
-                        int reg_addr = var->modbus_addr - 40001;
-                        modbus_write_success = (modbus_client_write_single_register(&global_data->modbus_client, reg_addr, reg_val) == MODBUS_SUCCESS);
+                        modbus_write_success = (modbus_client_write_single_register(&global_data->modbus_client, pdu_addr, reg_val) == MODBUS_SUCCESS);
                     }
                     break;
                 case PLC_TYPE_USINT:
                     if (dataValue->value.type == &UA_TYPES[UA_TYPES_BYTE]) {
                         UA_Byte byte_val = *(UA_Byte *)dataValue->value.data;
                         uint16_t reg_val = byte_val;
-                        int reg_addr = var->modbus_addr - 40001;
-                        modbus_write_success = (modbus_client_write_single_register(&global_data->modbus_client, reg_addr, reg_val) == MODBUS_SUCCESS);
+                        modbus_write_success = (modbus_client_write_single_register(&global_data->modbus_client, pdu_addr, reg_val) == MODBUS_SUCCESS);
                     }
                     break;
                 case PLC_TYPE_UINT:
                     if (dataValue->value.type == &UA_TYPES[UA_TYPES_UINT16]) {
                         UA_UInt16 uint16_val = *(UA_UInt16 *)dataValue->value.data;
-                        int reg_addr = var->modbus_addr - 40001;
-                        modbus_write_success = (modbus_client_write_single_register(&global_data->modbus_client, reg_addr, uint16_val) == MODBUS_SUCCESS);
+                        modbus_write_success = (modbus_client_write_single_register(&global_data->modbus_client, pdu_addr, uint16_val) == MODBUS_SUCCESS);
                     }
                     break;
                 case PLC_TYPE_REAL:
@@ -1131,7 +1641,7 @@ static UA_StatusCode writeVariableCallback(UA_Server *server, const UA_NodeId *s
                         // 小端序，先写低16位，再写高16位
                         uint16_t reg_val_low = raw & 0xFFFF;
                         uint16_t reg_val_high = (raw >> 16) & 0xFFFF;
-                        int reg_addr = var->modbus_addr - 40001;
+                        int reg_addr = pdu_addr;
                         
                         // 分别写入两个寄存器
                         modbus_write_success = (modbus_client_write_single_register(&global_data->modbus_client, reg_addr, reg_val_low) == MODBUS_SUCCESS);
@@ -1146,14 +1656,17 @@ static UA_StatusCode writeVariableCallback(UA_Server *server, const UA_NodeId *s
         case REGISTER_TYPE_COIL:
             if (var->plc_datatype == PLC_TYPE_BOOL && dataValue->value.type == &UA_TYPES[UA_TYPES_BOOLEAN]) {
                 UA_Boolean bool_val = *(UA_Boolean *)dataValue->value.data;
-                int coil_addr = var->modbus_addr - 1;
-                modbus_write_success = (modbus_client_write_single_coil(&global_data->modbus_client, coil_addr, bool_val) == MODBUS_SUCCESS);
+                modbus_write_success = (modbus_client_write_single_coil(&global_data->modbus_client, pdu_addr, bool_val) == MODBUS_SUCCESS);
             }
             break;
     }
     
     if (!modbus_write_success) {
-        log_error("Failed to write value to Modbus server for variable %s", var->name);
+        int saved_errno = errno;
+        log_error("Failed to write value to Modbus server for variable %s, modbus_addr=%d, pdu_addr=%d, register_type=%s, errno=%d (%s)",
+                  var->name, var->modbus_addr, pdu_addr,
+                  register_type_to_string(var->register_type),
+                  saved_errno, modbus_strerror(saved_errno));
         // 释放互斥锁
         pthread_mutex_unlock(&global_data->var_update_mutex);
         return UA_STATUSCODE_BADINTERNALERROR;
@@ -1449,7 +1962,7 @@ int checkDeviceStatus(GlobalData *global_data, const char *device_name) {
                     // 检查状态值
                     if (var->value) {
                         // 状态变量应该是UInt16类型
-                        return *((UA_UInt16 *)var->value) == 1;
+                        return *((UA_UInt16 *)var->value) == 0;
                     }
                 }
             }
@@ -1854,7 +2367,11 @@ void updateOPCUAVariables(UA_Server *server, GlobalData *global_data) {
                     }
                     
                     // 更新OPC UA节点值
-                    //UA_Server_writeValue(server, var->node_id, variant); //有可能都没加入opcua的数据模型，设置没用
+                    UA_StatusCode status = UA_Server_writeValue(server, var->node_id, variant);
+                    if (status != UA_STATUSCODE_GOOD) {
+                        log_warn("Failed to update OPC UA value for %s, modbus_addr=%d, status=0x%08x",
+                                 var->name, var->modbus_addr, status);
+                    }
                 }
             }
         }
@@ -1901,6 +2418,22 @@ void *modbusPollingThread(void *arg) {
         }
         
         // 按寄存器类型分组读取
+        bool read_failed = false;
+        for (int i = 0; running && i < global_data->modbus_read_plan.block_count; i++) {
+            ModbusReadBlock *block = &global_data->modbus_read_plan.blocks[i];
+            if (!read_modbus_block(&global_data->modbus_client, block, global_data)) {
+                read_failed = true;
+                break;
+            }
+        }
+
+        if (read_failed) {
+            connected = 0;
+            modbus_client_disconnect(&global_data->modbus_client);
+            continue;
+        }
+
+#if 0
         uint16_t input_registers[100];
         uint16_t holding_registers[100];
         uint8_t discrete_inputs[100];
@@ -1908,7 +2441,7 @@ void *modbusPollingThread(void *arg) {
 
 		#if 1
         // 读取输入寄存器
-        if (modbus_client_read_input_registers(&global_data->modbus_client, 0, 100, input_registers) == MODBUS_SUCCESS) {
+        if (modbus_client_read_input_registers(&global_data->modbus_client, MODBUS_PDU_READ_BASE_ADDR, 100, input_registers) == MODBUS_SUCCESS) {
             // 更新相关变量
             //pthread_mutex_lock(&global_data->var_update_mutex);
             for (int i = 0; i < global_data->device_count; i++) {
@@ -1916,7 +2449,8 @@ void *modbusPollingThread(void *arg) {
                 for (int j = 0; j < device->variable_count; j++) {
                     OPCUAVariable *var = &device->variables[j];
                     if (var->register_type == REGISTER_TYPE_INPUT_REGISTER && var->value) {
-                        int reg_index = var->modbus_addr - 30001;
+                        int reg_index = modbus_pdu_addr_to_poll_index(
+                            modbus_reference_to_pdu_addr(var->register_type, var->modbus_addr));
                         if (reg_index >= 0 && reg_index < 100) {
                             switch (var->plc_datatype) {
                                 case PLC_TYPE_USINT:
@@ -1932,10 +2466,10 @@ void *modbusPollingThread(void *arg) {
                                 case PLC_TYPE_ULINT:
                                     // 合并两个寄存器
                                     if (reg_index + 3 < 100) {
-                                        *((UA_UInt64 *)var->value) = ((UA_UInt64)input_registers[reg_index] << 48) | 
-                                                                   ((UA_UInt64)input_registers[reg_index + 1] << 32) |
-                                                                   ((UA_UInt64)input_registers[reg_index + 2] << 16) |
-                                                                   (UA_UInt64)input_registers[reg_index + 3];
+                                        *((UA_UInt64 *)var->value) = ((UA_UInt64)input_registers[reg_index + 3] << 48) | 
+                                                                   ((UA_UInt64)input_registers[reg_index + 2] << 32) |
+                                                                   ((UA_UInt64)input_registers[reg_index + 1] << 16) |
+                                                                   (UA_UInt64)input_registers[reg_index];
                                     }
                                     break;
                                 case PLC_TYPE_REAL:
@@ -1965,7 +2499,7 @@ void *modbusPollingThread(void *arg) {
 
 		#if 1
         // 读取保持寄存器
-        if (modbus_client_read_holding_registers(&global_data->modbus_client, 0, 100, holding_registers) == MODBUS_SUCCESS) {
+        if (modbus_client_read_holding_registers(&global_data->modbus_client, MODBUS_PDU_READ_BASE_ADDR, 100, holding_registers) == MODBUS_SUCCESS) {
             // 更新相关变量
             //pthread_mutex_lock(&global_data->var_update_mutex);
             for (int i = 0; i < global_data->device_count; i++) {
@@ -1973,7 +2507,8 @@ void *modbusPollingThread(void *arg) {
                 for (int j = 0; j < device->variable_count; j++) {
                     OPCUAVariable *var = &device->variables[j];
                     if (var->register_type == REGISTER_TYPE_HOLDING_REGISTER && var->value) {
-                        int reg_index = var->modbus_addr - 40001;
+                        int reg_index = modbus_pdu_addr_to_poll_index(
+                            modbus_reference_to_pdu_addr(var->register_type, var->modbus_addr));
                         if (reg_index >= 0 && reg_index < 100) {
                             switch (var->plc_datatype) {
                                 case PLC_TYPE_USINT:
@@ -1986,10 +2521,10 @@ void *modbusPollingThread(void *arg) {
                                 case PLC_TYPE_ULINT:
                                     // 合并两个寄存器
                                     if (reg_index + 3 < 100) {
-                                        *((UA_UInt64 *)var->value) = ((UA_UInt64)holding_registers[reg_index] << 48) | 
-                                                                   ((UA_UInt64)holding_registers[reg_index + 1] << 32) |
-                                                                   ((UA_UInt64)holding_registers[reg_index + 2] << 16) |
-                                                                   (UA_UInt64)holding_registers[reg_index + 3];
+                                        *((UA_UInt64 *)var->value) = ((UA_UInt64)holding_registers[reg_index + 3] << 48) | 
+                                                                   ((UA_UInt64)holding_registers[reg_index + 2] << 32) |
+                                                                   ((UA_UInt64)holding_registers[reg_index + 1] << 16) |
+                                                                   (UA_UInt64)holding_registers[reg_index];
                                     }
                                     break;
                                 case PLC_TYPE_REAL:
@@ -2018,7 +2553,7 @@ void *modbusPollingThread(void *arg) {
         #endif
 		
         // 读取离散输入
-        if (modbus_client_read_discrete_inputs(&global_data->modbus_client, 0, 100, discrete_inputs) == MODBUS_SUCCESS) {
+        if (modbus_client_read_discrete_inputs(&global_data->modbus_client, MODBUS_PDU_READ_BASE_ADDR, 100, discrete_inputs) == MODBUS_SUCCESS) {
             // 更新相关变量
             //pthread_mutex_lock(&global_data->var_update_mutex);
             for (int i = 0; i < global_data->device_count; i++) {
@@ -2026,7 +2561,8 @@ void *modbusPollingThread(void *arg) {
                 for (int j = 0; j < device->variable_count; j++) {
                     OPCUAVariable *var = &device->variables[j];
                     if (var->register_type == REGISTER_TYPE_DISCRETE_INPUT && var->value) {
-                        int bit_index = var->modbus_addr - 10001;
+                        int bit_index = modbus_pdu_addr_to_poll_index(
+                            modbus_reference_to_pdu_addr(var->register_type, var->modbus_addr));
                         if (bit_index >= 0 && bit_index < 100) {
                             int byte_index = bit_index / 8;
                             int bit_pos = bit_index % 8;
@@ -2045,6 +2581,7 @@ void *modbusPollingThread(void *arg) {
         }
         
         // 更新OPC UA变量
+#endif
         updateOPCUAVariables(global_data->server, global_data);
         
         // 动态管理设备节点
@@ -2067,7 +2604,7 @@ void *modbusPollingThread(void *arg) {
                 if (strcmp(var->name, status_var_name) == 0) {
                     // 检查状态值
                     if (var->value) {
-                        device_online = *((UA_UInt16 *)var->value) == 1;
+                        device_online = *((UA_UInt16 *)var->value) == 0;
                     }
                     break;
                 }
@@ -2077,6 +2614,8 @@ void *modbusPollingThread(void *arg) {
             if (device_online) {
                 // 如果设备在线，且设备节点不存在，则添加设备节点
                 if (UA_NodeId_isNull(&device->node_id)) {
+                    ipv6_manager_delay_before_next_device_if_needed();
+
                     if (device->ipv6_address[0] != '\0') {
                         log_debug("Reusing IPv6 address %s for device %s",
                                  device->ipv6_address, device->name);

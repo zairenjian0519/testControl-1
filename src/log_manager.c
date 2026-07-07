@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <errno.h>
 #include <limits.h>
+#include <pthread.h>
 
 static LogConfig g_log_config = {
     .enable_log = false,
@@ -16,6 +17,8 @@ static LogConfig g_log_config = {
     .log_file_size = 1024 * 1024, // 默认1MB
     .log_fp = NULL
 };
+
+static pthread_mutex_t g_log_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static const char* log_level_strings[] = {
     "DEBUG",
@@ -130,7 +133,10 @@ static void cleanup_old_log_files(void) {
         // 删除超出限制的最旧文件
         int files_to_delete = log_file_count - g_log_config.log_file_count;
         for (int i = 0; i < files_to_delete; i++) {
-            remove(log_files[i].filename);
+            if (remove(log_files[i].filename) != 0) {
+                fprintf(stderr, "Failed to remove old log file %s: errno=%d (%s)\n",
+                        log_files[i].filename, errno, strerror(errno));
+            }
         }
     }
     
@@ -220,7 +226,10 @@ static void check_and_rotate_log(void)
     get_timestamped_filename(timestamped_file, sizeof(timestamped_file), g_log_config.log_file);
     
     // 重命名当前日志文件
-    rename(g_log_config.log_file, timestamped_file);
+    if (rename(g_log_config.log_file, timestamped_file) != 0) {
+        fprintf(stderr, "Failed to rotate log file from %s to %s: errno=%d (%s)\n",
+                g_log_config.log_file, timestamped_file, errno, strerror(errno));
+    }
     
     // 打开新的日志文件
     g_log_config.log_fp = fopen(g_log_config.log_file, "a");
@@ -242,7 +251,10 @@ static void check_and_rotate_log(void)
  */
 static void log_print(LogLevel level, const char* format, va_list args)
 {
+    pthread_mutex_lock(&g_log_mutex);
+
     if (!g_log_config.enable_log || level < g_log_config.log_level) {
+        pthread_mutex_unlock(&g_log_mutex);
         return;
     }
 
@@ -273,6 +285,8 @@ static void log_print(LogLevel level, const char* format, va_list args)
             }
         }
     }
+
+    pthread_mutex_unlock(&g_log_mutex);
 }
 
 bool log_manager_init(LogConfig* config)
@@ -280,6 +294,8 @@ bool log_manager_init(LogConfig* config)
     if (!config) {
         return false;
     }
+
+    pthread_mutex_lock(&g_log_mutex);
 
     // 复制配置
     memcpy(&g_log_config, config, sizeof(LogConfig));
@@ -298,20 +314,26 @@ bool log_manager_init(LogConfig* config)
         if (!g_log_config.log_fp) {
             // 如果文件打开失败，回退到不输出到文件
             g_log_config.log_to_file = false;
+            pthread_mutex_unlock(&g_log_mutex);
             return false;
         }
     }
 
+    pthread_mutex_unlock(&g_log_mutex);
     return true;
 }
 
 void log_manager_cleanup(void)
 {
+    pthread_mutex_lock(&g_log_mutex);
+
     // 关闭日志文件
     if (g_log_config.log_fp) {
         fclose(g_log_config.log_fp);
         g_log_config.log_fp = NULL;
     }
+
+    pthread_mutex_unlock(&g_log_mutex);
 }
 
 void log_debug(const char* format, ...)
@@ -350,5 +372,8 @@ void log_error(const char* format, ...) {
  * @return 当前日志级别
  */
 LogLevel log_get_current_level(void) {
-    return g_log_config.log_level;
+    pthread_mutex_lock(&g_log_mutex);
+    LogLevel level = g_log_config.log_level;
+    pthread_mutex_unlock(&g_log_mutex);
+    return level;
 }

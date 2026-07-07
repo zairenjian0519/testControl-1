@@ -19,7 +19,10 @@
         "start_address": "2001:eaca:0101:0000:001e:cd00:0201:0000",
         "end_address": "2001:eaca:0101:0000:001e:cd00:0201:1005",
         "prefix_length": 64,
-        "max_lease_count": 1000
+        "max_lease_count": 1000,
+        "skip_as_source": true,
+        "batch_add_limit": 300,
+        "batch_add_delay_ms": 4000
     },
 
     "modbus_tcp": {

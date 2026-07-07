@@ -15,215 +15,1375 @@
 400003,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
 400004,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
 300015,null.null,Input Registers,UINT,undefined
-300016,AutbusPADev3_slot0_var1.AutbusPADev3_slot0_var1,Input Registers,ULINT,timestamp
-300020,AutbusPADev3_slot0_var2.AutbusPADev3_slot0_var2,Input Registers,ULINT,rx_bytes
-300024,AutbusPADev3_slot0_var3.AutbusPADev3_slot0_var3,Input Registers,ULINT,tx_bytes
-300028,AutbusPADev3_slot0_var4.AutbusPADev3_slot0_var4,Input Registers,ULINT,tx_dropbytes
-300032,AutbusPADev3_slot0_alarm1.AutbusPADev3_slot0_alarm1,Input Registers,USINT,alarm1
-400005,null.null,Holding Registers,DINT,RS485-baudrate(0 ~ 115200) 
-400007,null.null,Holding Registers,USINT,RS485-DataBits(0 ~ 8) 
-400008,null.null,Holding Registers,USINT,RS485-StopBits(0 ~ 2) 
-400009,null.null,Holding Registers,UINT,RS485-Parity(0 ~ 4) 
-400010,null.null,Holding Registers,DINT,CAN-baudrate(0 ~ 1000000) 
-100001,AutbusPADev3_slot1_var1.AutbusPADev3_slot1_var1,Discretes Input,BOOL,di1
-100002,AutbusPADev3_slot1_var2.AutbusPADev3_slot1_var2,Discretes Input,BOOL,di2
-100003,AutbusPADev3_slot1_var3.AutbusPADev3_slot1_var3,Discretes Input,BOOL,di3
-100004,AutbusPADev3_slot1_var4.AutbusPADev3_slot1_var4,Discretes Input,BOOL,di4
-100005,AutbusPADev3_slot1_var5.AutbusPADev3_slot1_var5,Discretes Input,BOOL,di5
-100006,AutbusPADev3_slot1_var6.AutbusPADev3_slot1_var6,Discretes Input,BOOL,di6
-100007,AutbusPADev3_slot1_var7.AutbusPADev3_slot1_var7,Discretes Input,BOOL,di7
-100008,AutbusPADev3_slot1_var8.AutbusPADev3_slot1_var8,Discretes Input,BOOL,di8
-100009,AutbusPADev3_slot1_var9.AutbusPADev3_slot1_var9,Discretes Input,BOOL,di9
-100010,AutbusPADev3_slot1_var10.AutbusPADev3_slot1_var10,Discretes Input,BOOL,di10
-100011,AutbusPADev3_slot1_var11.AutbusPADev3_slot1_var11,Discretes Input,BOOL,di11
-100012,AutbusPADev3_slot1_var12.AutbusPADev3_slot1_var12,Discretes Input,BOOL,di12
-100013,AutbusPADev3_slot1_var13.AutbusPADev3_slot1_var13,Discretes Input,BOOL,di13
-100014,AutbusPADev3_slot1_var14.AutbusPADev3_slot1_var14,Discretes Input,BOOL,di14
-100015,AutbusPADev3_slot1_var15.AutbusPADev3_slot1_var15,Discretes Input,BOOL,di15
-100016,AutbusPADev3_slot1_var16.AutbusPADev3_slot1_var16,Discretes Input,BOOL,di16
-100017,AutbusPADev3_slot1_var17.AutbusPADev3_slot1_var17,Discretes Input,BOOL,di17
-100018,AutbusPADev3_slot1_var18.AutbusPADev3_slot1_var18,Discretes Input,BOOL,di18
-100019,AutbusPADev3_slot1_var19.AutbusPADev3_slot1_var19,Discretes Input,BOOL,di19
-100020,AutbusPADev3_slot1_var20.AutbusPADev3_slot1_var20,Discretes Input,BOOL,di20
-100021,AutbusPADev3_slot1_var21.AutbusPADev3_slot1_var21,Discretes Input,BOOL,di21
-100022,AutbusPADev3_slot1_var22.AutbusPADev3_slot1_var22,Discretes Input,BOOL,di22
-100023,AutbusPADev3_slot1_var23.AutbusPADev3_slot1_var23,Discretes Input,BOOL,di23
-100024,AutbusPADev3_slot1_var24.AutbusPADev3_slot1_var24,Discretes Input,BOOL,di24
-100025,AutbusPADev3_slot1_var25.AutbusPADev3_slot1_var25,Discretes Input,BOOL,di25
-100026,AutbusPADev3_slot1_var26.AutbusPADev3_slot1_var26,Discretes Input,BOOL,di26
-100027,AutbusPADev3_slot1_var27.AutbusPADev3_slot1_var27,Discretes Input,BOOL,di27
-100028,AutbusPADev3_slot1_var28.AutbusPADev3_slot1_var28,Discretes Input,BOOL,di28
-100029,AutbusPADev3_slot1_var29.AutbusPADev3_slot1_var29,Discretes Input,BOOL,di29
-100030,AutbusPADev3_slot1_var30.AutbusPADev3_slot1_var30,Discretes Input,BOOL,di30
-100031,AutbusPADev3_slot1_var31.AutbusPADev3_slot1_var31,Discretes Input,BOOL,di31
-100032,AutbusPADev3_slot1_var32.AutbusPADev3_slot1_var32,Discretes Input,BOOL,di32
-300033,AutbusPADev3_slot1_var33.AutbusPADev3_slot1_var33,Input Registers,ULINT,timestamp
-300037,AutbusPADev3_slot1_alarm1.AutbusPADev3_slot1_alarm1,Input Registers,USINT,di-alarm1
-400012,null.null,Holding Registers,UINT,di-param1(0 ~ 4) 
-300058,AutbusPADev3_slot2_var1.AutbusPADev3_slot2_var1,Input Registers,REAL,RTD1
-300060,AutbusPADev3_slot2_var2.AutbusPADev3_slot2_var2,Input Registers,REAL,RTD2
-300062,AutbusPADev3_slot2_var3.AutbusPADev3_slot2_var3,Input Registers,REAL,RTD3
-300064,AutbusPADev3_slot2_var4.AutbusPADev3_slot2_var4,Input Registers,REAL,RTD4
-300066,AutbusPADev3_slot2_var5.AutbusPADev3_slot2_var5,Input Registers,REAL,RTD5
-300068,AutbusPADev3_slot2_var6.AutbusPADev3_slot2_var6,Input Registers,REAL,RTD6
-300070,AutbusPADev3_slot2_var7.AutbusPADev3_slot2_var7,Input Registers,REAL,RTD7
-300072,AutbusPADev3_slot2_var8.AutbusPADev3_slot2_var8,Input Registers,REAL,RTD8
-300074,AutbusPADev3_slot2_var9.AutbusPADev3_slot2_var9,Input Registers,ULINT,timestamp
-300078,AutbusPADev3_slot2_alarm1.AutbusPADev3_slot2_alarm1,Input Registers,USINT,rtd-alarm1
-400046,null.null,Holding Registers,UINT,RTD1-filter(0 ~ 12) 
-400047,null.null,Holding Registers,UINT,RTD1-samplerate(0 ~ 7) 
-400048,null.null,Holding Registers,UINT,RTD1-mode(2 ~ 4) 
-400049,null.null,Holding Registers,UINT,RTD1-range(0 ~ 31) 
-400050,null.null,Holding Registers,UINT,RTD1-convertTime(0 ~ 14) 
-400051,null.null,Holding Registers,UINT,RTD2-filter(0 ~ 12) 
-400052,null.null,Holding Registers,UINT,RTD2-samplerate(0 ~ 7) 
-400053,null.null,Holding Registers,UINT,RTD2-mode(2 ~ 4) 
-400054,null.null,Holding Registers,UINT,RTD2-range(0 ~ 31) 
-400055,null.null,Holding Registers,UINT,RTD2-convertTime(0 ~ 14) 
-400056,null.null,Holding Registers,UINT,RTD3-filter(0 ~ 12) 
-400057,null.null,Holding Registers,UINT,RTD3-samplerate(0 ~ 7) 
-400058,null.null,Holding Registers,UINT,RTD3-mode(2 ~ 4) 
-400059,null.null,Holding Registers,UINT,RTD3-range(0 ~ 31) 
-400060,null.null,Holding Registers,UINT,RTD3-convertTime(0 ~ 14) 
-400061,null.null,Holding Registers,UINT,RTD4-filter(0 ~ 12) 
-400062,null.null,Holding Registers,UINT,RTD4-samplerate(0 ~ 7) 
-400063,null.null,Holding Registers,UINT,RTD4-mode(2 ~ 4) 
-400064,null.null,Holding Registers,UINT,RTD4-range(0 ~ 31) 
-400065,null.null,Holding Registers,UINT,RTD4-convertTime(0 ~ 14) 
-400066,null.null,Holding Registers,UINT,RTD5-filter(0 ~ 12) 
-400067,null.null,Holding Registers,UINT,RTD5-samplerate(0 ~ 7) 
-400068,null.null,Holding Registers,UINT,RTD5-mode(2 ~ 4) 
-400069,null.null,Holding Registers,UINT,RTD5-range(0 ~ 31) 
-400070,null.null,Holding Registers,UINT,RTD5-convertTime(0 ~ 14) 
-400071,null.null,Holding Registers,UINT,RTD6-filter(0 ~ 12) 
-400072,null.null,Holding Registers,UINT,RTD6-samplerate(0 ~ 7) 
-400073,null.null,Holding Registers,UINT,RTD6-mode(2 ~ 4) 
-400074,null.null,Holding Registers,UINT,RTD6-range(0 ~ 31) 
-400075,null.null,Holding Registers,UINT,RTD6-convertTime(0 ~ 14) 
-400076,null.null,Holding Registers,UINT,RTD7-filter(0 ~ 12) 
-400077,null.null,Holding Registers,UINT,RTD7-samplerate(0 ~ 7) 
-400078,null.null,Holding Registers,UINT,RTD7-mode(2 ~ 4) 
-400079,null.null,Holding Registers,UINT,RTD7-range(0 ~ 31) 
-400080,null.null,Holding Registers,UINT,RTD7-convertTime(0 ~ 14) 
-400081,null.null,Holding Registers,UINT,RTD8-filter(0 ~ 12) 
-400082,null.null,Holding Registers,UINT,RTD8-samplerate(0 ~ 7) 
-400083,null.null,Holding Registers,UINT,RTD8-mode(2 ~ 4) 
-400084,null.null,Holding Registers,UINT,RTD8-range(0 ~ 31) 
-400085,null.null,Holding Registers,UINT,RTD8-convertTime(0 ~ 14) 
-300079,AutbusPADev3_slot3_var1.AutbusPADev3_slot3_var1,Input Registers,UINT,AI1
-300080,AutbusPADev3_slot3_var2.AutbusPADev3_slot3_var2,Input Registers,UINT,AI2
-300081,AutbusPADev3_slot3_var3.AutbusPADev3_slot3_var3,Input Registers,UINT,AI3
-300082,AutbusPADev3_slot3_var4.AutbusPADev3_slot3_var4,Input Registers,UINT,AI4
-300083,AutbusPADev3_slot3_var5.AutbusPADev3_slot3_var5,Input Registers,UINT,AI5
-300084,AutbusPADev3_slot3_var6.AutbusPADev3_slot3_var6,Input Registers,UINT,AI6
-300085,AutbusPADev3_slot3_var7.AutbusPADev3_slot3_var7,Input Registers,UINT,AI7
-300086,AutbusPADev3_slot3_var8.AutbusPADev3_slot3_var8,Input Registers,UINT,AI8
-300087,AutbusPADev3_slot3_var9.AutbusPADev3_slot3_var9,Input Registers,ULINT,timestamp
-300091,AutbusPADev3_slot3_alarm1.AutbusPADev3_slot3_alarm1,Input Registers,USINT,ai-alarm1
-400086,null.null,Holding Registers,UINT,AI1-filter(0 ~ 12) 
-400087,null.null,Holding Registers,UINT,AI1-samplerate(0 ~ 7) 
-400088,null.null,Holding Registers,UINT,AI1-mode(0 ~ 1) 
-400089,null.null,Holding Registers,UINT,AI1-range(0 ~ 8) 
-400090,null.null,Holding Registers,UINT,AI2-filter(0 ~ 12) 
-400091,null.null,Holding Registers,UINT,AI2-samplerate(0 ~ 7) 
-400092,null.null,Holding Registers,UINT,AI2-mode(0 ~ 1) 
-400093,null.null,Holding Registers,UINT,AI2-range(0 ~ 8) 
-400094,null.null,Holding Registers,UINT,AI3-filter(0 ~ 12) 
-400095,null.null,Holding Registers,UINT,AI3-samplerate(0 ~ 7) 
-400096,null.null,Holding Registers,UINT,AI3-mode(0 ~ 1) 
-400097,null.null,Holding Registers,UINT,AI3-range(0 ~ 8) 
-400098,null.null,Holding Registers,UINT,AI4-filter(0 ~ 12) 
-400099,null.null,Holding Registers,UINT,AI4-samplerate(0 ~ 7) 
-400100,null.null,Holding Registers,UINT,AI4-mode(0 ~ 1) 
-400101,null.null,Holding Registers,UINT,AI4-range(0 ~ 8) 
-400102,null.null,Holding Registers,UINT,AI5-filter(0 ~ 12) 
-400103,null.null,Holding Registers,UINT,AI5-samplerate(0 ~ 7) 
-400104,null.null,Holding Registers,UINT,AI5-mode(0 ~ 1) 
-400105,null.null,Holding Registers,UINT,AI5-range(0 ~ 8) 
-400106,null.null,Holding Registers,UINT,AI6-filter(0 ~ 12) 
-400107,null.null,Holding Registers,UINT,AI6-samplerate(0 ~ 7) 
-400108,null.null,Holding Registers,UINT,AI6-mode(0 ~ 1) 
-400109,null.null,Holding Registers,UINT,AI6-range(0 ~ 8) 
-400110,null.null,Holding Registers,UINT,AI7-filter(0 ~ 12) 
-400111,null.null,Holding Registers,UINT,AI7-samplerate(0 ~ 7) 
-400112,null.null,Holding Registers,UINT,AI7-mode(0 ~ 1) 
-400113,null.null,Holding Registers,UINT,AI7-range(0 ~ 8) 
-400114,null.null,Holding Registers,UINT,AI8-filter(0 ~ 12) 
-400115,null.null,Holding Registers,UINT,AI8-samplerate(0 ~ 7) 
-400116,null.null,Holding Registers,UINT,AI8-mode(0 ~ 1) 
-400117,null.null,Holding Registers,UINT,AI8-range(0 ~ 8) 
-300092,null.null,Input Registers,UINT,undefined
-300093,AutbusPADev4_slot0_var1.AutbusPADev4_slot0_var1,Input Registers,REAL,当前输出湿度值
-300095,AutbusPADev4_slot0_var2.AutbusPADev4_slot0_var2,Input Registers,REAL,当前输出温度值 
-300097,AutbusPADev4_slot0_alarm1.AutbusPADev4_slot0_alarm1,Input Registers,USINT,仪表正常
-300098,AutbusPADev4_slot0_alarm2.AutbusPADev4_slot0_alarm2,Input Registers,USINT,湿度传感器开路故障
-300099,AutbusPADev4_slot0_alarm3.AutbusPADev4_slot0_alarm3,Input Registers,USINT,湿度传感器短路故障
-300100,AutbusPADev4_slot0_alarm4.AutbusPADev4_slot0_alarm4,Input Registers,USINT,温度传感器开路故障
-300101,AutbusPADev4_slot0_alarm5.AutbusPADev4_slot0_alarm5,Input Registers,USINT,温度传感器短路故障
-300102,AutbusPADev4_slot0_alarm6.AutbusPADev4_slot0_alarm6,Input Registers,USINT,湿度超传感器极限故障
-300103,AutbusPADev4_slot0_alarm7.AutbusPADev4_slot0_alarm7,Input Registers,USINT,温度超传感器极限故障
-300104,AutbusPADev4_slot0_alarm8.AutbusPADev4_slot0_alarm8,Input Registers,USINT,湿度超量程上限故障
-300105,AutbusPADev4_slot0_alarm9.AutbusPADev4_slot0_alarm9,Input Registers,USINT,湿度超量程下限故障
-300106,AutbusPADev4_slot0_alarm10.AutbusPADev4_slot0_alarm10,Input Registers,USINT,温度超量程上限故障
-300107,AutbusPADev4_slot0_alarm11.AutbusPADev4_slot0_alarm11,Input Registers,USINT,温度超量程下限故障
-300108,AutbusPADev4_slot0_alarm12.AutbusPADev4_slot0_alarm12,Input Registers,USINT,环境温度超限故障
-300109,AutbusPADev4_slot0_alarm13.AutbusPADev4_slot0_alarm13,Input Registers,USINT,硬件故障-供电异常
-300110,AutbusPADev4_slot0_alarm14.AutbusPADev4_slot0_alarm14,Input Registers,USINT,硬件故障-模拟输出异常
-300111,AutbusPADev4_slot0_alarm15.AutbusPADev4_slot0_alarm15,Input Registers,USINT,其他硬件故障
-400118,null.null,Holding Registers,USINT,湿度显示单位(0 ~ 0) 
-400119,null.null,Holding Registers,USINT,温度显示单位(0 ~ 0) 
-400120,null.null,Holding Registers,USINT,写保护(0 ~ 1) 
-400121,null.null,Holding Registers,REAL,湿度量程上限(0 ~ 0) 
-400123,null.null,Holding Registers,REAL,湿度量程下限(0 ~ 0) 
-400125,null.null,Holding Registers,REAL,温度量程上限(0 ~ 0) ℃
-400127,null.null,Holding Registers,REAL,温度量程下限(0 ~ 0) ℃
-400129,null.null,Holding Registers,REAL,湿度上限标定设定点(0 ~ 0) 
-400131,null.null,Holding Registers,REAL,湿度下限标定设定点(0 ~ 0) 
-400133,null.null,Holding Registers,REAL,温度上限标定设定点(0 ~ 0) ℃
-400135,null.null,Holding Registers,REAL,温度下限标定设定点(0 ~ 0) ℃
-400137,null.null,Holding Registers,USINT,湿度传感器型号(0 ~ 4) 
-400138,null.null,Holding Registers,USINT,温度传感器型号(0 ~ 4) 
-400139,null.null,Holding Registers,REAL,湿度传感器上限(0 ~ 0) 
-400141,null.null,Holding Registers,REAL,湿度传感器下限(0 ~ 0) 
-400143,null.null,Holding Registers,REAL,温度传感器上限(0 ~ 0) ℃
-400145,null.null,Holding Registers,REAL,温度传感器下限(0 ~ 0) ℃
-400147,null.null,Holding Registers,REAL,湿度最小测范围(0 ~ 0) 
-400149,null.null,Holding Registers,REAL,温度最小测范围(0 ~ 0) ℃
-300112,null.null,Input Registers,UINT,undefined
-300038,wenshidu1_slot0_var1.wenshidu1_slot0_var1,Input Registers,REAL,当前输出湿度值
-300040,wenshidu1_slot0_var2.wenshidu1_slot0_var2,Input Registers,REAL,当前输出温度值 
-300042,wenshidu1_slot0_alarm1.wenshidu1_slot0_alarm1,Input Registers,USINT,仪表正常
-300043,wenshidu1_slot0_alarm2.wenshidu1_slot0_alarm2,Input Registers,USINT,湿度传感器开路故障
-300044,wenshidu1_slot0_alarm3.wenshidu1_slot0_alarm3,Input Registers,USINT,湿度传感器短路故障
-300045,wenshidu1_slot0_alarm4.wenshidu1_slot0_alarm4,Input Registers,USINT,温度传感器开路故障
-300046,wenshidu1_slot0_alarm5.wenshidu1_slot0_alarm5,Input Registers,USINT,温度传感器短路故障
-300047,wenshidu1_slot0_alarm6.wenshidu1_slot0_alarm6,Input Registers,USINT,湿度超传感器极限故障
-300048,wenshidu1_slot0_alarm7.wenshidu1_slot0_alarm7,Input Registers,USINT,温度超传感器极限故障
-300049,wenshidu1_slot0_alarm8.wenshidu1_slot0_alarm8,Input Registers,USINT,湿度超量程上限故障
-300050,wenshidu1_slot0_alarm9.wenshidu1_slot0_alarm9,Input Registers,USINT,湿度超量程下限故障
-300051,wenshidu1_slot0_alarm10.wenshidu1_slot0_alarm10,Input Registers,USINT,温度超量程上限故障
-300052,wenshidu1_slot0_alarm11.wenshidu1_slot0_alarm11,Input Registers,USINT,温度超量程下限故障
-300053,wenshidu1_slot0_alarm12.wenshidu1_slot0_alarm12,Input Registers,USINT,环境温度超限故障
-300054,wenshidu1_slot0_alarm13.wenshidu1_slot0_alarm13,Input Registers,USINT,硬件故障-供电异常
-300055,wenshidu1_slot0_alarm14.wenshidu1_slot0_alarm14,Input Registers,USINT,硬件故障-模拟输出异常
-300056,wenshidu1_slot0_alarm15.wenshidu1_slot0_alarm15,Input Registers,USINT,其他硬件故障
-400013,null.null,Holding Registers,USINT,湿度显示单位(0 ~ 0) 
-400014,null.null,Holding Registers,USINT,温度显示单位(0 ~ 0) 
-400015,null.null,Holding Registers,USINT,写保护(0 ~ 1) 
-400016,null.null,Holding Registers,REAL,湿度量程上限(0 ~ 0) 
-400018,null.null,Holding Registers,REAL,湿度量程下限(0 ~ 0) 
-400020,null.null,Holding Registers,REAL,温度量程上限(0 ~ 0) ℃
-400022,null.null,Holding Registers,REAL,温度量程下限(0 ~ 0) ℃
-400024,null.null,Holding Registers,REAL,湿度上限标定设定点(0 ~ 0) 
-400026,null.null,Holding Registers,REAL,湿度下限标定设定点(0 ~ 0) 
-400028,null.null,Holding Registers,REAL,温度上限标定设定点(0 ~ 0) ℃
-400030,null.null,Holding Registers,REAL,温度下限标定设定点(0 ~ 0) ℃
-400032,null.null,Holding Registers,USINT,湿度传感器型号(0 ~ 4) 
-400033,null.null,Holding Registers,USINT,温度传感器型号(0 ~ 4) 
-400034,null.null,Holding Registers,REAL,湿度传感器上限(0 ~ 0) 
-400036,null.null,Holding Registers,REAL,湿度传感器下限(0 ~ 0) 
-400038,null.null,Holding Registers,REAL,温度传感器上限(0 ~ 0) ℃
-400040,null.null,Holding Registers,REAL,温度传感器下限(0 ~ 0) ℃
-400042,null.null,Holding Registers,REAL,湿度最小测范围(0 ~ 0) 
-400044,null.null,Holding Registers,REAL,温度最小测范围(0 ~ 0) ℃
-300057,null.null,Input Registers,UINT,undefined
+300016,AutbusPADev2_slot0_var1.AutbusPADev2_slot0_var1,Input Registers,REAL,当前输出湿度值
+300018,AutbusPADev2_slot0_var2.AutbusPADev2_slot0_var2,Input Registers,REAL,当前输出温度值 
+300020,AutbusPADev2_slot0_alarm1.AutbusPADev2_slot0_alarm1,Input Registers,USINT,仪表正常
+300021,AutbusPADev2_slot0_alarm2.AutbusPADev2_slot0_alarm2,Input Registers,USINT,湿度传感器开路故障
+300022,AutbusPADev2_slot0_alarm3.AutbusPADev2_slot0_alarm3,Input Registers,USINT,湿度传感器短路故障
+300023,AutbusPADev2_slot0_alarm4.AutbusPADev2_slot0_alarm4,Input Registers,USINT,温度传感器开路故障
+300024,AutbusPADev2_slot0_alarm5.AutbusPADev2_slot0_alarm5,Input Registers,USINT,温度传感器短路故障
+300025,AutbusPADev2_slot0_alarm6.AutbusPADev2_slot0_alarm6,Input Registers,USINT,湿度超传感器极限故障
+300026,AutbusPADev2_slot0_alarm7.AutbusPADev2_slot0_alarm7,Input Registers,USINT,温度超传感器极限故障
+300027,AutbusPADev2_slot0_alarm8.AutbusPADev2_slot0_alarm8,Input Registers,USINT,湿度超量程上限故障
+300028,AutbusPADev2_slot0_alarm9.AutbusPADev2_slot0_alarm9,Input Registers,USINT,湿度超量程下限故障
+300029,AutbusPADev2_slot0_alarm10.AutbusPADev2_slot0_alarm10,Input Registers,USINT,温度超量程上限故障
+300030,AutbusPADev2_slot0_alarm11.AutbusPADev2_slot0_alarm11,Input Registers,USINT,温度超量程下限故障
+300031,AutbusPADev2_slot0_alarm12.AutbusPADev2_slot0_alarm12,Input Registers,USINT,环境温度超限故障
+300032,AutbusPADev2_slot0_alarm13.AutbusPADev2_slot0_alarm13,Input Registers,USINT,硬件故障-供电异常
+300033,AutbusPADev2_slot0_alarm14.AutbusPADev2_slot0_alarm14,Input Registers,USINT,硬件故障-模拟输出异常
+300034,AutbusPADev2_slot0_alarm15.AutbusPADev2_slot0_alarm15,Input Registers,USINT,其他硬件故障
+400005,null.null,Holding Registers,USINT,湿度显示单位(0 ~ 0) 
+400006,null.null,Holding Registers,USINT,温度显示单位(0 ~ 0) 
+400007,null.null,Holding Registers,USINT,写保护(0 ~ 1) 
+400008,null.null,Holding Registers,REAL,湿度量程上限(0 ~ 0) 
+400010,null.null,Holding Registers,REAL,湿度量程下限(0 ~ 0) 
+400012,null.null,Holding Registers,REAL,温度量程上限(0 ~ 0) ℃
+400014,null.null,Holding Registers,REAL,温度量程下限(0 ~ 0) ℃
+400016,null.null,Holding Registers,REAL,湿度上限标定设定点(0 ~ 0) 
+400018,null.null,Holding Registers,REAL,湿度下限标定设定点(0 ~ 0) 
+400020,null.null,Holding Registers,REAL,温度上限标定设定点(0 ~ 0) ℃
+400022,null.null,Holding Registers,REAL,温度下限标定设定点(0 ~ 0) ℃
+400024,null.null,Holding Registers,USINT,湿度传感器型号(0 ~ 4) 
+400025,null.null,Holding Registers,USINT,温度传感器型号(0 ~ 4) 
+400026,null.null,Holding Registers,REAL,湿度传感器上限(0 ~ 0) 
+400028,null.null,Holding Registers,REAL,湿度传感器下限(0 ~ 0) 
+400030,null.null,Holding Registers,REAL,温度传感器上限(0 ~ 0) ℃
+400032,null.null,Holding Registers,REAL,温度传感器下限(0 ~ 0) ℃
+400034,null.null,Holding Registers,REAL,湿度最小测范围(0 ~ 0) 
+400036,null.null,Holding Registers,REAL,温度最小测范围(0 ~ 0) ℃
+300035,null.null,Input Registers,UINT,undefined
+300036,AutbusPADev3_slot0_var1.AutbusPADev3_slot0_var1,Input Registers,USINT,InData1
+300037,AutbusPADev3_slot0_var2.AutbusPADev3_slot0_var2,Input Registers,UINT,InData2
+300038,AutbusPADev3_slot0_var3.AutbusPADev3_slot0_var3,Input Registers,ULINT,timer
+300042,AutbusPADev3_slot0_var4.AutbusPADev3_slot0_var4,Input Registers,UINT,year
+300043,AutbusPADev3_slot0_var5.AutbusPADev3_slot0_var5,Input Registers,USINT,month
+300044,AutbusPADev3_slot0_var6.AutbusPADev3_slot0_var6,Input Registers,USINT,day
+300045,AutbusPADev3_slot0_var7.AutbusPADev3_slot0_var7,Input Registers,USINT,hour
+300046,AutbusPADev3_slot0_var8.AutbusPADev3_slot0_var8,Input Registers,USINT,minute
+300047,AutbusPADev3_slot0_var9.AutbusPADev3_slot0_var9,Input Registers,USINT,second
+400038,AutbusPADev3_slot0_var10.AutbusPADev3_slot0_var10,Holding Registers,USINT,OutData1
+400039,AutbusPADev3_slot0_var11.AutbusPADev3_slot0_var11,Holding Registers,USINT,OutData2
+300048,AutbusPADev3_slot0_alarm1.AutbusPADev3_slot0_alarm1,Input Registers,USINT,alarm1
+300049,AutbusPADev3_slot0_alarm2.AutbusPADev3_slot0_alarm2,Input Registers,USINT,alarm2
+400040,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400041,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300050,null.null,Input Registers,UINT,undefined
+300051,AutbusPADev4_slot0_var1.AutbusPADev4_slot0_var1,Input Registers,USINT,InData1
+300052,AutbusPADev4_slot0_var2.AutbusPADev4_slot0_var2,Input Registers,UINT,InData2
+300053,AutbusPADev4_slot0_var3.AutbusPADev4_slot0_var3,Input Registers,ULINT,timer
+300057,AutbusPADev4_slot0_var4.AutbusPADev4_slot0_var4,Input Registers,UINT,year
+300058,AutbusPADev4_slot0_var5.AutbusPADev4_slot0_var5,Input Registers,USINT,month
+300059,AutbusPADev4_slot0_var6.AutbusPADev4_slot0_var6,Input Registers,USINT,day
+300060,AutbusPADev4_slot0_var7.AutbusPADev4_slot0_var7,Input Registers,USINT,hour
+300061,AutbusPADev4_slot0_var8.AutbusPADev4_slot0_var8,Input Registers,USINT,minute
+300062,AutbusPADev4_slot0_var9.AutbusPADev4_slot0_var9,Input Registers,USINT,second
+400042,AutbusPADev4_slot0_var10.AutbusPADev4_slot0_var10,Holding Registers,USINT,OutData1
+400043,AutbusPADev4_slot0_var11.AutbusPADev4_slot0_var11,Holding Registers,USINT,OutData2
+300063,AutbusPADev4_slot0_alarm1.AutbusPADev4_slot0_alarm1,Input Registers,USINT,alarm1
+300064,AutbusPADev4_slot0_alarm2.AutbusPADev4_slot0_alarm2,Input Registers,USINT,alarm2
+400044,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400045,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300065,null.null,Input Registers,UINT,undefined
+300066,AutbusPADev5_slot0_var1.AutbusPADev5_slot0_var1,Input Registers,USINT,InData1
+300067,AutbusPADev5_slot0_var2.AutbusPADev5_slot0_var2,Input Registers,UINT,InData2
+300068,AutbusPADev5_slot0_var3.AutbusPADev5_slot0_var3,Input Registers,ULINT,timer
+300072,AutbusPADev5_slot0_var4.AutbusPADev5_slot0_var4,Input Registers,UINT,year
+300073,AutbusPADev5_slot0_var5.AutbusPADev5_slot0_var5,Input Registers,USINT,month
+300074,AutbusPADev5_slot0_var6.AutbusPADev5_slot0_var6,Input Registers,USINT,day
+300075,AutbusPADev5_slot0_var7.AutbusPADev5_slot0_var7,Input Registers,USINT,hour
+300076,AutbusPADev5_slot0_var8.AutbusPADev5_slot0_var8,Input Registers,USINT,minute
+300077,AutbusPADev5_slot0_var9.AutbusPADev5_slot0_var9,Input Registers,USINT,second
+400046,AutbusPADev5_slot0_var10.AutbusPADev5_slot0_var10,Holding Registers,USINT,OutData1
+400047,AutbusPADev5_slot0_var11.AutbusPADev5_slot0_var11,Holding Registers,USINT,OutData2
+300078,AutbusPADev5_slot0_alarm1.AutbusPADev5_slot0_alarm1,Input Registers,USINT,alarm1
+300079,AutbusPADev5_slot0_alarm2.AutbusPADev5_slot0_alarm2,Input Registers,USINT,alarm2
+400048,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400049,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300080,null.null,Input Registers,UINT,undefined
+300081,AutbusPADev6_slot0_var1.AutbusPADev6_slot0_var1,Input Registers,USINT,InData1
+300082,AutbusPADev6_slot0_var2.AutbusPADev6_slot0_var2,Input Registers,UINT,InData2
+300083,AutbusPADev6_slot0_var3.AutbusPADev6_slot0_var3,Input Registers,ULINT,timer
+300087,AutbusPADev6_slot0_var4.AutbusPADev6_slot0_var4,Input Registers,UINT,year
+300088,AutbusPADev6_slot0_var5.AutbusPADev6_slot0_var5,Input Registers,USINT,month
+300089,AutbusPADev6_slot0_var6.AutbusPADev6_slot0_var6,Input Registers,USINT,day
+300090,AutbusPADev6_slot0_var7.AutbusPADev6_slot0_var7,Input Registers,USINT,hour
+300091,AutbusPADev6_slot0_var8.AutbusPADev6_slot0_var8,Input Registers,USINT,minute
+300092,AutbusPADev6_slot0_var9.AutbusPADev6_slot0_var9,Input Registers,USINT,second
+400050,AutbusPADev6_slot0_var10.AutbusPADev6_slot0_var10,Holding Registers,USINT,OutData1
+400051,AutbusPADev6_slot0_var11.AutbusPADev6_slot0_var11,Holding Registers,USINT,OutData2
+300093,AutbusPADev6_slot0_alarm1.AutbusPADev6_slot0_alarm1,Input Registers,USINT,alarm1
+300094,AutbusPADev6_slot0_alarm2.AutbusPADev6_slot0_alarm2,Input Registers,USINT,alarm2
+400052,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400053,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300095,null.null,Input Registers,UINT,undefined
+300096,AutbusPADev7_slot0_var1.AutbusPADev7_slot0_var1,Input Registers,USINT,InData1
+300097,AutbusPADev7_slot0_var2.AutbusPADev7_slot0_var2,Input Registers,UINT,InData2
+300098,AutbusPADev7_slot0_var3.AutbusPADev7_slot0_var3,Input Registers,ULINT,timer
+300102,AutbusPADev7_slot0_var4.AutbusPADev7_slot0_var4,Input Registers,UINT,year
+300103,AutbusPADev7_slot0_var5.AutbusPADev7_slot0_var5,Input Registers,USINT,month
+300104,AutbusPADev7_slot0_var6.AutbusPADev7_slot0_var6,Input Registers,USINT,day
+300105,AutbusPADev7_slot0_var7.AutbusPADev7_slot0_var7,Input Registers,USINT,hour
+300106,AutbusPADev7_slot0_var8.AutbusPADev7_slot0_var8,Input Registers,USINT,minute
+300107,AutbusPADev7_slot0_var9.AutbusPADev7_slot0_var9,Input Registers,USINT,second
+400054,AutbusPADev7_slot0_var10.AutbusPADev7_slot0_var10,Holding Registers,USINT,OutData1
+400055,AutbusPADev7_slot0_var11.AutbusPADev7_slot0_var11,Holding Registers,USINT,OutData2
+300108,AutbusPADev7_slot0_alarm1.AutbusPADev7_slot0_alarm1,Input Registers,USINT,alarm1
+300109,AutbusPADev7_slot0_alarm2.AutbusPADev7_slot0_alarm2,Input Registers,USINT,alarm2
+400056,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400057,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300110,null.null,Input Registers,UINT,undefined
+300111,AutbusPADev8_slot0_var1.AutbusPADev8_slot0_var1,Input Registers,USINT,InData1
+300112,AutbusPADev8_slot0_var2.AutbusPADev8_slot0_var2,Input Registers,UINT,InData2
+300113,AutbusPADev8_slot0_var3.AutbusPADev8_slot0_var3,Input Registers,ULINT,timer
+300117,AutbusPADev8_slot0_var4.AutbusPADev8_slot0_var4,Input Registers,UINT,year
+300118,AutbusPADev8_slot0_var5.AutbusPADev8_slot0_var5,Input Registers,USINT,month
+300119,AutbusPADev8_slot0_var6.AutbusPADev8_slot0_var6,Input Registers,USINT,day
+300120,AutbusPADev8_slot0_var7.AutbusPADev8_slot0_var7,Input Registers,USINT,hour
+300121,AutbusPADev8_slot0_var8.AutbusPADev8_slot0_var8,Input Registers,USINT,minute
+300122,AutbusPADev8_slot0_var9.AutbusPADev8_slot0_var9,Input Registers,USINT,second
+400058,AutbusPADev8_slot0_var10.AutbusPADev8_slot0_var10,Holding Registers,USINT,OutData1
+400059,AutbusPADev8_slot0_var11.AutbusPADev8_slot0_var11,Holding Registers,USINT,OutData2
+300123,AutbusPADev8_slot0_alarm1.AutbusPADev8_slot0_alarm1,Input Registers,USINT,alarm1
+300124,AutbusPADev8_slot0_alarm2.AutbusPADev8_slot0_alarm2,Input Registers,USINT,alarm2
+400060,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400061,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300125,null.null,Input Registers,UINT,undefined
+300126,AutbusPADev9_slot0_var1.AutbusPADev9_slot0_var1,Input Registers,USINT,InData1
+300127,AutbusPADev9_slot0_var2.AutbusPADev9_slot0_var2,Input Registers,UINT,InData2
+300128,AutbusPADev9_slot0_var3.AutbusPADev9_slot0_var3,Input Registers,ULINT,timer
+300132,AutbusPADev9_slot0_var4.AutbusPADev9_slot0_var4,Input Registers,UINT,year
+300133,AutbusPADev9_slot0_var5.AutbusPADev9_slot0_var5,Input Registers,USINT,month
+300134,AutbusPADev9_slot0_var6.AutbusPADev9_slot0_var6,Input Registers,USINT,day
+300135,AutbusPADev9_slot0_var7.AutbusPADev9_slot0_var7,Input Registers,USINT,hour
+300136,AutbusPADev9_slot0_var8.AutbusPADev9_slot0_var8,Input Registers,USINT,minute
+300137,AutbusPADev9_slot0_var9.AutbusPADev9_slot0_var9,Input Registers,USINT,second
+400062,AutbusPADev9_slot0_var10.AutbusPADev9_slot0_var10,Holding Registers,USINT,OutData1
+400063,AutbusPADev9_slot0_var11.AutbusPADev9_slot0_var11,Holding Registers,USINT,OutData2
+300138,AutbusPADev9_slot0_alarm1.AutbusPADev9_slot0_alarm1,Input Registers,USINT,alarm1
+300139,AutbusPADev9_slot0_alarm2.AutbusPADev9_slot0_alarm2,Input Registers,USINT,alarm2
+400064,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400065,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300140,null.null,Input Registers,UINT,undefined
+300141,AutbusPADev10_slot0_var1.AutbusPADev10_slot0_var1,Input Registers,USINT,InData1
+300142,AutbusPADev10_slot0_var2.AutbusPADev10_slot0_var2,Input Registers,UINT,InData2
+300143,AutbusPADev10_slot0_var3.AutbusPADev10_slot0_var3,Input Registers,ULINT,timer
+300147,AutbusPADev10_slot0_var4.AutbusPADev10_slot0_var4,Input Registers,UINT,year
+300148,AutbusPADev10_slot0_var5.AutbusPADev10_slot0_var5,Input Registers,USINT,month
+300149,AutbusPADev10_slot0_var6.AutbusPADev10_slot0_var6,Input Registers,USINT,day
+300150,AutbusPADev10_slot0_var7.AutbusPADev10_slot0_var7,Input Registers,USINT,hour
+300151,AutbusPADev10_slot0_var8.AutbusPADev10_slot0_var8,Input Registers,USINT,minute
+300152,AutbusPADev10_slot0_var9.AutbusPADev10_slot0_var9,Input Registers,USINT,second
+400066,AutbusPADev10_slot0_var10.AutbusPADev10_slot0_var10,Holding Registers,USINT,OutData1
+400067,AutbusPADev10_slot0_var11.AutbusPADev10_slot0_var11,Holding Registers,USINT,OutData2
+300153,AutbusPADev10_slot0_alarm1.AutbusPADev10_slot0_alarm1,Input Registers,USINT,alarm1
+300154,AutbusPADev10_slot0_alarm2.AutbusPADev10_slot0_alarm2,Input Registers,USINT,alarm2
+400068,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400069,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300155,null.null,Input Registers,UINT,undefined
+300156,AutbusPADev11_slot0_var1.AutbusPADev11_slot0_var1,Input Registers,USINT,InData1
+300157,AutbusPADev11_slot0_var2.AutbusPADev11_slot0_var2,Input Registers,UINT,InData2
+300158,AutbusPADev11_slot0_var3.AutbusPADev11_slot0_var3,Input Registers,ULINT,timer
+300162,AutbusPADev11_slot0_var4.AutbusPADev11_slot0_var4,Input Registers,UINT,year
+300163,AutbusPADev11_slot0_var5.AutbusPADev11_slot0_var5,Input Registers,USINT,month
+300164,AutbusPADev11_slot0_var6.AutbusPADev11_slot0_var6,Input Registers,USINT,day
+300165,AutbusPADev11_slot0_var7.AutbusPADev11_slot0_var7,Input Registers,USINT,hour
+300166,AutbusPADev11_slot0_var8.AutbusPADev11_slot0_var8,Input Registers,USINT,minute
+300167,AutbusPADev11_slot0_var9.AutbusPADev11_slot0_var9,Input Registers,USINT,second
+400070,AutbusPADev11_slot0_var10.AutbusPADev11_slot0_var10,Holding Registers,USINT,OutData1
+400071,AutbusPADev11_slot0_var11.AutbusPADev11_slot0_var11,Holding Registers,USINT,OutData2
+300168,AutbusPADev11_slot0_alarm1.AutbusPADev11_slot0_alarm1,Input Registers,USINT,alarm1
+300169,AutbusPADev11_slot0_alarm2.AutbusPADev11_slot0_alarm2,Input Registers,USINT,alarm2
+400072,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400073,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300170,null.null,Input Registers,UINT,undefined
+300171,AutbusPADev12_slot0_var1.AutbusPADev12_slot0_var1,Input Registers,USINT,InData1
+300172,AutbusPADev12_slot0_var2.AutbusPADev12_slot0_var2,Input Registers,UINT,InData2
+300173,AutbusPADev12_slot0_var3.AutbusPADev12_slot0_var3,Input Registers,ULINT,timer
+300177,AutbusPADev12_slot0_var4.AutbusPADev12_slot0_var4,Input Registers,UINT,year
+300178,AutbusPADev12_slot0_var5.AutbusPADev12_slot0_var5,Input Registers,USINT,month
+300179,AutbusPADev12_slot0_var6.AutbusPADev12_slot0_var6,Input Registers,USINT,day
+300180,AutbusPADev12_slot0_var7.AutbusPADev12_slot0_var7,Input Registers,USINT,hour
+300181,AutbusPADev12_slot0_var8.AutbusPADev12_slot0_var8,Input Registers,USINT,minute
+300182,AutbusPADev12_slot0_var9.AutbusPADev12_slot0_var9,Input Registers,USINT,second
+400074,AutbusPADev12_slot0_var10.AutbusPADev12_slot0_var10,Holding Registers,USINT,OutData1
+400075,AutbusPADev12_slot0_var11.AutbusPADev12_slot0_var11,Holding Registers,USINT,OutData2
+300183,AutbusPADev12_slot0_alarm1.AutbusPADev12_slot0_alarm1,Input Registers,USINT,alarm1
+300184,AutbusPADev12_slot0_alarm2.AutbusPADev12_slot0_alarm2,Input Registers,USINT,alarm2
+400076,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400077,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300185,null.null,Input Registers,UINT,undefined
+300186,AutbusPADev13_slot0_var1.AutbusPADev13_slot0_var1,Input Registers,USINT,InData1
+300187,AutbusPADev13_slot0_var2.AutbusPADev13_slot0_var2,Input Registers,UINT,InData2
+300188,AutbusPADev13_slot0_var3.AutbusPADev13_slot0_var3,Input Registers,ULINT,timer
+300192,AutbusPADev13_slot0_var4.AutbusPADev13_slot0_var4,Input Registers,UINT,year
+300193,AutbusPADev13_slot0_var5.AutbusPADev13_slot0_var5,Input Registers,USINT,month
+300194,AutbusPADev13_slot0_var6.AutbusPADev13_slot0_var6,Input Registers,USINT,day
+300195,AutbusPADev13_slot0_var7.AutbusPADev13_slot0_var7,Input Registers,USINT,hour
+300196,AutbusPADev13_slot0_var8.AutbusPADev13_slot0_var8,Input Registers,USINT,minute
+300197,AutbusPADev13_slot0_var9.AutbusPADev13_slot0_var9,Input Registers,USINT,second
+400078,AutbusPADev13_slot0_var10.AutbusPADev13_slot0_var10,Holding Registers,USINT,OutData1
+400079,AutbusPADev13_slot0_var11.AutbusPADev13_slot0_var11,Holding Registers,USINT,OutData2
+300198,AutbusPADev13_slot0_alarm1.AutbusPADev13_slot0_alarm1,Input Registers,USINT,alarm1
+300199,AutbusPADev13_slot0_alarm2.AutbusPADev13_slot0_alarm2,Input Registers,USINT,alarm2
+400080,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400081,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300200,null.null,Input Registers,UINT,undefined
+300201,AutbusPADev14_slot0_var1.AutbusPADev14_slot0_var1,Input Registers,USINT,InData1
+300202,AutbusPADev14_slot0_var2.AutbusPADev14_slot0_var2,Input Registers,UINT,InData2
+300203,AutbusPADev14_slot0_var3.AutbusPADev14_slot0_var3,Input Registers,ULINT,timer
+300207,AutbusPADev14_slot0_var4.AutbusPADev14_slot0_var4,Input Registers,UINT,year
+300208,AutbusPADev14_slot0_var5.AutbusPADev14_slot0_var5,Input Registers,USINT,month
+300209,AutbusPADev14_slot0_var6.AutbusPADev14_slot0_var6,Input Registers,USINT,day
+300210,AutbusPADev14_slot0_var7.AutbusPADev14_slot0_var7,Input Registers,USINT,hour
+300211,AutbusPADev14_slot0_var8.AutbusPADev14_slot0_var8,Input Registers,USINT,minute
+300212,AutbusPADev14_slot0_var9.AutbusPADev14_slot0_var9,Input Registers,USINT,second
+400082,AutbusPADev14_slot0_var10.AutbusPADev14_slot0_var10,Holding Registers,USINT,OutData1
+400083,AutbusPADev14_slot0_var11.AutbusPADev14_slot0_var11,Holding Registers,USINT,OutData2
+300213,AutbusPADev14_slot0_alarm1.AutbusPADev14_slot0_alarm1,Input Registers,USINT,alarm1
+300214,AutbusPADev14_slot0_alarm2.AutbusPADev14_slot0_alarm2,Input Registers,USINT,alarm2
+400084,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400085,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300215,null.null,Input Registers,UINT,undefined
+300216,AutbusPADev15_slot0_var1.AutbusPADev15_slot0_var1,Input Registers,USINT,InData1
+300217,AutbusPADev15_slot0_var2.AutbusPADev15_slot0_var2,Input Registers,UINT,InData2
+300218,AutbusPADev15_slot0_var3.AutbusPADev15_slot0_var3,Input Registers,ULINT,timer
+300222,AutbusPADev15_slot0_var4.AutbusPADev15_slot0_var4,Input Registers,UINT,year
+300223,AutbusPADev15_slot0_var5.AutbusPADev15_slot0_var5,Input Registers,USINT,month
+300224,AutbusPADev15_slot0_var6.AutbusPADev15_slot0_var6,Input Registers,USINT,day
+300225,AutbusPADev15_slot0_var7.AutbusPADev15_slot0_var7,Input Registers,USINT,hour
+300226,AutbusPADev15_slot0_var8.AutbusPADev15_slot0_var8,Input Registers,USINT,minute
+300227,AutbusPADev15_slot0_var9.AutbusPADev15_slot0_var9,Input Registers,USINT,second
+400086,AutbusPADev15_slot0_var10.AutbusPADev15_slot0_var10,Holding Registers,USINT,OutData1
+400087,AutbusPADev15_slot0_var11.AutbusPADev15_slot0_var11,Holding Registers,USINT,OutData2
+300228,AutbusPADev15_slot0_alarm1.AutbusPADev15_slot0_alarm1,Input Registers,USINT,alarm1
+300229,AutbusPADev15_slot0_alarm2.AutbusPADev15_slot0_alarm2,Input Registers,USINT,alarm2
+400088,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400089,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300230,null.null,Input Registers,UINT,undefined
+300231,AutbusPADev16_slot0_var1.AutbusPADev16_slot0_var1,Input Registers,USINT,InData1
+300232,AutbusPADev16_slot0_var2.AutbusPADev16_slot0_var2,Input Registers,UINT,InData2
+300233,AutbusPADev16_slot0_var3.AutbusPADev16_slot0_var3,Input Registers,ULINT,timer
+300237,AutbusPADev16_slot0_var4.AutbusPADev16_slot0_var4,Input Registers,UINT,year
+300238,AutbusPADev16_slot0_var5.AutbusPADev16_slot0_var5,Input Registers,USINT,month
+300239,AutbusPADev16_slot0_var6.AutbusPADev16_slot0_var6,Input Registers,USINT,day
+300240,AutbusPADev16_slot0_var7.AutbusPADev16_slot0_var7,Input Registers,USINT,hour
+300241,AutbusPADev16_slot0_var8.AutbusPADev16_slot0_var8,Input Registers,USINT,minute
+300242,AutbusPADev16_slot0_var9.AutbusPADev16_slot0_var9,Input Registers,USINT,second
+400090,AutbusPADev16_slot0_var10.AutbusPADev16_slot0_var10,Holding Registers,USINT,OutData1
+400091,AutbusPADev16_slot0_var11.AutbusPADev16_slot0_var11,Holding Registers,USINT,OutData2
+300243,AutbusPADev16_slot0_alarm1.AutbusPADev16_slot0_alarm1,Input Registers,USINT,alarm1
+300244,AutbusPADev16_slot0_alarm2.AutbusPADev16_slot0_alarm2,Input Registers,USINT,alarm2
+400092,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400093,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300245,null.null,Input Registers,UINT,undefined
+300246,AutbusPADev17_slot0_var1.AutbusPADev17_slot0_var1,Input Registers,USINT,InData1
+300247,AutbusPADev17_slot0_var2.AutbusPADev17_slot0_var2,Input Registers,UINT,InData2
+300248,AutbusPADev17_slot0_var3.AutbusPADev17_slot0_var3,Input Registers,ULINT,timer
+300252,AutbusPADev17_slot0_var4.AutbusPADev17_slot0_var4,Input Registers,UINT,year
+300253,AutbusPADev17_slot0_var5.AutbusPADev17_slot0_var5,Input Registers,USINT,month
+300254,AutbusPADev17_slot0_var6.AutbusPADev17_slot0_var6,Input Registers,USINT,day
+300255,AutbusPADev17_slot0_var7.AutbusPADev17_slot0_var7,Input Registers,USINT,hour
+300256,AutbusPADev17_slot0_var8.AutbusPADev17_slot0_var8,Input Registers,USINT,minute
+300257,AutbusPADev17_slot0_var9.AutbusPADev17_slot0_var9,Input Registers,USINT,second
+400094,AutbusPADev17_slot0_var10.AutbusPADev17_slot0_var10,Holding Registers,USINT,OutData1
+400095,AutbusPADev17_slot0_var11.AutbusPADev17_slot0_var11,Holding Registers,USINT,OutData2
+300258,AutbusPADev17_slot0_alarm1.AutbusPADev17_slot0_alarm1,Input Registers,USINT,alarm1
+300259,AutbusPADev17_slot0_alarm2.AutbusPADev17_slot0_alarm2,Input Registers,USINT,alarm2
+400096,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400097,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300260,null.null,Input Registers,UINT,undefined
+300261,AutbusPADev18_slot0_var1.AutbusPADev18_slot0_var1,Input Registers,USINT,InData1
+300262,AutbusPADev18_slot0_var2.AutbusPADev18_slot0_var2,Input Registers,UINT,InData2
+300263,AutbusPADev18_slot0_var3.AutbusPADev18_slot0_var3,Input Registers,ULINT,timer
+300267,AutbusPADev18_slot0_var4.AutbusPADev18_slot0_var4,Input Registers,UINT,year
+300268,AutbusPADev18_slot0_var5.AutbusPADev18_slot0_var5,Input Registers,USINT,month
+300269,AutbusPADev18_slot0_var6.AutbusPADev18_slot0_var6,Input Registers,USINT,day
+300270,AutbusPADev18_slot0_var7.AutbusPADev18_slot0_var7,Input Registers,USINT,hour
+300271,AutbusPADev18_slot0_var8.AutbusPADev18_slot0_var8,Input Registers,USINT,minute
+300272,AutbusPADev18_slot0_var9.AutbusPADev18_slot0_var9,Input Registers,USINT,second
+400098,AutbusPADev18_slot0_var10.AutbusPADev18_slot0_var10,Holding Registers,USINT,OutData1
+400099,AutbusPADev18_slot0_var11.AutbusPADev18_slot0_var11,Holding Registers,USINT,OutData2
+300273,AutbusPADev18_slot0_alarm1.AutbusPADev18_slot0_alarm1,Input Registers,USINT,alarm1
+300274,AutbusPADev18_slot0_alarm2.AutbusPADev18_slot0_alarm2,Input Registers,USINT,alarm2
+400100,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400101,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300275,null.null,Input Registers,UINT,undefined
+300276,AutbusPADev19_slot0_var1.AutbusPADev19_slot0_var1,Input Registers,USINT,InData1
+300277,AutbusPADev19_slot0_var2.AutbusPADev19_slot0_var2,Input Registers,UINT,InData2
+300278,AutbusPADev19_slot0_var3.AutbusPADev19_slot0_var3,Input Registers,ULINT,timer
+300282,AutbusPADev19_slot0_var4.AutbusPADev19_slot0_var4,Input Registers,UINT,year
+300283,AutbusPADev19_slot0_var5.AutbusPADev19_slot0_var5,Input Registers,USINT,month
+300284,AutbusPADev19_slot0_var6.AutbusPADev19_slot0_var6,Input Registers,USINT,day
+300285,AutbusPADev19_slot0_var7.AutbusPADev19_slot0_var7,Input Registers,USINT,hour
+300286,AutbusPADev19_slot0_var8.AutbusPADev19_slot0_var8,Input Registers,USINT,minute
+300287,AutbusPADev19_slot0_var9.AutbusPADev19_slot0_var9,Input Registers,USINT,second
+400102,AutbusPADev19_slot0_var10.AutbusPADev19_slot0_var10,Holding Registers,USINT,OutData1
+400103,AutbusPADev19_slot0_var11.AutbusPADev19_slot0_var11,Holding Registers,USINT,OutData2
+300288,AutbusPADev19_slot0_alarm1.AutbusPADev19_slot0_alarm1,Input Registers,USINT,alarm1
+300289,AutbusPADev19_slot0_alarm2.AutbusPADev19_slot0_alarm2,Input Registers,USINT,alarm2
+400104,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400105,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300290,null.null,Input Registers,UINT,undefined
+300291,AutbusPADev20_slot0_var1.AutbusPADev20_slot0_var1,Input Registers,USINT,InData1
+300292,AutbusPADev20_slot0_var2.AutbusPADev20_slot0_var2,Input Registers,UINT,InData2
+300293,AutbusPADev20_slot0_var3.AutbusPADev20_slot0_var3,Input Registers,ULINT,timer
+300297,AutbusPADev20_slot0_var4.AutbusPADev20_slot0_var4,Input Registers,UINT,year
+300298,AutbusPADev20_slot0_var5.AutbusPADev20_slot0_var5,Input Registers,USINT,month
+300299,AutbusPADev20_slot0_var6.AutbusPADev20_slot0_var6,Input Registers,USINT,day
+300300,AutbusPADev20_slot0_var7.AutbusPADev20_slot0_var7,Input Registers,USINT,hour
+300301,AutbusPADev20_slot0_var8.AutbusPADev20_slot0_var8,Input Registers,USINT,minute
+300302,AutbusPADev20_slot0_var9.AutbusPADev20_slot0_var9,Input Registers,USINT,second
+400106,AutbusPADev20_slot0_var10.AutbusPADev20_slot0_var10,Holding Registers,USINT,OutData1
+400107,AutbusPADev20_slot0_var11.AutbusPADev20_slot0_var11,Holding Registers,USINT,OutData2
+300303,AutbusPADev20_slot0_alarm1.AutbusPADev20_slot0_alarm1,Input Registers,USINT,alarm1
+300304,AutbusPADev20_slot0_alarm2.AutbusPADev20_slot0_alarm2,Input Registers,USINT,alarm2
+400108,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400109,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300305,null.null,Input Registers,UINT,undefined
+300306,AutbusPADev21_slot0_var1.AutbusPADev21_slot0_var1,Input Registers,USINT,InData1
+300307,AutbusPADev21_slot0_var2.AutbusPADev21_slot0_var2,Input Registers,UINT,InData2
+300308,AutbusPADev21_slot0_var3.AutbusPADev21_slot0_var3,Input Registers,ULINT,timer
+300312,AutbusPADev21_slot0_var4.AutbusPADev21_slot0_var4,Input Registers,UINT,year
+300313,AutbusPADev21_slot0_var5.AutbusPADev21_slot0_var5,Input Registers,USINT,month
+300314,AutbusPADev21_slot0_var6.AutbusPADev21_slot0_var6,Input Registers,USINT,day
+300315,AutbusPADev21_slot0_var7.AutbusPADev21_slot0_var7,Input Registers,USINT,hour
+300316,AutbusPADev21_slot0_var8.AutbusPADev21_slot0_var8,Input Registers,USINT,minute
+300317,AutbusPADev21_slot0_var9.AutbusPADev21_slot0_var9,Input Registers,USINT,second
+400110,AutbusPADev21_slot0_var10.AutbusPADev21_slot0_var10,Holding Registers,USINT,OutData1
+400111,AutbusPADev21_slot0_var11.AutbusPADev21_slot0_var11,Holding Registers,USINT,OutData2
+300318,AutbusPADev21_slot0_alarm1.AutbusPADev21_slot0_alarm1,Input Registers,USINT,alarm1
+300319,AutbusPADev21_slot0_alarm2.AutbusPADev21_slot0_alarm2,Input Registers,USINT,alarm2
+400112,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400113,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300320,null.null,Input Registers,UINT,undefined
+300321,AutbusPADev22_slot0_var1.AutbusPADev22_slot0_var1,Input Registers,USINT,InData1
+300322,AutbusPADev22_slot0_var2.AutbusPADev22_slot0_var2,Input Registers,UINT,InData2
+300323,AutbusPADev22_slot0_var3.AutbusPADev22_slot0_var3,Input Registers,ULINT,timer
+300327,AutbusPADev22_slot0_var4.AutbusPADev22_slot0_var4,Input Registers,UINT,year
+300328,AutbusPADev22_slot0_var5.AutbusPADev22_slot0_var5,Input Registers,USINT,month
+300329,AutbusPADev22_slot0_var6.AutbusPADev22_slot0_var6,Input Registers,USINT,day
+300330,AutbusPADev22_slot0_var7.AutbusPADev22_slot0_var7,Input Registers,USINT,hour
+300331,AutbusPADev22_slot0_var8.AutbusPADev22_slot0_var8,Input Registers,USINT,minute
+300332,AutbusPADev22_slot0_var9.AutbusPADev22_slot0_var9,Input Registers,USINT,second
+400114,AutbusPADev22_slot0_var10.AutbusPADev22_slot0_var10,Holding Registers,USINT,OutData1
+400115,AutbusPADev22_slot0_var11.AutbusPADev22_slot0_var11,Holding Registers,USINT,OutData2
+300333,AutbusPADev22_slot0_alarm1.AutbusPADev22_slot0_alarm1,Input Registers,USINT,alarm1
+300334,AutbusPADev22_slot0_alarm2.AutbusPADev22_slot0_alarm2,Input Registers,USINT,alarm2
+400116,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400117,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300335,null.null,Input Registers,UINT,undefined
+300336,AutbusPADev23_slot0_var1.AutbusPADev23_slot0_var1,Input Registers,USINT,InData1
+300337,AutbusPADev23_slot0_var2.AutbusPADev23_slot0_var2,Input Registers,UINT,InData2
+300338,AutbusPADev23_slot0_var3.AutbusPADev23_slot0_var3,Input Registers,ULINT,timer
+300342,AutbusPADev23_slot0_var4.AutbusPADev23_slot0_var4,Input Registers,UINT,year
+300343,AutbusPADev23_slot0_var5.AutbusPADev23_slot0_var5,Input Registers,USINT,month
+300344,AutbusPADev23_slot0_var6.AutbusPADev23_slot0_var6,Input Registers,USINT,day
+300345,AutbusPADev23_slot0_var7.AutbusPADev23_slot0_var7,Input Registers,USINT,hour
+300346,AutbusPADev23_slot0_var8.AutbusPADev23_slot0_var8,Input Registers,USINT,minute
+300347,AutbusPADev23_slot0_var9.AutbusPADev23_slot0_var9,Input Registers,USINT,second
+400118,AutbusPADev23_slot0_var10.AutbusPADev23_slot0_var10,Holding Registers,USINT,OutData1
+400119,AutbusPADev23_slot0_var11.AutbusPADev23_slot0_var11,Holding Registers,USINT,OutData2
+300348,AutbusPADev23_slot0_alarm1.AutbusPADev23_slot0_alarm1,Input Registers,USINT,alarm1
+300349,AutbusPADev23_slot0_alarm2.AutbusPADev23_slot0_alarm2,Input Registers,USINT,alarm2
+400120,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400121,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300350,null.null,Input Registers,UINT,undefined
+300351,AutbusPADev24_slot0_var1.AutbusPADev24_slot0_var1,Input Registers,USINT,InData1
+300352,AutbusPADev24_slot0_var2.AutbusPADev24_slot0_var2,Input Registers,UINT,InData2
+300353,AutbusPADev24_slot0_var3.AutbusPADev24_slot0_var3,Input Registers,ULINT,timer
+300357,AutbusPADev24_slot0_var4.AutbusPADev24_slot0_var4,Input Registers,UINT,year
+300358,AutbusPADev24_slot0_var5.AutbusPADev24_slot0_var5,Input Registers,USINT,month
+300359,AutbusPADev24_slot0_var6.AutbusPADev24_slot0_var6,Input Registers,USINT,day
+300360,AutbusPADev24_slot0_var7.AutbusPADev24_slot0_var7,Input Registers,USINT,hour
+300361,AutbusPADev24_slot0_var8.AutbusPADev24_slot0_var8,Input Registers,USINT,minute
+300362,AutbusPADev24_slot0_var9.AutbusPADev24_slot0_var9,Input Registers,USINT,second
+400122,AutbusPADev24_slot0_var10.AutbusPADev24_slot0_var10,Holding Registers,USINT,OutData1
+400123,AutbusPADev24_slot0_var11.AutbusPADev24_slot0_var11,Holding Registers,USINT,OutData2
+300363,AutbusPADev24_slot0_alarm1.AutbusPADev24_slot0_alarm1,Input Registers,USINT,alarm1
+300364,AutbusPADev24_slot0_alarm2.AutbusPADev24_slot0_alarm2,Input Registers,USINT,alarm2
+400124,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400125,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300365,null.null,Input Registers,UINT,undefined
+300366,AutbusPADev25_slot0_var1.AutbusPADev25_slot0_var1,Input Registers,USINT,InData1
+300367,AutbusPADev25_slot0_var2.AutbusPADev25_slot0_var2,Input Registers,UINT,InData2
+300368,AutbusPADev25_slot0_var3.AutbusPADev25_slot0_var3,Input Registers,ULINT,timer
+300372,AutbusPADev25_slot0_var4.AutbusPADev25_slot0_var4,Input Registers,UINT,year
+300373,AutbusPADev25_slot0_var5.AutbusPADev25_slot0_var5,Input Registers,USINT,month
+300374,AutbusPADev25_slot0_var6.AutbusPADev25_slot0_var6,Input Registers,USINT,day
+300375,AutbusPADev25_slot0_var7.AutbusPADev25_slot0_var7,Input Registers,USINT,hour
+300376,AutbusPADev25_slot0_var8.AutbusPADev25_slot0_var8,Input Registers,USINT,minute
+300377,AutbusPADev25_slot0_var9.AutbusPADev25_slot0_var9,Input Registers,USINT,second
+400126,AutbusPADev25_slot0_var10.AutbusPADev25_slot0_var10,Holding Registers,USINT,OutData1
+400127,AutbusPADev25_slot0_var11.AutbusPADev25_slot0_var11,Holding Registers,USINT,OutData2
+300378,AutbusPADev25_slot0_alarm1.AutbusPADev25_slot0_alarm1,Input Registers,USINT,alarm1
+300379,AutbusPADev25_slot0_alarm2.AutbusPADev25_slot0_alarm2,Input Registers,USINT,alarm2
+400128,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400129,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300380,null.null,Input Registers,UINT,undefined
+300381,AutbusPADev26_slot0_var1.AutbusPADev26_slot0_var1,Input Registers,USINT,InData1
+300382,AutbusPADev26_slot0_var2.AutbusPADev26_slot0_var2,Input Registers,UINT,InData2
+300383,AutbusPADev26_slot0_var3.AutbusPADev26_slot0_var3,Input Registers,ULINT,timer
+300387,AutbusPADev26_slot0_var4.AutbusPADev26_slot0_var4,Input Registers,UINT,year
+300388,AutbusPADev26_slot0_var5.AutbusPADev26_slot0_var5,Input Registers,USINT,month
+300389,AutbusPADev26_slot0_var6.AutbusPADev26_slot0_var6,Input Registers,USINT,day
+300390,AutbusPADev26_slot0_var7.AutbusPADev26_slot0_var7,Input Registers,USINT,hour
+300391,AutbusPADev26_slot0_var8.AutbusPADev26_slot0_var8,Input Registers,USINT,minute
+300392,AutbusPADev26_slot0_var9.AutbusPADev26_slot0_var9,Input Registers,USINT,second
+400130,AutbusPADev26_slot0_var10.AutbusPADev26_slot0_var10,Holding Registers,USINT,OutData1
+400131,AutbusPADev26_slot0_var11.AutbusPADev26_slot0_var11,Holding Registers,USINT,OutData2
+300393,AutbusPADev26_slot0_alarm1.AutbusPADev26_slot0_alarm1,Input Registers,USINT,alarm1
+300394,AutbusPADev26_slot0_alarm2.AutbusPADev26_slot0_alarm2,Input Registers,USINT,alarm2
+400132,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400133,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300395,null.null,Input Registers,UINT,undefined
+300396,AutbusPADev27_slot0_var1.AutbusPADev27_slot0_var1,Input Registers,USINT,InData1
+300397,AutbusPADev27_slot0_var2.AutbusPADev27_slot0_var2,Input Registers,UINT,InData2
+300398,AutbusPADev27_slot0_var3.AutbusPADev27_slot0_var3,Input Registers,ULINT,timer
+300402,AutbusPADev27_slot0_var4.AutbusPADev27_slot0_var4,Input Registers,UINT,year
+300403,AutbusPADev27_slot0_var5.AutbusPADev27_slot0_var5,Input Registers,USINT,month
+300404,AutbusPADev27_slot0_var6.AutbusPADev27_slot0_var6,Input Registers,USINT,day
+300405,AutbusPADev27_slot0_var7.AutbusPADev27_slot0_var7,Input Registers,USINT,hour
+300406,AutbusPADev27_slot0_var8.AutbusPADev27_slot0_var8,Input Registers,USINT,minute
+300407,AutbusPADev27_slot0_var9.AutbusPADev27_slot0_var9,Input Registers,USINT,second
+400134,AutbusPADev27_slot0_var10.AutbusPADev27_slot0_var10,Holding Registers,USINT,OutData1
+400135,AutbusPADev27_slot0_var11.AutbusPADev27_slot0_var11,Holding Registers,USINT,OutData2
+300408,AutbusPADev27_slot0_alarm1.AutbusPADev27_slot0_alarm1,Input Registers,USINT,alarm1
+300409,AutbusPADev27_slot0_alarm2.AutbusPADev27_slot0_alarm2,Input Registers,USINT,alarm2
+400136,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400137,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300410,null.null,Input Registers,UINT,undefined
+300411,AutbusPADev28_slot0_var1.AutbusPADev28_slot0_var1,Input Registers,USINT,InData1
+300412,AutbusPADev28_slot0_var2.AutbusPADev28_slot0_var2,Input Registers,UINT,InData2
+300413,AutbusPADev28_slot0_var3.AutbusPADev28_slot0_var3,Input Registers,ULINT,timer
+300417,AutbusPADev28_slot0_var4.AutbusPADev28_slot0_var4,Input Registers,UINT,year
+300418,AutbusPADev28_slot0_var5.AutbusPADev28_slot0_var5,Input Registers,USINT,month
+300419,AutbusPADev28_slot0_var6.AutbusPADev28_slot0_var6,Input Registers,USINT,day
+300420,AutbusPADev28_slot0_var7.AutbusPADev28_slot0_var7,Input Registers,USINT,hour
+300421,AutbusPADev28_slot0_var8.AutbusPADev28_slot0_var8,Input Registers,USINT,minute
+300422,AutbusPADev28_slot0_var9.AutbusPADev28_slot0_var9,Input Registers,USINT,second
+400138,AutbusPADev28_slot0_var10.AutbusPADev28_slot0_var10,Holding Registers,USINT,OutData1
+400139,AutbusPADev28_slot0_var11.AutbusPADev28_slot0_var11,Holding Registers,USINT,OutData2
+300423,AutbusPADev28_slot0_alarm1.AutbusPADev28_slot0_alarm1,Input Registers,USINT,alarm1
+300424,AutbusPADev28_slot0_alarm2.AutbusPADev28_slot0_alarm2,Input Registers,USINT,alarm2
+400140,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400141,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300425,null.null,Input Registers,UINT,undefined
+300426,AutbusPADev29_slot0_var1.AutbusPADev29_slot0_var1,Input Registers,USINT,InData1
+300427,AutbusPADev29_slot0_var2.AutbusPADev29_slot0_var2,Input Registers,UINT,InData2
+300428,AutbusPADev29_slot0_var3.AutbusPADev29_slot0_var3,Input Registers,ULINT,timer
+300432,AutbusPADev29_slot0_var4.AutbusPADev29_slot0_var4,Input Registers,UINT,year
+300433,AutbusPADev29_slot0_var5.AutbusPADev29_slot0_var5,Input Registers,USINT,month
+300434,AutbusPADev29_slot0_var6.AutbusPADev29_slot0_var6,Input Registers,USINT,day
+300435,AutbusPADev29_slot0_var7.AutbusPADev29_slot0_var7,Input Registers,USINT,hour
+300436,AutbusPADev29_slot0_var8.AutbusPADev29_slot0_var8,Input Registers,USINT,minute
+300437,AutbusPADev29_slot0_var9.AutbusPADev29_slot0_var9,Input Registers,USINT,second
+400142,AutbusPADev29_slot0_var10.AutbusPADev29_slot0_var10,Holding Registers,USINT,OutData1
+400143,AutbusPADev29_slot0_var11.AutbusPADev29_slot0_var11,Holding Registers,USINT,OutData2
+300438,AutbusPADev29_slot0_alarm1.AutbusPADev29_slot0_alarm1,Input Registers,USINT,alarm1
+300439,AutbusPADev29_slot0_alarm2.AutbusPADev29_slot0_alarm2,Input Registers,USINT,alarm2
+400144,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400145,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300440,null.null,Input Registers,UINT,undefined
+300441,AutbusPADev30_slot0_var1.AutbusPADev30_slot0_var1,Input Registers,USINT,InData1
+300442,AutbusPADev30_slot0_var2.AutbusPADev30_slot0_var2,Input Registers,UINT,InData2
+300443,AutbusPADev30_slot0_var3.AutbusPADev30_slot0_var3,Input Registers,ULINT,timer
+300447,AutbusPADev30_slot0_var4.AutbusPADev30_slot0_var4,Input Registers,UINT,year
+300448,AutbusPADev30_slot0_var5.AutbusPADev30_slot0_var5,Input Registers,USINT,month
+300449,AutbusPADev30_slot0_var6.AutbusPADev30_slot0_var6,Input Registers,USINT,day
+300450,AutbusPADev30_slot0_var7.AutbusPADev30_slot0_var7,Input Registers,USINT,hour
+300451,AutbusPADev30_slot0_var8.AutbusPADev30_slot0_var8,Input Registers,USINT,minute
+300452,AutbusPADev30_slot0_var9.AutbusPADev30_slot0_var9,Input Registers,USINT,second
+400146,AutbusPADev30_slot0_var10.AutbusPADev30_slot0_var10,Holding Registers,USINT,OutData1
+400147,AutbusPADev30_slot0_var11.AutbusPADev30_slot0_var11,Holding Registers,USINT,OutData2
+300453,AutbusPADev30_slot0_alarm1.AutbusPADev30_slot0_alarm1,Input Registers,USINT,alarm1
+300454,AutbusPADev30_slot0_alarm2.AutbusPADev30_slot0_alarm2,Input Registers,USINT,alarm2
+400148,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400149,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300455,null.null,Input Registers,UINT,undefined
+300456,AutbusPADev31_slot0_var1.AutbusPADev31_slot0_var1,Input Registers,USINT,InData1
+300457,AutbusPADev31_slot0_var2.AutbusPADev31_slot0_var2,Input Registers,UINT,InData2
+300458,AutbusPADev31_slot0_var3.AutbusPADev31_slot0_var3,Input Registers,ULINT,timer
+300462,AutbusPADev31_slot0_var4.AutbusPADev31_slot0_var4,Input Registers,UINT,year
+300463,AutbusPADev31_slot0_var5.AutbusPADev31_slot0_var5,Input Registers,USINT,month
+300464,AutbusPADev31_slot0_var6.AutbusPADev31_slot0_var6,Input Registers,USINT,day
+300465,AutbusPADev31_slot0_var7.AutbusPADev31_slot0_var7,Input Registers,USINT,hour
+300466,AutbusPADev31_slot0_var8.AutbusPADev31_slot0_var8,Input Registers,USINT,minute
+300467,AutbusPADev31_slot0_var9.AutbusPADev31_slot0_var9,Input Registers,USINT,second
+400150,AutbusPADev31_slot0_var10.AutbusPADev31_slot0_var10,Holding Registers,USINT,OutData1
+400151,AutbusPADev31_slot0_var11.AutbusPADev31_slot0_var11,Holding Registers,USINT,OutData2
+300468,AutbusPADev31_slot0_alarm1.AutbusPADev31_slot0_alarm1,Input Registers,USINT,alarm1
+300469,AutbusPADev31_slot0_alarm2.AutbusPADev31_slot0_alarm2,Input Registers,USINT,alarm2
+400152,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400153,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300470,null.null,Input Registers,UINT,undefined
+300471,AutbusPADev32_slot0_var1.AutbusPADev32_slot0_var1,Input Registers,USINT,InData1
+300472,AutbusPADev32_slot0_var2.AutbusPADev32_slot0_var2,Input Registers,UINT,InData2
+300473,AutbusPADev32_slot0_var3.AutbusPADev32_slot0_var3,Input Registers,ULINT,timer
+300477,AutbusPADev32_slot0_var4.AutbusPADev32_slot0_var4,Input Registers,UINT,year
+300478,AutbusPADev32_slot0_var5.AutbusPADev32_slot0_var5,Input Registers,USINT,month
+300479,AutbusPADev32_slot0_var6.AutbusPADev32_slot0_var6,Input Registers,USINT,day
+300480,AutbusPADev32_slot0_var7.AutbusPADev32_slot0_var7,Input Registers,USINT,hour
+300481,AutbusPADev32_slot0_var8.AutbusPADev32_slot0_var8,Input Registers,USINT,minute
+300482,AutbusPADev32_slot0_var9.AutbusPADev32_slot0_var9,Input Registers,USINT,second
+400154,AutbusPADev32_slot0_var10.AutbusPADev32_slot0_var10,Holding Registers,USINT,OutData1
+400155,AutbusPADev32_slot0_var11.AutbusPADev32_slot0_var11,Holding Registers,USINT,OutData2
+300483,AutbusPADev32_slot0_alarm1.AutbusPADev32_slot0_alarm1,Input Registers,USINT,alarm1
+300484,AutbusPADev32_slot0_alarm2.AutbusPADev32_slot0_alarm2,Input Registers,USINT,alarm2
+400156,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400157,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300485,null.null,Input Registers,UINT,undefined
+300486,AutbusPADev33_slot0_var1.AutbusPADev33_slot0_var1,Input Registers,USINT,InData1
+300487,AutbusPADev33_slot0_var2.AutbusPADev33_slot0_var2,Input Registers,UINT,InData2
+300488,AutbusPADev33_slot0_var3.AutbusPADev33_slot0_var3,Input Registers,ULINT,timer
+300492,AutbusPADev33_slot0_var4.AutbusPADev33_slot0_var4,Input Registers,UINT,year
+300493,AutbusPADev33_slot0_var5.AutbusPADev33_slot0_var5,Input Registers,USINT,month
+300494,AutbusPADev33_slot0_var6.AutbusPADev33_slot0_var6,Input Registers,USINT,day
+300495,AutbusPADev33_slot0_var7.AutbusPADev33_slot0_var7,Input Registers,USINT,hour
+300496,AutbusPADev33_slot0_var8.AutbusPADev33_slot0_var8,Input Registers,USINT,minute
+300497,AutbusPADev33_slot0_var9.AutbusPADev33_slot0_var9,Input Registers,USINT,second
+400158,AutbusPADev33_slot0_var10.AutbusPADev33_slot0_var10,Holding Registers,USINT,OutData1
+400159,AutbusPADev33_slot0_var11.AutbusPADev33_slot0_var11,Holding Registers,USINT,OutData2
+300498,AutbusPADev33_slot0_alarm1.AutbusPADev33_slot0_alarm1,Input Registers,USINT,alarm1
+300499,AutbusPADev33_slot0_alarm2.AutbusPADev33_slot0_alarm2,Input Registers,USINT,alarm2
+400160,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400161,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300500,null.null,Input Registers,UINT,undefined
+300501,AutbusPADev34_slot0_var1.AutbusPADev34_slot0_var1,Input Registers,USINT,InData1
+300502,AutbusPADev34_slot0_var2.AutbusPADev34_slot0_var2,Input Registers,UINT,InData2
+300503,AutbusPADev34_slot0_var3.AutbusPADev34_slot0_var3,Input Registers,ULINT,timer
+300507,AutbusPADev34_slot0_var4.AutbusPADev34_slot0_var4,Input Registers,UINT,year
+300508,AutbusPADev34_slot0_var5.AutbusPADev34_slot0_var5,Input Registers,USINT,month
+300509,AutbusPADev34_slot0_var6.AutbusPADev34_slot0_var6,Input Registers,USINT,day
+300510,AutbusPADev34_slot0_var7.AutbusPADev34_slot0_var7,Input Registers,USINT,hour
+300511,AutbusPADev34_slot0_var8.AutbusPADev34_slot0_var8,Input Registers,USINT,minute
+300512,AutbusPADev34_slot0_var9.AutbusPADev34_slot0_var9,Input Registers,USINT,second
+400162,AutbusPADev34_slot0_var10.AutbusPADev34_slot0_var10,Holding Registers,USINT,OutData1
+400163,AutbusPADev34_slot0_var11.AutbusPADev34_slot0_var11,Holding Registers,USINT,OutData2
+300513,AutbusPADev34_slot0_alarm1.AutbusPADev34_slot0_alarm1,Input Registers,USINT,alarm1
+300514,AutbusPADev34_slot0_alarm2.AutbusPADev34_slot0_alarm2,Input Registers,USINT,alarm2
+400164,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400165,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300515,null.null,Input Registers,UINT,undefined
+300516,AutbusPADev35_slot0_var1.AutbusPADev35_slot0_var1,Input Registers,USINT,InData1
+300517,AutbusPADev35_slot0_var2.AutbusPADev35_slot0_var2,Input Registers,UINT,InData2
+300518,AutbusPADev35_slot0_var3.AutbusPADev35_slot0_var3,Input Registers,ULINT,timer
+300522,AutbusPADev35_slot0_var4.AutbusPADev35_slot0_var4,Input Registers,UINT,year
+300523,AutbusPADev35_slot0_var5.AutbusPADev35_slot0_var5,Input Registers,USINT,month
+300524,AutbusPADev35_slot0_var6.AutbusPADev35_slot0_var6,Input Registers,USINT,day
+300525,AutbusPADev35_slot0_var7.AutbusPADev35_slot0_var7,Input Registers,USINT,hour
+300526,AutbusPADev35_slot0_var8.AutbusPADev35_slot0_var8,Input Registers,USINT,minute
+300527,AutbusPADev35_slot0_var9.AutbusPADev35_slot0_var9,Input Registers,USINT,second
+400166,AutbusPADev35_slot0_var10.AutbusPADev35_slot0_var10,Holding Registers,USINT,OutData1
+400167,AutbusPADev35_slot0_var11.AutbusPADev35_slot0_var11,Holding Registers,USINT,OutData2
+300528,AutbusPADev35_slot0_alarm1.AutbusPADev35_slot0_alarm1,Input Registers,USINT,alarm1
+300529,AutbusPADev35_slot0_alarm2.AutbusPADev35_slot0_alarm2,Input Registers,USINT,alarm2
+400168,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400169,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300530,null.null,Input Registers,UINT,undefined
+300531,AutbusPADev36_slot0_var1.AutbusPADev36_slot0_var1,Input Registers,USINT,InData1
+300532,AutbusPADev36_slot0_var2.AutbusPADev36_slot0_var2,Input Registers,UINT,InData2
+300533,AutbusPADev36_slot0_var3.AutbusPADev36_slot0_var3,Input Registers,ULINT,timer
+300537,AutbusPADev36_slot0_var4.AutbusPADev36_slot0_var4,Input Registers,UINT,year
+300538,AutbusPADev36_slot0_var5.AutbusPADev36_slot0_var5,Input Registers,USINT,month
+300539,AutbusPADev36_slot0_var6.AutbusPADev36_slot0_var6,Input Registers,USINT,day
+300540,AutbusPADev36_slot0_var7.AutbusPADev36_slot0_var7,Input Registers,USINT,hour
+300541,AutbusPADev36_slot0_var8.AutbusPADev36_slot0_var8,Input Registers,USINT,minute
+300542,AutbusPADev36_slot0_var9.AutbusPADev36_slot0_var9,Input Registers,USINT,second
+400170,AutbusPADev36_slot0_var10.AutbusPADev36_slot0_var10,Holding Registers,USINT,OutData1
+400171,AutbusPADev36_slot0_var11.AutbusPADev36_slot0_var11,Holding Registers,USINT,OutData2
+300543,AutbusPADev36_slot0_alarm1.AutbusPADev36_slot0_alarm1,Input Registers,USINT,alarm1
+300544,AutbusPADev36_slot0_alarm2.AutbusPADev36_slot0_alarm2,Input Registers,USINT,alarm2
+400172,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400173,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300545,null.null,Input Registers,UINT,undefined
+300546,AutbusPADev37_slot0_var1.AutbusPADev37_slot0_var1,Input Registers,USINT,InData1
+300547,AutbusPADev37_slot0_var2.AutbusPADev37_slot0_var2,Input Registers,UINT,InData2
+300548,AutbusPADev37_slot0_var3.AutbusPADev37_slot0_var3,Input Registers,ULINT,timer
+300552,AutbusPADev37_slot0_var4.AutbusPADev37_slot0_var4,Input Registers,UINT,year
+300553,AutbusPADev37_slot0_var5.AutbusPADev37_slot0_var5,Input Registers,USINT,month
+300554,AutbusPADev37_slot0_var6.AutbusPADev37_slot0_var6,Input Registers,USINT,day
+300555,AutbusPADev37_slot0_var7.AutbusPADev37_slot0_var7,Input Registers,USINT,hour
+300556,AutbusPADev37_slot0_var8.AutbusPADev37_slot0_var8,Input Registers,USINT,minute
+300557,AutbusPADev37_slot0_var9.AutbusPADev37_slot0_var9,Input Registers,USINT,second
+400174,AutbusPADev37_slot0_var10.AutbusPADev37_slot0_var10,Holding Registers,USINT,OutData1
+400175,AutbusPADev37_slot0_var11.AutbusPADev37_slot0_var11,Holding Registers,USINT,OutData2
+300558,AutbusPADev37_slot0_alarm1.AutbusPADev37_slot0_alarm1,Input Registers,USINT,alarm1
+300559,AutbusPADev37_slot0_alarm2.AutbusPADev37_slot0_alarm2,Input Registers,USINT,alarm2
+400176,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400177,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300560,null.null,Input Registers,UINT,undefined
+300561,AutbusPADev38_slot0_var1.AutbusPADev38_slot0_var1,Input Registers,USINT,InData1
+300562,AutbusPADev38_slot0_var2.AutbusPADev38_slot0_var2,Input Registers,UINT,InData2
+300563,AutbusPADev38_slot0_var3.AutbusPADev38_slot0_var3,Input Registers,ULINT,timer
+300567,AutbusPADev38_slot0_var4.AutbusPADev38_slot0_var4,Input Registers,UINT,year
+300568,AutbusPADev38_slot0_var5.AutbusPADev38_slot0_var5,Input Registers,USINT,month
+300569,AutbusPADev38_slot0_var6.AutbusPADev38_slot0_var6,Input Registers,USINT,day
+300570,AutbusPADev38_slot0_var7.AutbusPADev38_slot0_var7,Input Registers,USINT,hour
+300571,AutbusPADev38_slot0_var8.AutbusPADev38_slot0_var8,Input Registers,USINT,minute
+300572,AutbusPADev38_slot0_var9.AutbusPADev38_slot0_var9,Input Registers,USINT,second
+400178,AutbusPADev38_slot0_var10.AutbusPADev38_slot0_var10,Holding Registers,USINT,OutData1
+400179,AutbusPADev38_slot0_var11.AutbusPADev38_slot0_var11,Holding Registers,USINT,OutData2
+300573,AutbusPADev38_slot0_alarm1.AutbusPADev38_slot0_alarm1,Input Registers,USINT,alarm1
+300574,AutbusPADev38_slot0_alarm2.AutbusPADev38_slot0_alarm2,Input Registers,USINT,alarm2
+400180,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400181,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300575,null.null,Input Registers,UINT,undefined
+300576,AutbusPADev39_slot0_var1.AutbusPADev39_slot0_var1,Input Registers,USINT,InData1
+300577,AutbusPADev39_slot0_var2.AutbusPADev39_slot0_var2,Input Registers,UINT,InData2
+300578,AutbusPADev39_slot0_var3.AutbusPADev39_slot0_var3,Input Registers,ULINT,timer
+300582,AutbusPADev39_slot0_var4.AutbusPADev39_slot0_var4,Input Registers,UINT,year
+300583,AutbusPADev39_slot0_var5.AutbusPADev39_slot0_var5,Input Registers,USINT,month
+300584,AutbusPADev39_slot0_var6.AutbusPADev39_slot0_var6,Input Registers,USINT,day
+300585,AutbusPADev39_slot0_var7.AutbusPADev39_slot0_var7,Input Registers,USINT,hour
+300586,AutbusPADev39_slot0_var8.AutbusPADev39_slot0_var8,Input Registers,USINT,minute
+300587,AutbusPADev39_slot0_var9.AutbusPADev39_slot0_var9,Input Registers,USINT,second
+400182,AutbusPADev39_slot0_var10.AutbusPADev39_slot0_var10,Holding Registers,USINT,OutData1
+400183,AutbusPADev39_slot0_var11.AutbusPADev39_slot0_var11,Holding Registers,USINT,OutData2
+300588,AutbusPADev39_slot0_alarm1.AutbusPADev39_slot0_alarm1,Input Registers,USINT,alarm1
+300589,AutbusPADev39_slot0_alarm2.AutbusPADev39_slot0_alarm2,Input Registers,USINT,alarm2
+400184,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400185,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300590,null.null,Input Registers,UINT,undefined
+300591,AutbusPADev40_slot0_var1.AutbusPADev40_slot0_var1,Input Registers,USINT,InData1
+300592,AutbusPADev40_slot0_var2.AutbusPADev40_slot0_var2,Input Registers,UINT,InData2
+300593,AutbusPADev40_slot0_var3.AutbusPADev40_slot0_var3,Input Registers,ULINT,timer
+300597,AutbusPADev40_slot0_var4.AutbusPADev40_slot0_var4,Input Registers,UINT,year
+300598,AutbusPADev40_slot0_var5.AutbusPADev40_slot0_var5,Input Registers,USINT,month
+300599,AutbusPADev40_slot0_var6.AutbusPADev40_slot0_var6,Input Registers,USINT,day
+300600,AutbusPADev40_slot0_var7.AutbusPADev40_slot0_var7,Input Registers,USINT,hour
+300601,AutbusPADev40_slot0_var8.AutbusPADev40_slot0_var8,Input Registers,USINT,minute
+300602,AutbusPADev40_slot0_var9.AutbusPADev40_slot0_var9,Input Registers,USINT,second
+400186,AutbusPADev40_slot0_var10.AutbusPADev40_slot0_var10,Holding Registers,USINT,OutData1
+400187,AutbusPADev40_slot0_var11.AutbusPADev40_slot0_var11,Holding Registers,USINT,OutData2
+300603,AutbusPADev40_slot0_alarm1.AutbusPADev40_slot0_alarm1,Input Registers,USINT,alarm1
+300604,AutbusPADev40_slot0_alarm2.AutbusPADev40_slot0_alarm2,Input Registers,USINT,alarm2
+400188,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400189,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300605,null.null,Input Registers,UINT,undefined
+300606,AutbusPADev41_slot0_var1.AutbusPADev41_slot0_var1,Input Registers,USINT,InData1
+300607,AutbusPADev41_slot0_var2.AutbusPADev41_slot0_var2,Input Registers,UINT,InData2
+300608,AutbusPADev41_slot0_var3.AutbusPADev41_slot0_var3,Input Registers,ULINT,timer
+300612,AutbusPADev41_slot0_var4.AutbusPADev41_slot0_var4,Input Registers,UINT,year
+300613,AutbusPADev41_slot0_var5.AutbusPADev41_slot0_var5,Input Registers,USINT,month
+300614,AutbusPADev41_slot0_var6.AutbusPADev41_slot0_var6,Input Registers,USINT,day
+300615,AutbusPADev41_slot0_var7.AutbusPADev41_slot0_var7,Input Registers,USINT,hour
+300616,AutbusPADev41_slot0_var8.AutbusPADev41_slot0_var8,Input Registers,USINT,minute
+300617,AutbusPADev41_slot0_var9.AutbusPADev41_slot0_var9,Input Registers,USINT,second
+400190,AutbusPADev41_slot0_var10.AutbusPADev41_slot0_var10,Holding Registers,USINT,OutData1
+400191,AutbusPADev41_slot0_var11.AutbusPADev41_slot0_var11,Holding Registers,USINT,OutData2
+300618,AutbusPADev41_slot0_alarm1.AutbusPADev41_slot0_alarm1,Input Registers,USINT,alarm1
+300619,AutbusPADev41_slot0_alarm2.AutbusPADev41_slot0_alarm2,Input Registers,USINT,alarm2
+400192,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400193,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300620,null.null,Input Registers,UINT,undefined
+300621,AutbusPADev42_slot0_var1.AutbusPADev42_slot0_var1,Input Registers,USINT,InData1
+300622,AutbusPADev42_slot0_var2.AutbusPADev42_slot0_var2,Input Registers,UINT,InData2
+300623,AutbusPADev42_slot0_var3.AutbusPADev42_slot0_var3,Input Registers,ULINT,timer
+300627,AutbusPADev42_slot0_var4.AutbusPADev42_slot0_var4,Input Registers,UINT,year
+300628,AutbusPADev42_slot0_var5.AutbusPADev42_slot0_var5,Input Registers,USINT,month
+300629,AutbusPADev42_slot0_var6.AutbusPADev42_slot0_var6,Input Registers,USINT,day
+300630,AutbusPADev42_slot0_var7.AutbusPADev42_slot0_var7,Input Registers,USINT,hour
+300631,AutbusPADev42_slot0_var8.AutbusPADev42_slot0_var8,Input Registers,USINT,minute
+300632,AutbusPADev42_slot0_var9.AutbusPADev42_slot0_var9,Input Registers,USINT,second
+400194,AutbusPADev42_slot0_var10.AutbusPADev42_slot0_var10,Holding Registers,USINT,OutData1
+400195,AutbusPADev42_slot0_var11.AutbusPADev42_slot0_var11,Holding Registers,USINT,OutData2
+300633,AutbusPADev42_slot0_alarm1.AutbusPADev42_slot0_alarm1,Input Registers,USINT,alarm1
+300634,AutbusPADev42_slot0_alarm2.AutbusPADev42_slot0_alarm2,Input Registers,USINT,alarm2
+400196,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400197,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300635,null.null,Input Registers,UINT,undefined
+300636,AutbusPADev43_slot0_var1.AutbusPADev43_slot0_var1,Input Registers,USINT,InData1
+300637,AutbusPADev43_slot0_var2.AutbusPADev43_slot0_var2,Input Registers,UINT,InData2
+300638,AutbusPADev43_slot0_var3.AutbusPADev43_slot0_var3,Input Registers,ULINT,timer
+300642,AutbusPADev43_slot0_var4.AutbusPADev43_slot0_var4,Input Registers,UINT,year
+300643,AutbusPADev43_slot0_var5.AutbusPADev43_slot0_var5,Input Registers,USINT,month
+300644,AutbusPADev43_slot0_var6.AutbusPADev43_slot0_var6,Input Registers,USINT,day
+300645,AutbusPADev43_slot0_var7.AutbusPADev43_slot0_var7,Input Registers,USINT,hour
+300646,AutbusPADev43_slot0_var8.AutbusPADev43_slot0_var8,Input Registers,USINT,minute
+300647,AutbusPADev43_slot0_var9.AutbusPADev43_slot0_var9,Input Registers,USINT,second
+400198,AutbusPADev43_slot0_var10.AutbusPADev43_slot0_var10,Holding Registers,USINT,OutData1
+400199,AutbusPADev43_slot0_var11.AutbusPADev43_slot0_var11,Holding Registers,USINT,OutData2
+300648,AutbusPADev43_slot0_alarm1.AutbusPADev43_slot0_alarm1,Input Registers,USINT,alarm1
+300649,AutbusPADev43_slot0_alarm2.AutbusPADev43_slot0_alarm2,Input Registers,USINT,alarm2
+400200,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400201,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300650,null.null,Input Registers,UINT,undefined
+300651,AutbusPADev44_slot0_var1.AutbusPADev44_slot0_var1,Input Registers,USINT,InData1
+300652,AutbusPADev44_slot0_var2.AutbusPADev44_slot0_var2,Input Registers,UINT,InData2
+300653,AutbusPADev44_slot0_var3.AutbusPADev44_slot0_var3,Input Registers,ULINT,timer
+300657,AutbusPADev44_slot0_var4.AutbusPADev44_slot0_var4,Input Registers,UINT,year
+300658,AutbusPADev44_slot0_var5.AutbusPADev44_slot0_var5,Input Registers,USINT,month
+300659,AutbusPADev44_slot0_var6.AutbusPADev44_slot0_var6,Input Registers,USINT,day
+300660,AutbusPADev44_slot0_var7.AutbusPADev44_slot0_var7,Input Registers,USINT,hour
+300661,AutbusPADev44_slot0_var8.AutbusPADev44_slot0_var8,Input Registers,USINT,minute
+300662,AutbusPADev44_slot0_var9.AutbusPADev44_slot0_var9,Input Registers,USINT,second
+400202,AutbusPADev44_slot0_var10.AutbusPADev44_slot0_var10,Holding Registers,USINT,OutData1
+400203,AutbusPADev44_slot0_var11.AutbusPADev44_slot0_var11,Holding Registers,USINT,OutData2
+300663,AutbusPADev44_slot0_alarm1.AutbusPADev44_slot0_alarm1,Input Registers,USINT,alarm1
+300664,AutbusPADev44_slot0_alarm2.AutbusPADev44_slot0_alarm2,Input Registers,USINT,alarm2
+400204,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400205,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300665,null.null,Input Registers,UINT,undefined
+300666,AutbusPADev45_slot0_var1.AutbusPADev45_slot0_var1,Input Registers,USINT,InData1
+300667,AutbusPADev45_slot0_var2.AutbusPADev45_slot0_var2,Input Registers,UINT,InData2
+300668,AutbusPADev45_slot0_var3.AutbusPADev45_slot0_var3,Input Registers,ULINT,timer
+300672,AutbusPADev45_slot0_var4.AutbusPADev45_slot0_var4,Input Registers,UINT,year
+300673,AutbusPADev45_slot0_var5.AutbusPADev45_slot0_var5,Input Registers,USINT,month
+300674,AutbusPADev45_slot0_var6.AutbusPADev45_slot0_var6,Input Registers,USINT,day
+300675,AutbusPADev45_slot0_var7.AutbusPADev45_slot0_var7,Input Registers,USINT,hour
+300676,AutbusPADev45_slot0_var8.AutbusPADev45_slot0_var8,Input Registers,USINT,minute
+300677,AutbusPADev45_slot0_var9.AutbusPADev45_slot0_var9,Input Registers,USINT,second
+400206,AutbusPADev45_slot0_var10.AutbusPADev45_slot0_var10,Holding Registers,USINT,OutData1
+400207,AutbusPADev45_slot0_var11.AutbusPADev45_slot0_var11,Holding Registers,USINT,OutData2
+300678,AutbusPADev45_slot0_alarm1.AutbusPADev45_slot0_alarm1,Input Registers,USINT,alarm1
+300679,AutbusPADev45_slot0_alarm2.AutbusPADev45_slot0_alarm2,Input Registers,USINT,alarm2
+400208,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400209,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300680,null.null,Input Registers,UINT,undefined
+300681,AutbusPADev46_slot0_var1.AutbusPADev46_slot0_var1,Input Registers,USINT,InData1
+300682,AutbusPADev46_slot0_var2.AutbusPADev46_slot0_var2,Input Registers,UINT,InData2
+300683,AutbusPADev46_slot0_var3.AutbusPADev46_slot0_var3,Input Registers,ULINT,timer
+300687,AutbusPADev46_slot0_var4.AutbusPADev46_slot0_var4,Input Registers,UINT,year
+300688,AutbusPADev46_slot0_var5.AutbusPADev46_slot0_var5,Input Registers,USINT,month
+300689,AutbusPADev46_slot0_var6.AutbusPADev46_slot0_var6,Input Registers,USINT,day
+300690,AutbusPADev46_slot0_var7.AutbusPADev46_slot0_var7,Input Registers,USINT,hour
+300691,AutbusPADev46_slot0_var8.AutbusPADev46_slot0_var8,Input Registers,USINT,minute
+300692,AutbusPADev46_slot0_var9.AutbusPADev46_slot0_var9,Input Registers,USINT,second
+400210,AutbusPADev46_slot0_var10.AutbusPADev46_slot0_var10,Holding Registers,USINT,OutData1
+400211,AutbusPADev46_slot0_var11.AutbusPADev46_slot0_var11,Holding Registers,USINT,OutData2
+300693,AutbusPADev46_slot0_alarm1.AutbusPADev46_slot0_alarm1,Input Registers,USINT,alarm1
+300694,AutbusPADev46_slot0_alarm2.AutbusPADev46_slot0_alarm2,Input Registers,USINT,alarm2
+400212,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400213,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300695,null.null,Input Registers,UINT,undefined
+300696,AutbusPADev47_slot0_var1.AutbusPADev47_slot0_var1,Input Registers,USINT,InData1
+300697,AutbusPADev47_slot0_var2.AutbusPADev47_slot0_var2,Input Registers,UINT,InData2
+300698,AutbusPADev47_slot0_var3.AutbusPADev47_slot0_var3,Input Registers,ULINT,timer
+300702,AutbusPADev47_slot0_var4.AutbusPADev47_slot0_var4,Input Registers,UINT,year
+300703,AutbusPADev47_slot0_var5.AutbusPADev47_slot0_var5,Input Registers,USINT,month
+300704,AutbusPADev47_slot0_var6.AutbusPADev47_slot0_var6,Input Registers,USINT,day
+300705,AutbusPADev47_slot0_var7.AutbusPADev47_slot0_var7,Input Registers,USINT,hour
+300706,AutbusPADev47_slot0_var8.AutbusPADev47_slot0_var8,Input Registers,USINT,minute
+300707,AutbusPADev47_slot0_var9.AutbusPADev47_slot0_var9,Input Registers,USINT,second
+400214,AutbusPADev47_slot0_var10.AutbusPADev47_slot0_var10,Holding Registers,USINT,OutData1
+400215,AutbusPADev47_slot0_var11.AutbusPADev47_slot0_var11,Holding Registers,USINT,OutData2
+300708,AutbusPADev47_slot0_alarm1.AutbusPADev47_slot0_alarm1,Input Registers,USINT,alarm1
+300709,AutbusPADev47_slot0_alarm2.AutbusPADev47_slot0_alarm2,Input Registers,USINT,alarm2
+400216,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400217,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300710,null.null,Input Registers,UINT,undefined
+300711,AutbusPADev48_slot0_var1.AutbusPADev48_slot0_var1,Input Registers,USINT,InData1
+300712,AutbusPADev48_slot0_var2.AutbusPADev48_slot0_var2,Input Registers,UINT,InData2
+300713,AutbusPADev48_slot0_var3.AutbusPADev48_slot0_var3,Input Registers,ULINT,timer
+300717,AutbusPADev48_slot0_var4.AutbusPADev48_slot0_var4,Input Registers,UINT,year
+300718,AutbusPADev48_slot0_var5.AutbusPADev48_slot0_var5,Input Registers,USINT,month
+300719,AutbusPADev48_slot0_var6.AutbusPADev48_slot0_var6,Input Registers,USINT,day
+300720,AutbusPADev48_slot0_var7.AutbusPADev48_slot0_var7,Input Registers,USINT,hour
+300721,AutbusPADev48_slot0_var8.AutbusPADev48_slot0_var8,Input Registers,USINT,minute
+300722,AutbusPADev48_slot0_var9.AutbusPADev48_slot0_var9,Input Registers,USINT,second
+400218,AutbusPADev48_slot0_var10.AutbusPADev48_slot0_var10,Holding Registers,USINT,OutData1
+400219,AutbusPADev48_slot0_var11.AutbusPADev48_slot0_var11,Holding Registers,USINT,OutData2
+300723,AutbusPADev48_slot0_alarm1.AutbusPADev48_slot0_alarm1,Input Registers,USINT,alarm1
+300724,AutbusPADev48_slot0_alarm2.AutbusPADev48_slot0_alarm2,Input Registers,USINT,alarm2
+400220,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400221,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300725,null.null,Input Registers,UINT,undefined
+300726,AutbusPADev49_slot0_var1.AutbusPADev49_slot0_var1,Input Registers,USINT,InData1
+300727,AutbusPADev49_slot0_var2.AutbusPADev49_slot0_var2,Input Registers,UINT,InData2
+300728,AutbusPADev49_slot0_var3.AutbusPADev49_slot0_var3,Input Registers,ULINT,timer
+300732,AutbusPADev49_slot0_var4.AutbusPADev49_slot0_var4,Input Registers,UINT,year
+300733,AutbusPADev49_slot0_var5.AutbusPADev49_slot0_var5,Input Registers,USINT,month
+300734,AutbusPADev49_slot0_var6.AutbusPADev49_slot0_var6,Input Registers,USINT,day
+300735,AutbusPADev49_slot0_var7.AutbusPADev49_slot0_var7,Input Registers,USINT,hour
+300736,AutbusPADev49_slot0_var8.AutbusPADev49_slot0_var8,Input Registers,USINT,minute
+300737,AutbusPADev49_slot0_var9.AutbusPADev49_slot0_var9,Input Registers,USINT,second
+400222,AutbusPADev49_slot0_var10.AutbusPADev49_slot0_var10,Holding Registers,USINT,OutData1
+400223,AutbusPADev49_slot0_var11.AutbusPADev49_slot0_var11,Holding Registers,USINT,OutData2
+300738,AutbusPADev49_slot0_alarm1.AutbusPADev49_slot0_alarm1,Input Registers,USINT,alarm1
+300739,AutbusPADev49_slot0_alarm2.AutbusPADev49_slot0_alarm2,Input Registers,USINT,alarm2
+400224,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400225,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300740,null.null,Input Registers,UINT,undefined
+300741,AutbusPADev50_slot0_var1.AutbusPADev50_slot0_var1,Input Registers,USINT,InData1
+300742,AutbusPADev50_slot0_var2.AutbusPADev50_slot0_var2,Input Registers,UINT,InData2
+300743,AutbusPADev50_slot0_var3.AutbusPADev50_slot0_var3,Input Registers,ULINT,timer
+300747,AutbusPADev50_slot0_var4.AutbusPADev50_slot0_var4,Input Registers,UINT,year
+300748,AutbusPADev50_slot0_var5.AutbusPADev50_slot0_var5,Input Registers,USINT,month
+300749,AutbusPADev50_slot0_var6.AutbusPADev50_slot0_var6,Input Registers,USINT,day
+300750,AutbusPADev50_slot0_var7.AutbusPADev50_slot0_var7,Input Registers,USINT,hour
+300751,AutbusPADev50_slot0_var8.AutbusPADev50_slot0_var8,Input Registers,USINT,minute
+300752,AutbusPADev50_slot0_var9.AutbusPADev50_slot0_var9,Input Registers,USINT,second
+400226,AutbusPADev50_slot0_var10.AutbusPADev50_slot0_var10,Holding Registers,USINT,OutData1
+400227,AutbusPADev50_slot0_var11.AutbusPADev50_slot0_var11,Holding Registers,USINT,OutData2
+300753,AutbusPADev50_slot0_alarm1.AutbusPADev50_slot0_alarm1,Input Registers,USINT,alarm1
+300754,AutbusPADev50_slot0_alarm2.AutbusPADev50_slot0_alarm2,Input Registers,USINT,alarm2
+400228,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400229,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300755,null.null,Input Registers,UINT,undefined
+300756,AutbusPADev51_slot0_var1.AutbusPADev51_slot0_var1,Input Registers,USINT,InData1
+300757,AutbusPADev51_slot0_var2.AutbusPADev51_slot0_var2,Input Registers,UINT,InData2
+300758,AutbusPADev51_slot0_var3.AutbusPADev51_slot0_var3,Input Registers,ULINT,timer
+300762,AutbusPADev51_slot0_var4.AutbusPADev51_slot0_var4,Input Registers,UINT,year
+300763,AutbusPADev51_slot0_var5.AutbusPADev51_slot0_var5,Input Registers,USINT,month
+300764,AutbusPADev51_slot0_var6.AutbusPADev51_slot0_var6,Input Registers,USINT,day
+300765,AutbusPADev51_slot0_var7.AutbusPADev51_slot0_var7,Input Registers,USINT,hour
+300766,AutbusPADev51_slot0_var8.AutbusPADev51_slot0_var8,Input Registers,USINT,minute
+300767,AutbusPADev51_slot0_var9.AutbusPADev51_slot0_var9,Input Registers,USINT,second
+400230,AutbusPADev51_slot0_var10.AutbusPADev51_slot0_var10,Holding Registers,USINT,OutData1
+400231,AutbusPADev51_slot0_var11.AutbusPADev51_slot0_var11,Holding Registers,USINT,OutData2
+300768,AutbusPADev51_slot0_alarm1.AutbusPADev51_slot0_alarm1,Input Registers,USINT,alarm1
+300769,AutbusPADev51_slot0_alarm2.AutbusPADev51_slot0_alarm2,Input Registers,USINT,alarm2
+400232,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400233,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300770,null.null,Input Registers,UINT,undefined
+300771,AutbusPADev52_slot0_var1.AutbusPADev52_slot0_var1,Input Registers,USINT,InData1
+300772,AutbusPADev52_slot0_var2.AutbusPADev52_slot0_var2,Input Registers,UINT,InData2
+300773,AutbusPADev52_slot0_var3.AutbusPADev52_slot0_var3,Input Registers,ULINT,timer
+300777,AutbusPADev52_slot0_var4.AutbusPADev52_slot0_var4,Input Registers,UINT,year
+300778,AutbusPADev52_slot0_var5.AutbusPADev52_slot0_var5,Input Registers,USINT,month
+300779,AutbusPADev52_slot0_var6.AutbusPADev52_slot0_var6,Input Registers,USINT,day
+300780,AutbusPADev52_slot0_var7.AutbusPADev52_slot0_var7,Input Registers,USINT,hour
+300781,AutbusPADev52_slot0_var8.AutbusPADev52_slot0_var8,Input Registers,USINT,minute
+300782,AutbusPADev52_slot0_var9.AutbusPADev52_slot0_var9,Input Registers,USINT,second
+400234,AutbusPADev52_slot0_var10.AutbusPADev52_slot0_var10,Holding Registers,USINT,OutData1
+400235,AutbusPADev52_slot0_var11.AutbusPADev52_slot0_var11,Holding Registers,USINT,OutData2
+300783,AutbusPADev52_slot0_alarm1.AutbusPADev52_slot0_alarm1,Input Registers,USINT,alarm1
+300784,AutbusPADev52_slot0_alarm2.AutbusPADev52_slot0_alarm2,Input Registers,USINT,alarm2
+400236,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400237,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300785,null.null,Input Registers,UINT,undefined
+300786,AutbusPADev53_slot0_var1.AutbusPADev53_slot0_var1,Input Registers,USINT,InData1
+300787,AutbusPADev53_slot0_var2.AutbusPADev53_slot0_var2,Input Registers,UINT,InData2
+300788,AutbusPADev53_slot0_var3.AutbusPADev53_slot0_var3,Input Registers,ULINT,timer
+300792,AutbusPADev53_slot0_var4.AutbusPADev53_slot0_var4,Input Registers,UINT,year
+300793,AutbusPADev53_slot0_var5.AutbusPADev53_slot0_var5,Input Registers,USINT,month
+300794,AutbusPADev53_slot0_var6.AutbusPADev53_slot0_var6,Input Registers,USINT,day
+300795,AutbusPADev53_slot0_var7.AutbusPADev53_slot0_var7,Input Registers,USINT,hour
+300796,AutbusPADev53_slot0_var8.AutbusPADev53_slot0_var8,Input Registers,USINT,minute
+300797,AutbusPADev53_slot0_var9.AutbusPADev53_slot0_var9,Input Registers,USINT,second
+400238,AutbusPADev53_slot0_var10.AutbusPADev53_slot0_var10,Holding Registers,USINT,OutData1
+400239,AutbusPADev53_slot0_var11.AutbusPADev53_slot0_var11,Holding Registers,USINT,OutData2
+300798,AutbusPADev53_slot0_alarm1.AutbusPADev53_slot0_alarm1,Input Registers,USINT,alarm1
+300799,AutbusPADev53_slot0_alarm2.AutbusPADev53_slot0_alarm2,Input Registers,USINT,alarm2
+400240,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400241,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300800,null.null,Input Registers,UINT,undefined
+300801,AutbusPADev54_slot0_var1.AutbusPADev54_slot0_var1,Input Registers,USINT,InData1
+300802,AutbusPADev54_slot0_var2.AutbusPADev54_slot0_var2,Input Registers,UINT,InData2
+300803,AutbusPADev54_slot0_var3.AutbusPADev54_slot0_var3,Input Registers,ULINT,timer
+300807,AutbusPADev54_slot0_var4.AutbusPADev54_slot0_var4,Input Registers,UINT,year
+300808,AutbusPADev54_slot0_var5.AutbusPADev54_slot0_var5,Input Registers,USINT,month
+300809,AutbusPADev54_slot0_var6.AutbusPADev54_slot0_var6,Input Registers,USINT,day
+300810,AutbusPADev54_slot0_var7.AutbusPADev54_slot0_var7,Input Registers,USINT,hour
+300811,AutbusPADev54_slot0_var8.AutbusPADev54_slot0_var8,Input Registers,USINT,minute
+300812,AutbusPADev54_slot0_var9.AutbusPADev54_slot0_var9,Input Registers,USINT,second
+400242,AutbusPADev54_slot0_var10.AutbusPADev54_slot0_var10,Holding Registers,USINT,OutData1
+400243,AutbusPADev54_slot0_var11.AutbusPADev54_slot0_var11,Holding Registers,USINT,OutData2
+300813,AutbusPADev54_slot0_alarm1.AutbusPADev54_slot0_alarm1,Input Registers,USINT,alarm1
+300814,AutbusPADev54_slot0_alarm2.AutbusPADev54_slot0_alarm2,Input Registers,USINT,alarm2
+400244,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400245,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300815,null.null,Input Registers,UINT,undefined
+300816,AutbusPADev55_slot0_var1.AutbusPADev55_slot0_var1,Input Registers,USINT,InData1
+300817,AutbusPADev55_slot0_var2.AutbusPADev55_slot0_var2,Input Registers,UINT,InData2
+300818,AutbusPADev55_slot0_var3.AutbusPADev55_slot0_var3,Input Registers,ULINT,timer
+300822,AutbusPADev55_slot0_var4.AutbusPADev55_slot0_var4,Input Registers,UINT,year
+300823,AutbusPADev55_slot0_var5.AutbusPADev55_slot0_var5,Input Registers,USINT,month
+300824,AutbusPADev55_slot0_var6.AutbusPADev55_slot0_var6,Input Registers,USINT,day
+300825,AutbusPADev55_slot0_var7.AutbusPADev55_slot0_var7,Input Registers,USINT,hour
+300826,AutbusPADev55_slot0_var8.AutbusPADev55_slot0_var8,Input Registers,USINT,minute
+300827,AutbusPADev55_slot0_var9.AutbusPADev55_slot0_var9,Input Registers,USINT,second
+400246,AutbusPADev55_slot0_var10.AutbusPADev55_slot0_var10,Holding Registers,USINT,OutData1
+400247,AutbusPADev55_slot0_var11.AutbusPADev55_slot0_var11,Holding Registers,USINT,OutData2
+300828,AutbusPADev55_slot0_alarm1.AutbusPADev55_slot0_alarm1,Input Registers,USINT,alarm1
+300829,AutbusPADev55_slot0_alarm2.AutbusPADev55_slot0_alarm2,Input Registers,USINT,alarm2
+400248,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400249,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300830,null.null,Input Registers,UINT,undefined
+300831,AutbusPADev56_slot0_var1.AutbusPADev56_slot0_var1,Input Registers,USINT,InData1
+300832,AutbusPADev56_slot0_var2.AutbusPADev56_slot0_var2,Input Registers,UINT,InData2
+300833,AutbusPADev56_slot0_var3.AutbusPADev56_slot0_var3,Input Registers,ULINT,timer
+300837,AutbusPADev56_slot0_var4.AutbusPADev56_slot0_var4,Input Registers,UINT,year
+300838,AutbusPADev56_slot0_var5.AutbusPADev56_slot0_var5,Input Registers,USINT,month
+300839,AutbusPADev56_slot0_var6.AutbusPADev56_slot0_var6,Input Registers,USINT,day
+300840,AutbusPADev56_slot0_var7.AutbusPADev56_slot0_var7,Input Registers,USINT,hour
+300841,AutbusPADev56_slot0_var8.AutbusPADev56_slot0_var8,Input Registers,USINT,minute
+300842,AutbusPADev56_slot0_var9.AutbusPADev56_slot0_var9,Input Registers,USINT,second
+400250,AutbusPADev56_slot0_var10.AutbusPADev56_slot0_var10,Holding Registers,USINT,OutData1
+400251,AutbusPADev56_slot0_var11.AutbusPADev56_slot0_var11,Holding Registers,USINT,OutData2
+300843,AutbusPADev56_slot0_alarm1.AutbusPADev56_slot0_alarm1,Input Registers,USINT,alarm1
+300844,AutbusPADev56_slot0_alarm2.AutbusPADev56_slot0_alarm2,Input Registers,USINT,alarm2
+400252,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400253,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300845,null.null,Input Registers,UINT,undefined
+300846,AutbusPADev57_slot0_var1.AutbusPADev57_slot0_var1,Input Registers,USINT,InData1
+300847,AutbusPADev57_slot0_var2.AutbusPADev57_slot0_var2,Input Registers,UINT,InData2
+300848,AutbusPADev57_slot0_var3.AutbusPADev57_slot0_var3,Input Registers,ULINT,timer
+300852,AutbusPADev57_slot0_var4.AutbusPADev57_slot0_var4,Input Registers,UINT,year
+300853,AutbusPADev57_slot0_var5.AutbusPADev57_slot0_var5,Input Registers,USINT,month
+300854,AutbusPADev57_slot0_var6.AutbusPADev57_slot0_var6,Input Registers,USINT,day
+300855,AutbusPADev57_slot0_var7.AutbusPADev57_slot0_var7,Input Registers,USINT,hour
+300856,AutbusPADev57_slot0_var8.AutbusPADev57_slot0_var8,Input Registers,USINT,minute
+300857,AutbusPADev57_slot0_var9.AutbusPADev57_slot0_var9,Input Registers,USINT,second
+400254,AutbusPADev57_slot0_var10.AutbusPADev57_slot0_var10,Holding Registers,USINT,OutData1
+400255,AutbusPADev57_slot0_var11.AutbusPADev57_slot0_var11,Holding Registers,USINT,OutData2
+300858,AutbusPADev57_slot0_alarm1.AutbusPADev57_slot0_alarm1,Input Registers,USINT,alarm1
+300859,AutbusPADev57_slot0_alarm2.AutbusPADev57_slot0_alarm2,Input Registers,USINT,alarm2
+400256,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400257,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300860,null.null,Input Registers,UINT,undefined
+300861,AutbusPADev58_slot0_var1.AutbusPADev58_slot0_var1,Input Registers,USINT,InData1
+300862,AutbusPADev58_slot0_var2.AutbusPADev58_slot0_var2,Input Registers,UINT,InData2
+300863,AutbusPADev58_slot0_var3.AutbusPADev58_slot0_var3,Input Registers,ULINT,timer
+300867,AutbusPADev58_slot0_var4.AutbusPADev58_slot0_var4,Input Registers,UINT,year
+300868,AutbusPADev58_slot0_var5.AutbusPADev58_slot0_var5,Input Registers,USINT,month
+300869,AutbusPADev58_slot0_var6.AutbusPADev58_slot0_var6,Input Registers,USINT,day
+300870,AutbusPADev58_slot0_var7.AutbusPADev58_slot0_var7,Input Registers,USINT,hour
+300871,AutbusPADev58_slot0_var8.AutbusPADev58_slot0_var8,Input Registers,USINT,minute
+300872,AutbusPADev58_slot0_var9.AutbusPADev58_slot0_var9,Input Registers,USINT,second
+400258,AutbusPADev58_slot0_var10.AutbusPADev58_slot0_var10,Holding Registers,USINT,OutData1
+400259,AutbusPADev58_slot0_var11.AutbusPADev58_slot0_var11,Holding Registers,USINT,OutData2
+300873,AutbusPADev58_slot0_alarm1.AutbusPADev58_slot0_alarm1,Input Registers,USINT,alarm1
+300874,AutbusPADev58_slot0_alarm2.AutbusPADev58_slot0_alarm2,Input Registers,USINT,alarm2
+400260,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400261,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300875,null.null,Input Registers,UINT,undefined
+300876,AutbusPADev59_slot0_var1.AutbusPADev59_slot0_var1,Input Registers,USINT,InData1
+300877,AutbusPADev59_slot0_var2.AutbusPADev59_slot0_var2,Input Registers,UINT,InData2
+300878,AutbusPADev59_slot0_var3.AutbusPADev59_slot0_var3,Input Registers,ULINT,timer
+300882,AutbusPADev59_slot0_var4.AutbusPADev59_slot0_var4,Input Registers,UINT,year
+300883,AutbusPADev59_slot0_var5.AutbusPADev59_slot0_var5,Input Registers,USINT,month
+300884,AutbusPADev59_slot0_var6.AutbusPADev59_slot0_var6,Input Registers,USINT,day
+300885,AutbusPADev59_slot0_var7.AutbusPADev59_slot0_var7,Input Registers,USINT,hour
+300886,AutbusPADev59_slot0_var8.AutbusPADev59_slot0_var8,Input Registers,USINT,minute
+300887,AutbusPADev59_slot0_var9.AutbusPADev59_slot0_var9,Input Registers,USINT,second
+400262,AutbusPADev59_slot0_var10.AutbusPADev59_slot0_var10,Holding Registers,USINT,OutData1
+400263,AutbusPADev59_slot0_var11.AutbusPADev59_slot0_var11,Holding Registers,USINT,OutData2
+300888,AutbusPADev59_slot0_alarm1.AutbusPADev59_slot0_alarm1,Input Registers,USINT,alarm1
+300889,AutbusPADev59_slot0_alarm2.AutbusPADev59_slot0_alarm2,Input Registers,USINT,alarm2
+400264,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400265,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300890,null.null,Input Registers,UINT,undefined
+300891,AutbusPADev60_slot0_var1.AutbusPADev60_slot0_var1,Input Registers,USINT,InData1
+300892,AutbusPADev60_slot0_var2.AutbusPADev60_slot0_var2,Input Registers,UINT,InData2
+300893,AutbusPADev60_slot0_var3.AutbusPADev60_slot0_var3,Input Registers,ULINT,timer
+300897,AutbusPADev60_slot0_var4.AutbusPADev60_slot0_var4,Input Registers,UINT,year
+300898,AutbusPADev60_slot0_var5.AutbusPADev60_slot0_var5,Input Registers,USINT,month
+300899,AutbusPADev60_slot0_var6.AutbusPADev60_slot0_var6,Input Registers,USINT,day
+300900,AutbusPADev60_slot0_var7.AutbusPADev60_slot0_var7,Input Registers,USINT,hour
+300901,AutbusPADev60_slot0_var8.AutbusPADev60_slot0_var8,Input Registers,USINT,minute
+300902,AutbusPADev60_slot0_var9.AutbusPADev60_slot0_var9,Input Registers,USINT,second
+400266,AutbusPADev60_slot0_var10.AutbusPADev60_slot0_var10,Holding Registers,USINT,OutData1
+400267,AutbusPADev60_slot0_var11.AutbusPADev60_slot0_var11,Holding Registers,USINT,OutData2
+300903,AutbusPADev60_slot0_alarm1.AutbusPADev60_slot0_alarm1,Input Registers,USINT,alarm1
+300904,AutbusPADev60_slot0_alarm2.AutbusPADev60_slot0_alarm2,Input Registers,USINT,alarm2
+400268,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400269,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300905,null.null,Input Registers,UINT,undefined
+300906,AutbusPADev61_slot0_var1.AutbusPADev61_slot0_var1,Input Registers,USINT,InData1
+300907,AutbusPADev61_slot0_var2.AutbusPADev61_slot0_var2,Input Registers,UINT,InData2
+300908,AutbusPADev61_slot0_var3.AutbusPADev61_slot0_var3,Input Registers,ULINT,timer
+300912,AutbusPADev61_slot0_var4.AutbusPADev61_slot0_var4,Input Registers,UINT,year
+300913,AutbusPADev61_slot0_var5.AutbusPADev61_slot0_var5,Input Registers,USINT,month
+300914,AutbusPADev61_slot0_var6.AutbusPADev61_slot0_var6,Input Registers,USINT,day
+300915,AutbusPADev61_slot0_var7.AutbusPADev61_slot0_var7,Input Registers,USINT,hour
+300916,AutbusPADev61_slot0_var8.AutbusPADev61_slot0_var8,Input Registers,USINT,minute
+300917,AutbusPADev61_slot0_var9.AutbusPADev61_slot0_var9,Input Registers,USINT,second
+400270,AutbusPADev61_slot0_var10.AutbusPADev61_slot0_var10,Holding Registers,USINT,OutData1
+400271,AutbusPADev61_slot0_var11.AutbusPADev61_slot0_var11,Holding Registers,USINT,OutData2
+300918,AutbusPADev61_slot0_alarm1.AutbusPADev61_slot0_alarm1,Input Registers,USINT,alarm1
+300919,AutbusPADev61_slot0_alarm2.AutbusPADev61_slot0_alarm2,Input Registers,USINT,alarm2
+400272,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400273,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300920,null.null,Input Registers,UINT,undefined
+300921,AutbusPADev62_slot0_var1.AutbusPADev62_slot0_var1,Input Registers,USINT,InData1
+300922,AutbusPADev62_slot0_var2.AutbusPADev62_slot0_var2,Input Registers,UINT,InData2
+300923,AutbusPADev62_slot0_var3.AutbusPADev62_slot0_var3,Input Registers,ULINT,timer
+300927,AutbusPADev62_slot0_var4.AutbusPADev62_slot0_var4,Input Registers,UINT,year
+300928,AutbusPADev62_slot0_var5.AutbusPADev62_slot0_var5,Input Registers,USINT,month
+300929,AutbusPADev62_slot0_var6.AutbusPADev62_slot0_var6,Input Registers,USINT,day
+300930,AutbusPADev62_slot0_var7.AutbusPADev62_slot0_var7,Input Registers,USINT,hour
+300931,AutbusPADev62_slot0_var8.AutbusPADev62_slot0_var8,Input Registers,USINT,minute
+300932,AutbusPADev62_slot0_var9.AutbusPADev62_slot0_var9,Input Registers,USINT,second
+400274,AutbusPADev62_slot0_var10.AutbusPADev62_slot0_var10,Holding Registers,USINT,OutData1
+400275,AutbusPADev62_slot0_var11.AutbusPADev62_slot0_var11,Holding Registers,USINT,OutData2
+300933,AutbusPADev62_slot0_alarm1.AutbusPADev62_slot0_alarm1,Input Registers,USINT,alarm1
+300934,AutbusPADev62_slot0_alarm2.AutbusPADev62_slot0_alarm2,Input Registers,USINT,alarm2
+400276,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400277,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300935,null.null,Input Registers,UINT,undefined
+300936,AutbusPADev63_slot0_var1.AutbusPADev63_slot0_var1,Input Registers,USINT,InData1
+300937,AutbusPADev63_slot0_var2.AutbusPADev63_slot0_var2,Input Registers,UINT,InData2
+300938,AutbusPADev63_slot0_var3.AutbusPADev63_slot0_var3,Input Registers,ULINT,timer
+300942,AutbusPADev63_slot0_var4.AutbusPADev63_slot0_var4,Input Registers,UINT,year
+300943,AutbusPADev63_slot0_var5.AutbusPADev63_slot0_var5,Input Registers,USINT,month
+300944,AutbusPADev63_slot0_var6.AutbusPADev63_slot0_var6,Input Registers,USINT,day
+300945,AutbusPADev63_slot0_var7.AutbusPADev63_slot0_var7,Input Registers,USINT,hour
+300946,AutbusPADev63_slot0_var8.AutbusPADev63_slot0_var8,Input Registers,USINT,minute
+300947,AutbusPADev63_slot0_var9.AutbusPADev63_slot0_var9,Input Registers,USINT,second
+400278,AutbusPADev63_slot0_var10.AutbusPADev63_slot0_var10,Holding Registers,USINT,OutData1
+400279,AutbusPADev63_slot0_var11.AutbusPADev63_slot0_var11,Holding Registers,USINT,OutData2
+300948,AutbusPADev63_slot0_alarm1.AutbusPADev63_slot0_alarm1,Input Registers,USINT,alarm1
+300949,AutbusPADev63_slot0_alarm2.AutbusPADev63_slot0_alarm2,Input Registers,USINT,alarm2
+400280,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400281,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300950,null.null,Input Registers,UINT,undefined
+300951,AutbusPADev64_slot0_var1.AutbusPADev64_slot0_var1,Input Registers,USINT,InData1
+300952,AutbusPADev64_slot0_var2.AutbusPADev64_slot0_var2,Input Registers,UINT,InData2
+300953,AutbusPADev64_slot0_var3.AutbusPADev64_slot0_var3,Input Registers,ULINT,timer
+300957,AutbusPADev64_slot0_var4.AutbusPADev64_slot0_var4,Input Registers,UINT,year
+300958,AutbusPADev64_slot0_var5.AutbusPADev64_slot0_var5,Input Registers,USINT,month
+300959,AutbusPADev64_slot0_var6.AutbusPADev64_slot0_var6,Input Registers,USINT,day
+300960,AutbusPADev64_slot0_var7.AutbusPADev64_slot0_var7,Input Registers,USINT,hour
+300961,AutbusPADev64_slot0_var8.AutbusPADev64_slot0_var8,Input Registers,USINT,minute
+300962,AutbusPADev64_slot0_var9.AutbusPADev64_slot0_var9,Input Registers,USINT,second
+400282,AutbusPADev64_slot0_var10.AutbusPADev64_slot0_var10,Holding Registers,USINT,OutData1
+400283,AutbusPADev64_slot0_var11.AutbusPADev64_slot0_var11,Holding Registers,USINT,OutData2
+300963,AutbusPADev64_slot0_alarm1.AutbusPADev64_slot0_alarm1,Input Registers,USINT,alarm1
+300964,AutbusPADev64_slot0_alarm2.AutbusPADev64_slot0_alarm2,Input Registers,USINT,alarm2
+400284,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400285,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300965,null.null,Input Registers,UINT,undefined
+300966,AutbusPADev65_slot0_var1.AutbusPADev65_slot0_var1,Input Registers,USINT,InData1
+300967,AutbusPADev65_slot0_var2.AutbusPADev65_slot0_var2,Input Registers,UINT,InData2
+300968,AutbusPADev65_slot0_var3.AutbusPADev65_slot0_var3,Input Registers,ULINT,timer
+300972,AutbusPADev65_slot0_var4.AutbusPADev65_slot0_var4,Input Registers,UINT,year
+300973,AutbusPADev65_slot0_var5.AutbusPADev65_slot0_var5,Input Registers,USINT,month
+300974,AutbusPADev65_slot0_var6.AutbusPADev65_slot0_var6,Input Registers,USINT,day
+300975,AutbusPADev65_slot0_var7.AutbusPADev65_slot0_var7,Input Registers,USINT,hour
+300976,AutbusPADev65_slot0_var8.AutbusPADev65_slot0_var8,Input Registers,USINT,minute
+300977,AutbusPADev65_slot0_var9.AutbusPADev65_slot0_var9,Input Registers,USINT,second
+400286,AutbusPADev65_slot0_var10.AutbusPADev65_slot0_var10,Holding Registers,USINT,OutData1
+400287,AutbusPADev65_slot0_var11.AutbusPADev65_slot0_var11,Holding Registers,USINT,OutData2
+300978,AutbusPADev65_slot0_alarm1.AutbusPADev65_slot0_alarm1,Input Registers,USINT,alarm1
+300979,AutbusPADev65_slot0_alarm2.AutbusPADev65_slot0_alarm2,Input Registers,USINT,alarm2
+400288,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400289,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300980,null.null,Input Registers,UINT,undefined
+300981,AutbusPADev66_slot0_var1.AutbusPADev66_slot0_var1,Input Registers,USINT,InData1
+300982,AutbusPADev66_slot0_var2.AutbusPADev66_slot0_var2,Input Registers,UINT,InData2
+300983,AutbusPADev66_slot0_var3.AutbusPADev66_slot0_var3,Input Registers,ULINT,timer
+300987,AutbusPADev66_slot0_var4.AutbusPADev66_slot0_var4,Input Registers,UINT,year
+300988,AutbusPADev66_slot0_var5.AutbusPADev66_slot0_var5,Input Registers,USINT,month
+300989,AutbusPADev66_slot0_var6.AutbusPADev66_slot0_var6,Input Registers,USINT,day
+300990,AutbusPADev66_slot0_var7.AutbusPADev66_slot0_var7,Input Registers,USINT,hour
+300991,AutbusPADev66_slot0_var8.AutbusPADev66_slot0_var8,Input Registers,USINT,minute
+300992,AutbusPADev66_slot0_var9.AutbusPADev66_slot0_var9,Input Registers,USINT,second
+400290,AutbusPADev66_slot0_var10.AutbusPADev66_slot0_var10,Holding Registers,USINT,OutData1
+400291,AutbusPADev66_slot0_var11.AutbusPADev66_slot0_var11,Holding Registers,USINT,OutData2
+300993,AutbusPADev66_slot0_alarm1.AutbusPADev66_slot0_alarm1,Input Registers,USINT,alarm1
+300994,AutbusPADev66_slot0_alarm2.AutbusPADev66_slot0_alarm2,Input Registers,USINT,alarm2
+400292,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400293,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+300995,null.null,Input Registers,UINT,undefined
+300996,AutbusPADev67_slot0_var1.AutbusPADev67_slot0_var1,Input Registers,USINT,InData1
+300997,AutbusPADev67_slot0_var2.AutbusPADev67_slot0_var2,Input Registers,UINT,InData2
+300998,AutbusPADev67_slot0_var3.AutbusPADev67_slot0_var3,Input Registers,ULINT,timer
+301002,AutbusPADev67_slot0_var4.AutbusPADev67_slot0_var4,Input Registers,UINT,year
+301003,AutbusPADev67_slot0_var5.AutbusPADev67_slot0_var5,Input Registers,USINT,month
+301004,AutbusPADev67_slot0_var6.AutbusPADev67_slot0_var6,Input Registers,USINT,day
+301005,AutbusPADev67_slot0_var7.AutbusPADev67_slot0_var7,Input Registers,USINT,hour
+301006,AutbusPADev67_slot0_var8.AutbusPADev67_slot0_var8,Input Registers,USINT,minute
+301007,AutbusPADev67_slot0_var9.AutbusPADev67_slot0_var9,Input Registers,USINT,second
+400294,AutbusPADev67_slot0_var10.AutbusPADev67_slot0_var10,Holding Registers,USINT,OutData1
+400295,AutbusPADev67_slot0_var11.AutbusPADev67_slot0_var11,Holding Registers,USINT,OutData2
+301008,AutbusPADev67_slot0_alarm1.AutbusPADev67_slot0_alarm1,Input Registers,USINT,alarm1
+301009,AutbusPADev67_slot0_alarm2.AutbusPADev67_slot0_alarm2,Input Registers,USINT,alarm2
+400296,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400297,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+301010,null.null,Input Registers,UINT,undefined
+301011,AutbusPADev68_slot0_var1.AutbusPADev68_slot0_var1,Input Registers,USINT,InData1
+301012,AutbusPADev68_slot0_var2.AutbusPADev68_slot0_var2,Input Registers,UINT,InData2
+301013,AutbusPADev68_slot0_var3.AutbusPADev68_slot0_var3,Input Registers,ULINT,timer
+301017,AutbusPADev68_slot0_var4.AutbusPADev68_slot0_var4,Input Registers,UINT,year
+301018,AutbusPADev68_slot0_var5.AutbusPADev68_slot0_var5,Input Registers,USINT,month
+301019,AutbusPADev68_slot0_var6.AutbusPADev68_slot0_var6,Input Registers,USINT,day
+301020,AutbusPADev68_slot0_var7.AutbusPADev68_slot0_var7,Input Registers,USINT,hour
+301021,AutbusPADev68_slot0_var8.AutbusPADev68_slot0_var8,Input Registers,USINT,minute
+301022,AutbusPADev68_slot0_var9.AutbusPADev68_slot0_var9,Input Registers,USINT,second
+400298,AutbusPADev68_slot0_var10.AutbusPADev68_slot0_var10,Holding Registers,USINT,OutData1
+400299,AutbusPADev68_slot0_var11.AutbusPADev68_slot0_var11,Holding Registers,USINT,OutData2
+301023,AutbusPADev68_slot0_alarm1.AutbusPADev68_slot0_alarm1,Input Registers,USINT,alarm1
+301024,AutbusPADev68_slot0_alarm2.AutbusPADev68_slot0_alarm2,Input Registers,USINT,alarm2
+400300,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400301,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+301025,null.null,Input Registers,UINT,undefined
+301026,AutbusPADev69_slot0_var1.AutbusPADev69_slot0_var1,Input Registers,USINT,InData1
+301027,AutbusPADev69_slot0_var2.AutbusPADev69_slot0_var2,Input Registers,UINT,InData2
+301028,AutbusPADev69_slot0_var3.AutbusPADev69_slot0_var3,Input Registers,ULINT,timer
+301032,AutbusPADev69_slot0_var4.AutbusPADev69_slot0_var4,Input Registers,UINT,year
+301033,AutbusPADev69_slot0_var5.AutbusPADev69_slot0_var5,Input Registers,USINT,month
+301034,AutbusPADev69_slot0_var6.AutbusPADev69_slot0_var6,Input Registers,USINT,day
+301035,AutbusPADev69_slot0_var7.AutbusPADev69_slot0_var7,Input Registers,USINT,hour
+301036,AutbusPADev69_slot0_var8.AutbusPADev69_slot0_var8,Input Registers,USINT,minute
+301037,AutbusPADev69_slot0_var9.AutbusPADev69_slot0_var9,Input Registers,USINT,second
+400302,AutbusPADev69_slot0_var10.AutbusPADev69_slot0_var10,Holding Registers,USINT,OutData1
+400303,AutbusPADev69_slot0_var11.AutbusPADev69_slot0_var11,Holding Registers,USINT,OutData2
+301038,AutbusPADev69_slot0_alarm1.AutbusPADev69_slot0_alarm1,Input Registers,USINT,alarm1
+301039,AutbusPADev69_slot0_alarm2.AutbusPADev69_slot0_alarm2,Input Registers,USINT,alarm2
+400304,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400305,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+301040,null.null,Input Registers,UINT,undefined
+301041,AutbusPADev70_slot0_var1.AutbusPADev70_slot0_var1,Input Registers,USINT,InData1
+301042,AutbusPADev70_slot0_var2.AutbusPADev70_slot0_var2,Input Registers,UINT,InData2
+301043,AutbusPADev70_slot0_var3.AutbusPADev70_slot0_var3,Input Registers,ULINT,timer
+301047,AutbusPADev70_slot0_var4.AutbusPADev70_slot0_var4,Input Registers,UINT,year
+301048,AutbusPADev70_slot0_var5.AutbusPADev70_slot0_var5,Input Registers,USINT,month
+301049,AutbusPADev70_slot0_var6.AutbusPADev70_slot0_var6,Input Registers,USINT,day
+301050,AutbusPADev70_slot0_var7.AutbusPADev70_slot0_var7,Input Registers,USINT,hour
+301051,AutbusPADev70_slot0_var8.AutbusPADev70_slot0_var8,Input Registers,USINT,minute
+301052,AutbusPADev70_slot0_var9.AutbusPADev70_slot0_var9,Input Registers,USINT,second
+400306,AutbusPADev70_slot0_var10.AutbusPADev70_slot0_var10,Holding Registers,USINT,OutData1
+400307,AutbusPADev70_slot0_var11.AutbusPADev70_slot0_var11,Holding Registers,USINT,OutData2
+301053,AutbusPADev70_slot0_alarm1.AutbusPADev70_slot0_alarm1,Input Registers,USINT,alarm1
+301054,AutbusPADev70_slot0_alarm2.AutbusPADev70_slot0_alarm2,Input Registers,USINT,alarm2
+400308,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400309,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+301055,null.null,Input Registers,UINT,undefined
+301056,AutbusPADev71_slot0_var1.AutbusPADev71_slot0_var1,Input Registers,USINT,InData1
+301057,AutbusPADev71_slot0_var2.AutbusPADev71_slot0_var2,Input Registers,UINT,InData2
+301058,AutbusPADev71_slot0_var3.AutbusPADev71_slot0_var3,Input Registers,ULINT,timer
+301062,AutbusPADev71_slot0_var4.AutbusPADev71_slot0_var4,Input Registers,UINT,year
+301063,AutbusPADev71_slot0_var5.AutbusPADev71_slot0_var5,Input Registers,USINT,month
+301064,AutbusPADev71_slot0_var6.AutbusPADev71_slot0_var6,Input Registers,USINT,day
+301065,AutbusPADev71_slot0_var7.AutbusPADev71_slot0_var7,Input Registers,USINT,hour
+301066,AutbusPADev71_slot0_var8.AutbusPADev71_slot0_var8,Input Registers,USINT,minute
+301067,AutbusPADev71_slot0_var9.AutbusPADev71_slot0_var9,Input Registers,USINT,second
+400310,AutbusPADev71_slot0_var10.AutbusPADev71_slot0_var10,Holding Registers,USINT,OutData1
+400311,AutbusPADev71_slot0_var11.AutbusPADev71_slot0_var11,Holding Registers,USINT,OutData2
+301068,AutbusPADev71_slot0_alarm1.AutbusPADev71_slot0_alarm1,Input Registers,USINT,alarm1
+301069,AutbusPADev71_slot0_alarm2.AutbusPADev71_slot0_alarm2,Input Registers,USINT,alarm2
+400312,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400313,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+301070,null.null,Input Registers,UINT,undefined
+301071,AutbusPADev72_slot0_var1.AutbusPADev72_slot0_var1,Input Registers,USINT,InData1
+301072,AutbusPADev72_slot0_var2.AutbusPADev72_slot0_var2,Input Registers,UINT,InData2
+301073,AutbusPADev72_slot0_var3.AutbusPADev72_slot0_var3,Input Registers,ULINT,timer
+301077,AutbusPADev72_slot0_var4.AutbusPADev72_slot0_var4,Input Registers,UINT,year
+301078,AutbusPADev72_slot0_var5.AutbusPADev72_slot0_var5,Input Registers,USINT,month
+301079,AutbusPADev72_slot0_var6.AutbusPADev72_slot0_var6,Input Registers,USINT,day
+301080,AutbusPADev72_slot0_var7.AutbusPADev72_slot0_var7,Input Registers,USINT,hour
+301081,AutbusPADev72_slot0_var8.AutbusPADev72_slot0_var8,Input Registers,USINT,minute
+301082,AutbusPADev72_slot0_var9.AutbusPADev72_slot0_var9,Input Registers,USINT,second
+400314,AutbusPADev72_slot0_var10.AutbusPADev72_slot0_var10,Holding Registers,USINT,OutData1
+400315,AutbusPADev72_slot0_var11.AutbusPADev72_slot0_var11,Holding Registers,USINT,OutData2
+301083,AutbusPADev72_slot0_alarm1.AutbusPADev72_slot0_alarm1,Input Registers,USINT,alarm1
+301084,AutbusPADev72_slot0_alarm2.AutbusPADev72_slot0_alarm2,Input Registers,USINT,alarm2
+400316,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400317,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+301085,null.null,Input Registers,UINT,undefined
+301086,AutbusPADev73_slot0_var1.AutbusPADev73_slot0_var1,Input Registers,USINT,InData1
+301087,AutbusPADev73_slot0_var2.AutbusPADev73_slot0_var2,Input Registers,UINT,InData2
+301088,AutbusPADev73_slot0_var3.AutbusPADev73_slot0_var3,Input Registers,ULINT,timer
+301092,AutbusPADev73_slot0_var4.AutbusPADev73_slot0_var4,Input Registers,UINT,year
+301093,AutbusPADev73_slot0_var5.AutbusPADev73_slot0_var5,Input Registers,USINT,month
+301094,AutbusPADev73_slot0_var6.AutbusPADev73_slot0_var6,Input Registers,USINT,day
+301095,AutbusPADev73_slot0_var7.AutbusPADev73_slot0_var7,Input Registers,USINT,hour
+301096,AutbusPADev73_slot0_var8.AutbusPADev73_slot0_var8,Input Registers,USINT,minute
+301097,AutbusPADev73_slot0_var9.AutbusPADev73_slot0_var9,Input Registers,USINT,second
+400318,AutbusPADev73_slot0_var10.AutbusPADev73_slot0_var10,Holding Registers,USINT,OutData1
+400319,AutbusPADev73_slot0_var11.AutbusPADev73_slot0_var11,Holding Registers,USINT,OutData2
+301098,AutbusPADev73_slot0_alarm1.AutbusPADev73_slot0_alarm1,Input Registers,USINT,alarm1
+301099,AutbusPADev73_slot0_alarm2.AutbusPADev73_slot0_alarm2,Input Registers,USINT,alarm2
+400320,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400321,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+301100,null.null,Input Registers,UINT,undefined
+301101,AutbusPADev74_slot0_var1.AutbusPADev74_slot0_var1,Input Registers,USINT,InData1
+301102,AutbusPADev74_slot0_var2.AutbusPADev74_slot0_var2,Input Registers,UINT,InData2
+301103,AutbusPADev74_slot0_var3.AutbusPADev74_slot0_var3,Input Registers,ULINT,timer
+301107,AutbusPADev74_slot0_var4.AutbusPADev74_slot0_var4,Input Registers,UINT,year
+301108,AutbusPADev74_slot0_var5.AutbusPADev74_slot0_var5,Input Registers,USINT,month
+301109,AutbusPADev74_slot0_var6.AutbusPADev74_slot0_var6,Input Registers,USINT,day
+301110,AutbusPADev74_slot0_var7.AutbusPADev74_slot0_var7,Input Registers,USINT,hour
+301111,AutbusPADev74_slot0_var8.AutbusPADev74_slot0_var8,Input Registers,USINT,minute
+301112,AutbusPADev74_slot0_var9.AutbusPADev74_slot0_var9,Input Registers,USINT,second
+400322,AutbusPADev74_slot0_var10.AutbusPADev74_slot0_var10,Holding Registers,USINT,OutData1
+400323,AutbusPADev74_slot0_var11.AutbusPADev74_slot0_var11,Holding Registers,USINT,OutData2
+301113,AutbusPADev74_slot0_alarm1.AutbusPADev74_slot0_alarm1,Input Registers,USINT,alarm1
+301114,AutbusPADev74_slot0_alarm2.AutbusPADev74_slot0_alarm2,Input Registers,USINT,alarm2
+400324,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400325,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+301115,null.null,Input Registers,UINT,undefined
+301116,AutbusPADev75_slot0_var1.AutbusPADev75_slot0_var1,Input Registers,USINT,InData1
+301117,AutbusPADev75_slot0_var2.AutbusPADev75_slot0_var2,Input Registers,UINT,InData2
+301118,AutbusPADev75_slot0_var3.AutbusPADev75_slot0_var3,Input Registers,ULINT,timer
+301122,AutbusPADev75_slot0_var4.AutbusPADev75_slot0_var4,Input Registers,UINT,year
+301123,AutbusPADev75_slot0_var5.AutbusPADev75_slot0_var5,Input Registers,USINT,month
+301124,AutbusPADev75_slot0_var6.AutbusPADev75_slot0_var6,Input Registers,USINT,day
+301125,AutbusPADev75_slot0_var7.AutbusPADev75_slot0_var7,Input Registers,USINT,hour
+301126,AutbusPADev75_slot0_var8.AutbusPADev75_slot0_var8,Input Registers,USINT,minute
+301127,AutbusPADev75_slot0_var9.AutbusPADev75_slot0_var9,Input Registers,USINT,second
+400326,AutbusPADev75_slot0_var10.AutbusPADev75_slot0_var10,Holding Registers,USINT,OutData1
+400327,AutbusPADev75_slot0_var11.AutbusPADev75_slot0_var11,Holding Registers,USINT,OutData2
+301128,AutbusPADev75_slot0_alarm1.AutbusPADev75_slot0_alarm1,Input Registers,USINT,alarm1
+301129,AutbusPADev75_slot0_alarm2.AutbusPADev75_slot0_alarm2,Input Registers,USINT,alarm2
+400328,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400329,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+301130,null.null,Input Registers,UINT,undefined
+301131,AutbusPADev76_slot0_var1.AutbusPADev76_slot0_var1,Input Registers,USINT,InData1
+301132,AutbusPADev76_slot0_var2.AutbusPADev76_slot0_var2,Input Registers,UINT,InData2
+301133,AutbusPADev76_slot0_var3.AutbusPADev76_slot0_var3,Input Registers,ULINT,timer
+301137,AutbusPADev76_slot0_var4.AutbusPADev76_slot0_var4,Input Registers,UINT,year
+301138,AutbusPADev76_slot0_var5.AutbusPADev76_slot0_var5,Input Registers,USINT,month
+301139,AutbusPADev76_slot0_var6.AutbusPADev76_slot0_var6,Input Registers,USINT,day
+301140,AutbusPADev76_slot0_var7.AutbusPADev76_slot0_var7,Input Registers,USINT,hour
+301141,AutbusPADev76_slot0_var8.AutbusPADev76_slot0_var8,Input Registers,USINT,minute
+301142,AutbusPADev76_slot0_var9.AutbusPADev76_slot0_var9,Input Registers,USINT,second
+400330,AutbusPADev76_slot0_var10.AutbusPADev76_slot0_var10,Holding Registers,USINT,OutData1
+400331,AutbusPADev76_slot0_var11.AutbusPADev76_slot0_var11,Holding Registers,USINT,OutData2
+301143,AutbusPADev76_slot0_alarm1.AutbusPADev76_slot0_alarm1,Input Registers,USINT,alarm1
+301144,AutbusPADev76_slot0_alarm2.AutbusPADev76_slot0_alarm2,Input Registers,USINT,alarm2
+400332,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400333,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+301145,null.null,Input Registers,UINT,undefined
+301146,AutbusPADev77_slot0_var1.AutbusPADev77_slot0_var1,Input Registers,USINT,InData1
+301147,AutbusPADev77_slot0_var2.AutbusPADev77_slot0_var2,Input Registers,UINT,InData2
+301148,AutbusPADev77_slot0_var3.AutbusPADev77_slot0_var3,Input Registers,ULINT,timer
+301152,AutbusPADev77_slot0_var4.AutbusPADev77_slot0_var4,Input Registers,UINT,year
+301153,AutbusPADev77_slot0_var5.AutbusPADev77_slot0_var5,Input Registers,USINT,month
+301154,AutbusPADev77_slot0_var6.AutbusPADev77_slot0_var6,Input Registers,USINT,day
+301155,AutbusPADev77_slot0_var7.AutbusPADev77_slot0_var7,Input Registers,USINT,hour
+301156,AutbusPADev77_slot0_var8.AutbusPADev77_slot0_var8,Input Registers,USINT,minute
+301157,AutbusPADev77_slot0_var9.AutbusPADev77_slot0_var9,Input Registers,USINT,second
+400334,AutbusPADev77_slot0_var10.AutbusPADev77_slot0_var10,Holding Registers,USINT,OutData1
+400335,AutbusPADev77_slot0_var11.AutbusPADev77_slot0_var11,Holding Registers,USINT,OutData2
+301158,AutbusPADev77_slot0_alarm1.AutbusPADev77_slot0_alarm1,Input Registers,USINT,alarm1
+301159,AutbusPADev77_slot0_alarm2.AutbusPADev77_slot0_alarm2,Input Registers,USINT,alarm2
+400336,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400337,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+301160,null.null,Input Registers,UINT,undefined
+301161,AutbusPADev78_slot0_var1.AutbusPADev78_slot0_var1,Input Registers,USINT,InData1
+301162,AutbusPADev78_slot0_var2.AutbusPADev78_slot0_var2,Input Registers,UINT,InData2
+301163,AutbusPADev78_slot0_var3.AutbusPADev78_slot0_var3,Input Registers,ULINT,timer
+301167,AutbusPADev78_slot0_var4.AutbusPADev78_slot0_var4,Input Registers,UINT,year
+301168,AutbusPADev78_slot0_var5.AutbusPADev78_slot0_var5,Input Registers,USINT,month
+301169,AutbusPADev78_slot0_var6.AutbusPADev78_slot0_var6,Input Registers,USINT,day
+301170,AutbusPADev78_slot0_var7.AutbusPADev78_slot0_var7,Input Registers,USINT,hour
+301171,AutbusPADev78_slot0_var8.AutbusPADev78_slot0_var8,Input Registers,USINT,minute
+301172,AutbusPADev78_slot0_var9.AutbusPADev78_slot0_var9,Input Registers,USINT,second
+400338,AutbusPADev78_slot0_var10.AutbusPADev78_slot0_var10,Holding Registers,USINT,OutData1
+400339,AutbusPADev78_slot0_var11.AutbusPADev78_slot0_var11,Holding Registers,USINT,OutData2
+301173,AutbusPADev78_slot0_alarm1.AutbusPADev78_slot0_alarm1,Input Registers,USINT,alarm1
+301174,AutbusPADev78_slot0_alarm2.AutbusPADev78_slot0_alarm2,Input Registers,USINT,alarm2
+400340,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400341,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+301175,null.null,Input Registers,UINT,undefined
+301176,AutbusPADev79_slot0_var1.AutbusPADev79_slot0_var1,Input Registers,USINT,InData1
+301177,AutbusPADev79_slot0_var2.AutbusPADev79_slot0_var2,Input Registers,UINT,InData2
+301178,AutbusPADev79_slot0_var3.AutbusPADev79_slot0_var3,Input Registers,ULINT,timer
+301182,AutbusPADev79_slot0_var4.AutbusPADev79_slot0_var4,Input Registers,UINT,year
+301183,AutbusPADev79_slot0_var5.AutbusPADev79_slot0_var5,Input Registers,USINT,month
+301184,AutbusPADev79_slot0_var6.AutbusPADev79_slot0_var6,Input Registers,USINT,day
+301185,AutbusPADev79_slot0_var7.AutbusPADev79_slot0_var7,Input Registers,USINT,hour
+301186,AutbusPADev79_slot0_var8.AutbusPADev79_slot0_var8,Input Registers,USINT,minute
+301187,AutbusPADev79_slot0_var9.AutbusPADev79_slot0_var9,Input Registers,USINT,second
+400342,AutbusPADev79_slot0_var10.AutbusPADev79_slot0_var10,Holding Registers,USINT,OutData1
+400343,AutbusPADev79_slot0_var11.AutbusPADev79_slot0_var11,Holding Registers,USINT,OutData2
+301188,AutbusPADev79_slot0_alarm1.AutbusPADev79_slot0_alarm1,Input Registers,USINT,alarm1
+301189,AutbusPADev79_slot0_alarm2.AutbusPADev79_slot0_alarm2,Input Registers,USINT,alarm2
+400344,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400345,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+301190,null.null,Input Registers,UINT,undefined
+301191,AutbusPADev80_slot0_var1.AutbusPADev80_slot0_var1,Input Registers,USINT,InData1
+301192,AutbusPADev80_slot0_var2.AutbusPADev80_slot0_var2,Input Registers,UINT,InData2
+301193,AutbusPADev80_slot0_var3.AutbusPADev80_slot0_var3,Input Registers,ULINT,timer
+301197,AutbusPADev80_slot0_var4.AutbusPADev80_slot0_var4,Input Registers,UINT,year
+301198,AutbusPADev80_slot0_var5.AutbusPADev80_slot0_var5,Input Registers,USINT,month
+301199,AutbusPADev80_slot0_var6.AutbusPADev80_slot0_var6,Input Registers,USINT,day
+301200,AutbusPADev80_slot0_var7.AutbusPADev80_slot0_var7,Input Registers,USINT,hour
+301201,AutbusPADev80_slot0_var8.AutbusPADev80_slot0_var8,Input Registers,USINT,minute
+301202,AutbusPADev80_slot0_var9.AutbusPADev80_slot0_var9,Input Registers,USINT,second
+400346,AutbusPADev80_slot0_var10.AutbusPADev80_slot0_var10,Holding Registers,USINT,OutData1
+400347,AutbusPADev80_slot0_var11.AutbusPADev80_slot0_var11,Holding Registers,USINT,OutData2
+301203,AutbusPADev80_slot0_alarm1.AutbusPADev80_slot0_alarm1,Input Registers,USINT,alarm1
+301204,AutbusPADev80_slot0_alarm2.AutbusPADev80_slot0_alarm2,Input Registers,USINT,alarm2
+400348,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400349,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+301205,null.null,Input Registers,UINT,undefined
+301206,AutbusPADev81_slot0_var1.AutbusPADev81_slot0_var1,Input Registers,USINT,InData1
+301207,AutbusPADev81_slot0_var2.AutbusPADev81_slot0_var2,Input Registers,UINT,InData2
+301208,AutbusPADev81_slot0_var3.AutbusPADev81_slot0_var3,Input Registers,ULINT,timer
+301212,AutbusPADev81_slot0_var4.AutbusPADev81_slot0_var4,Input Registers,UINT,year
+301213,AutbusPADev81_slot0_var5.AutbusPADev81_slot0_var5,Input Registers,USINT,month
+301214,AutbusPADev81_slot0_var6.AutbusPADev81_slot0_var6,Input Registers,USINT,day
+301215,AutbusPADev81_slot0_var7.AutbusPADev81_slot0_var7,Input Registers,USINT,hour
+301216,AutbusPADev81_slot0_var8.AutbusPADev81_slot0_var8,Input Registers,USINT,minute
+301217,AutbusPADev81_slot0_var9.AutbusPADev81_slot0_var9,Input Registers,USINT,second
+400350,AutbusPADev81_slot0_var10.AutbusPADev81_slot0_var10,Holding Registers,USINT,OutData1
+400351,AutbusPADev81_slot0_var11.AutbusPADev81_slot0_var11,Holding Registers,USINT,OutData2
+301218,AutbusPADev81_slot0_alarm1.AutbusPADev81_slot0_alarm1,Input Registers,USINT,alarm1
+301219,AutbusPADev81_slot0_alarm2.AutbusPADev81_slot0_alarm2,Input Registers,USINT,alarm2
+400352,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400353,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+301220,null.null,Input Registers,UINT,undefined
+301221,AutbusPADev82_slot0_var1.AutbusPADev82_slot0_var1,Input Registers,USINT,InData1
+301222,AutbusPADev82_slot0_var2.AutbusPADev82_slot0_var2,Input Registers,UINT,InData2
+301223,AutbusPADev82_slot0_var3.AutbusPADev82_slot0_var3,Input Registers,ULINT,timer
+301227,AutbusPADev82_slot0_var4.AutbusPADev82_slot0_var4,Input Registers,UINT,year
+301228,AutbusPADev82_slot0_var5.AutbusPADev82_slot0_var5,Input Registers,USINT,month
+301229,AutbusPADev82_slot0_var6.AutbusPADev82_slot0_var6,Input Registers,USINT,day
+301230,AutbusPADev82_slot0_var7.AutbusPADev82_slot0_var7,Input Registers,USINT,hour
+301231,AutbusPADev82_slot0_var8.AutbusPADev82_slot0_var8,Input Registers,USINT,minute
+301232,AutbusPADev82_slot0_var9.AutbusPADev82_slot0_var9,Input Registers,USINT,second
+400354,AutbusPADev82_slot0_var10.AutbusPADev82_slot0_var10,Holding Registers,USINT,OutData1
+400355,AutbusPADev82_slot0_var11.AutbusPADev82_slot0_var11,Holding Registers,USINT,OutData2
+301233,AutbusPADev82_slot0_alarm1.AutbusPADev82_slot0_alarm1,Input Registers,USINT,alarm1
+301234,AutbusPADev82_slot0_alarm2.AutbusPADev82_slot0_alarm2,Input Registers,USINT,alarm2
+400356,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400357,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+301235,null.null,Input Registers,UINT,undefined
+301236,AutbusPADev83_slot0_var1.AutbusPADev83_slot0_var1,Input Registers,USINT,InData1
+301237,AutbusPADev83_slot0_var2.AutbusPADev83_slot0_var2,Input Registers,UINT,InData2
+301238,AutbusPADev83_slot0_var3.AutbusPADev83_slot0_var3,Input Registers,ULINT,timer
+301242,AutbusPADev83_slot0_var4.AutbusPADev83_slot0_var4,Input Registers,UINT,year
+301243,AutbusPADev83_slot0_var5.AutbusPADev83_slot0_var5,Input Registers,USINT,month
+301244,AutbusPADev83_slot0_var6.AutbusPADev83_slot0_var6,Input Registers,USINT,day
+301245,AutbusPADev83_slot0_var7.AutbusPADev83_slot0_var7,Input Registers,USINT,hour
+301246,AutbusPADev83_slot0_var8.AutbusPADev83_slot0_var8,Input Registers,USINT,minute
+301247,AutbusPADev83_slot0_var9.AutbusPADev83_slot0_var9,Input Registers,USINT,second
+400358,AutbusPADev83_slot0_var10.AutbusPADev83_slot0_var10,Holding Registers,USINT,OutData1
+400359,AutbusPADev83_slot0_var11.AutbusPADev83_slot0_var11,Holding Registers,USINT,OutData2
+301248,AutbusPADev83_slot0_alarm1.AutbusPADev83_slot0_alarm1,Input Registers,USINT,alarm1
+301249,AutbusPADev83_slot0_alarm2.AutbusPADev83_slot0_alarm2,Input Registers,USINT,alarm2
+400360,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400361,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+301250,null.null,Input Registers,UINT,undefined
+301251,AutbusPADev84_slot0_var1.AutbusPADev84_slot0_var1,Input Registers,USINT,InData1
+301252,AutbusPADev84_slot0_var2.AutbusPADev84_slot0_var2,Input Registers,UINT,InData2
+301253,AutbusPADev84_slot0_var3.AutbusPADev84_slot0_var3,Input Registers,ULINT,timer
+301257,AutbusPADev84_slot0_var4.AutbusPADev84_slot0_var4,Input Registers,UINT,year
+301258,AutbusPADev84_slot0_var5.AutbusPADev84_slot0_var5,Input Registers,USINT,month
+301259,AutbusPADev84_slot0_var6.AutbusPADev84_slot0_var6,Input Registers,USINT,day
+301260,AutbusPADev84_slot0_var7.AutbusPADev84_slot0_var7,Input Registers,USINT,hour
+301261,AutbusPADev84_slot0_var8.AutbusPADev84_slot0_var8,Input Registers,USINT,minute
+301262,AutbusPADev84_slot0_var9.AutbusPADev84_slot0_var9,Input Registers,USINT,second
+400362,AutbusPADev84_slot0_var10.AutbusPADev84_slot0_var10,Holding Registers,USINT,OutData1
+400363,AutbusPADev84_slot0_var11.AutbusPADev84_slot0_var11,Holding Registers,USINT,OutData2
+301263,AutbusPADev84_slot0_alarm1.AutbusPADev84_slot0_alarm1,Input Registers,USINT,alarm1
+301264,AutbusPADev84_slot0_alarm2.AutbusPADev84_slot0_alarm2,Input Registers,USINT,alarm2
+400364,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400365,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+301265,null.null,Input Registers,UINT,undefined
+301266,AutbusPADev85_slot0_var1.AutbusPADev85_slot0_var1,Input Registers,USINT,InData1
+301267,AutbusPADev85_slot0_var2.AutbusPADev85_slot0_var2,Input Registers,UINT,InData2
+301268,AutbusPADev85_slot0_var3.AutbusPADev85_slot0_var3,Input Registers,ULINT,timer
+301272,AutbusPADev85_slot0_var4.AutbusPADev85_slot0_var4,Input Registers,UINT,year
+301273,AutbusPADev85_slot0_var5.AutbusPADev85_slot0_var5,Input Registers,USINT,month
+301274,AutbusPADev85_slot0_var6.AutbusPADev85_slot0_var6,Input Registers,USINT,day
+301275,AutbusPADev85_slot0_var7.AutbusPADev85_slot0_var7,Input Registers,USINT,hour
+301276,AutbusPADev85_slot0_var8.AutbusPADev85_slot0_var8,Input Registers,USINT,minute
+301277,AutbusPADev85_slot0_var9.AutbusPADev85_slot0_var9,Input Registers,USINT,second
+400366,AutbusPADev85_slot0_var10.AutbusPADev85_slot0_var10,Holding Registers,USINT,OutData1
+400367,AutbusPADev85_slot0_var11.AutbusPADev85_slot0_var11,Holding Registers,USINT,OutData2
+301278,AutbusPADev85_slot0_alarm1.AutbusPADev85_slot0_alarm1,Input Registers,USINT,alarm1
+301279,AutbusPADev85_slot0_alarm2.AutbusPADev85_slot0_alarm2,Input Registers,USINT,alarm2
+400368,null.null,Holding Registers,UINT,参数1(0 ~ 1000) 
+400369,null.null,Holding Registers,UINT,参数2(0 ~ 1000) 
+301280,null.null,Input Registers,UINT,undefined
+400370,KYYZ_2DO_slot0_var3.KYYZ_2DO_slot0_var3,Holding Registers,USINT,DO1
+400371,KYYZ_2DO_slot0_var4.KYYZ_2DO_slot0_var4,Holding Registers,USINT,DO2
+301281,KYYZ_2DO_slot0_alarm1.KYYZ_2DO_slot0_alarm1,Input Registers,USINT,ALARM1
+301282,KYYZ_2DO_slot0_alarm2.KYYZ_2DO_slot0_alarm2,Input Registers,USINT,ALARM2
+400372,null.null,Holding Registers,UINT,param1(0 ~ 1000) 
+400373,null.null,Holding Registers,UINT,param2(0 ~ 1000) 
+301283,null.null,Input Registers,UINT,undefined

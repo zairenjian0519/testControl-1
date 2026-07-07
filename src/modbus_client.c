@@ -1,5 +1,6 @@
 #include "modbus_client.h"
 #include "log_manager.h"
+#include <errno.h>
 
 
 // 初始化Modbus客户端
@@ -182,7 +183,8 @@ int modbus_client_write_single_coil(ModbusClient *client, int addr, int value) {
     
     int rc = modbus_write_bit(client->ctx, addr, value);
     if (rc == -1) {
-        fprintf(stderr, "modbus_write_bit failed: %s\n", modbus_strerror(errno));
+        log_error("modbus_write_bit failed: addr=%d errno=%d (%s)",
+                  addr, errno, modbus_strerror(errno));
         return MODBUS_ERROR_WRITE;
     }
     
@@ -197,7 +199,8 @@ int modbus_client_write_single_register(ModbusClient *client, int addr, int valu
     
     int rc = modbus_write_register(client->ctx, addr, value);
     if (rc == -1) {
-        fprintf(stderr, "modbus_write_register failed: %s\n", modbus_strerror(errno));
+        log_error("modbus_write_register failed: addr=%d errno=%d (%s)",
+                  addr, errno, modbus_strerror(errno));
         return MODBUS_ERROR_WRITE;
     }
     

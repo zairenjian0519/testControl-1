@@ -4,10 +4,12 @@
 #include <iphlpapi.h>
 #include <cstring>
 #include <iomanip>
+#include <atomic>
 #include <stdint.h>  // C / C++ 通用
 #include "ipv6_manager.h"
+#include "log_manager.h"
 
-volatile bool g_main_loop_running = true;
+std::atomic_bool g_main_loop_running(true);
 
 
 // Link with ws2_32.lib
@@ -99,6 +101,7 @@ struct Network {
     WSADATA wsaData;
     SOCKET multicastSocket;
     struct sockaddr_in6 multicastAddr;
+    bool ownsSocket;
 };
 
 // Helper functions
@@ -152,6 +155,7 @@ ErrorCode networkInit(Network* network)
     }
 #endif
     network->multicastSocket = INVALID_SOCKET;
+    network->ownsSocket = false;
     return SUCCESS;
 }
 
@@ -162,6 +166,7 @@ ErrorCode networkCreateMulticastSocket(Network* network) {
         std::cerr << "socket creation failed: " << WSAGetLastError() << std::endl;
         return SOCKET_CREATE;
     }
+    network->ownsSocket = true;
     
     // Set reuse address
     int opt = 1;
@@ -257,7 +262,10 @@ ErrorCode networkReceiveData(Network* network, uint8_t* buffer, int* size, struc
     *size = recvfrom(network->multicastSocket, (char*)buffer, 1024, 0, (struct sockaddr*)senderAddr, &addrLen);
     
     if (*size == SOCKET_ERROR) {
-        std::cerr << "recvfrom failed: " << WSAGetLastError() << std::endl;
+        int error = WSAGetLastError();
+        if (error != WSAETIMEDOUT && error != WSAEWOULDBLOCK && error != WSAENOTSOCK && g_main_loop_running.load()) {
+            log_warn("recvfrom failed: %d", error);
+        }
         return RECEIVE;
     }
     
@@ -268,7 +276,7 @@ ErrorCode networkSendData(Network* network, const uint8_t* buffer, int size, con
     int sent = sendto(network->multicastSocket, (const char*)buffer, size, 0, (struct sockaddr*)destAddr, sizeof(*destAddr));
     
     if (sent == SOCKET_ERROR) {
-        std::cerr << "sendto failed: " << WSAGetLastError() << std::endl;
+        log_warn("sendto failed: %d", WSAGetLastError());
         return SEND;
     }
     
@@ -276,11 +284,11 @@ ErrorCode networkSendData(Network* network, const uint8_t* buffer, int size, con
 }
 
 void networkCleanup(Network* network) {
-    if (network->multicastSocket != INVALID_SOCKET) {
+    if (network->ownsSocket && network->multicastSocket != INVALID_SOCKET) {
         closesocket(network->multicastSocket);
-        network->multicastSocket = INVALID_SOCKET;
     }
-    WSACleanup();
+    network->multicastSocket = INVALID_SOCKET;
+    network->ownsSocket = false;
 }
 
 // ADDP protocol functions
@@ -444,7 +452,7 @@ void devicePrintInfo(const DeviceInfo* device) {
     }
 }
 
-int main_loop(int serversocket, int nic_index, const char *device_name, const char *device_model, int opcua_port, const char *opcua_path) 
+int main_loop(SOCKET serversocket, int nic_index, const char *device_name, const char *device_model, int opcua_port, const char *opcua_path) 
 {
     std::cout << "=== AUTBUS Controller Simulator ===" << std::endl;
     const char *effective_device_name = (device_name && device_name[0] != '\0') ? device_name : "spssps";
@@ -511,49 +519,37 @@ int main_loop(int serversocket, int nic_index, const char *device_name, const ch
     uint8_t buffer[1024];
     struct sockaddr_in6 senderAddr;
     
-    while (g_main_loop_running) {
+    unsigned int invalid_packet_log_count = 0;
+
+    while (g_main_loop_running.load()) {
         int size = 0;
         ErrorCode result = networkReceiveData(&network, buffer, &size, &senderAddr);
 
-        if (!g_main_loop_running) {
+        if (!g_main_loop_running.load()) {
             break;
         }
         
         if (result == SUCCESS && size > 0) {
-            std::cout << "\nReceived UDP packet:" << std::endl;
-            std::cout << "  Size: " << size << " bytes" << std::endl;
-            
-            // Print sender address
             char senderAddrStr[INET6_ADDRSTRLEN];
             InetNtop(AF_INET6, &senderAddr.sin6_addr, senderAddrStr, sizeof(senderAddrStr));
-            std::cout << "  Sender: " << senderAddrStr << ":" << ntohs(senderAddr.sin6_port) << std::endl;
-            
-            // Print packet hex dump
-            std::cout << "  Packet hex: ";
-            for (int i = 0; i < size && i < 64; i++) {
-                std::cout << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(buffer[i]) << " ";
-                if ((i + 1) % 16 == 0) {
-                    std::cout << std::endl << "  ";
-                }
-            }
-            std::cout << std::dec << std::endl;
+            log_debug("Received UDP packet: size=%d sender=[%s]:%d",
+                      size, senderAddrStr, ntohs(senderAddr.sin6_port));
             
             // Parse scan request
             uint32_t sequenceNumber;
             uint8_t clientMac[6];
             uint8_t clientIpv6[16];
             
-            std::cout << "  Attempting to parse ADDP scan request..." << std::endl;
+            log_debug("Attempting to parse ADDP scan request");
             if (addpParseScanRequest(buffer, size, &sequenceNumber, clientMac, clientIpv6)) {
                 char macStr[18];
                 char ipv6Str[INET6_ADDRSTRLEN];
-                std::cout << "  Successfully parsed ADDP scan request:" << std::endl;
-                std::cout << "  Sequence: " << sequenceNumber << std::endl;
-                std::cout << "  Client MAC: " << macToString(clientMac, macStr, sizeof(macStr)) << std::endl;
-                std::cout << "  Client IPv6: " << ipv6ToString(clientIpv6, ipv6Str, sizeof(ipv6Str)) << std::endl;
+                log_debug("Parsed ADDP scan request: sequence=%u client_mac=%s client_ipv6=%s",
+                          sequenceNumber,
+                          macToString(clientMac, macStr, sizeof(macStr)),
+                          ipv6ToString(clientIpv6, ipv6Str, sizeof(ipv6Str)));
                 
                 // Build response message
-                std::cout << "  Building device response..." << std::endl;
                 int responseSize = addpBuildDeviceResponse(
                     &device,
                     sequenceNumber,
@@ -562,31 +558,30 @@ int main_loop(int serversocket, int nic_index, const char *device_name, const ch
                     buffer
                 );
                 if (responseSize <= 0) {
-                    std::cerr << "  Failed to build response: buffer too small" << std::endl;
+                    log_warn("Failed to build ADDP response: buffer too small");
                     continue;
                 }
                 
                 // Send response
-                std::cout << "  Sending device response (" << responseSize << " bytes)..." << std::endl;
                 if (networkSendData(&network, buffer, responseSize, &senderAddr) == SUCCESS) {
-                    std::cout << "  Sent device response successfully" << std::endl;
+                    log_debug("Sent ADDP device response: %d bytes", responseSize);
                 } else {
-                    std::cerr << "  Failed to send response" << std::endl;
+                    log_warn("Failed to send ADDP device response");
                 }
             } else {
-                std::cout << "  Failed to parse ADDP scan request" << std::endl;
-                
-                // Check if it's a valid ADDP packet
-                if (size >= 32) {
-                    uint16_t protocolId = readUint16LE(buffer);
-                    uint8_t version = buffer[2];
-                    uint8_t messageType = buffer[3];
-                    std::cout << "  Header analysis:" << std::endl;
-                    std::cout << "  Protocol ID: 0x" << std::hex << protocolId << std::dec << std::endl;
-                    std::cout << "  Version: " << static_cast<int>(version) << std::endl;
-                    std::cout << "  Message Type: " << static_cast<int>(messageType) << std::endl;
-                } else {
-                    std::cout << "  Packet too short for ADDP header" << std::endl;
+                invalid_packet_log_count++;
+                if (invalid_packet_log_count <= 10 || (invalid_packet_log_count % 100) == 0) {
+                    uint16_t protocolId = size >= 2 ? readUint16LE(buffer) : 0;
+                    uint8_t version = size >= 3 ? buffer[2] : 0;
+                    uint8_t messageType = size >= 4 ? buffer[3] : 0;
+                    log_warn("Invalid ADDP scan packet count=%u size=%d sender=[%s]:%d protocol=0x%04x version=%u type=%u",
+                             invalid_packet_log_count,
+                             size,
+                             senderAddrStr,
+                             ntohs(senderAddr.sin6_port),
+                             protocolId,
+                             version,
+                             messageType);
                 }
             }
         }

@@ -18,6 +18,8 @@ static int parseCSVLine(char *line, CSVRecord *record, char *lastValidName) {
     
     // 将厂家扩展的6位地址转换为标准5位地址
     // 30xxxx -> 3xxxx, 10xxxx -> 1xxxx, 20xxxx -> 2xxxx, 40xxxx -> 4xxxx
+    record->modbusAddr = atoi(token);
+#if 0
     int addr = atoi(token);
     if (addr >= 100000 && addr <= 499999) {
         // 对于6位地址，去掉中间的0，保留前5位有效数字
@@ -27,6 +29,7 @@ static int parseCSVLine(char *line, CSVRecord *record, char *lastValidName) {
         addr = prefix * 10000 + suffix;
     }
     record->modbusAddr = addr;
+#endif
     fieldIndex++;
     
     // 解析name

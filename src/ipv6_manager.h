@@ -2,6 +2,7 @@
 #define IPV6_MANAGER_H
 
 #include <stdbool.h>
+#include <stddef.h>
 
 // IPv6地址管理函数声明
 
@@ -28,6 +29,14 @@ bool ipv6_add_address_to_interface(int nic_index, const char *ipv6_address, int 
 bool ipv6_remove_address_from_interface(int nic_index, const char *ipv6_address);
 
 void ipv6_remove_all_allocated_addresses(int nic_index);
+
+void ipv6_manager_set_add_options(bool skip_as_source,
+                                  unsigned int batch_add_limit,
+                                  unsigned int batch_add_delay_ms);
+
+void ipv6_manager_note_address_added(void);
+
+void ipv6_manager_delay_before_next_device_if_needed(void);
 
 /**
  * @brief 初始化IPv6地址管理器
